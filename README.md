@@ -27,7 +27,7 @@ Davis, T., 2017. A new open source boundary element code and its application to 
 
 ### Boundary Element MATLAB code. Modelling faults and deformation
 
-This software is for academic use. Do not use this in a commercial environment. There are plenty of commercial BEM codes in circulation. 
+This software is for academic use. Do not use this in a commercial environment. There are plenty of commercial Boundary Element codes in circulation. 
 It does not require compiling, simply load the file 'Mainframe.m' in MATLAB (either from the 3D or 2D directory) then start the code by pressing the &#9654; (run) symbol in the editor tab of MATLAB, alternatively call "run MainFrame.m" in the cmd window. Once the code starts it should run spitting out diagrams, showing progressbars and supplying results. 
 
 This code uses the Boundary Element Method (BEM), specifically the Displacement Discontinuity Method (DDM).
