@@ -1,3 +1,0 @@
-%Chuck meng eshelby code in here if you want to run this test.
-%http://www.sciencedirect.com/science/article/pii/S0098300411002378#ec0005
-%Code at :http://ars.els-cdn.com/content/image/1-s2.0-S0098300411002378-mmc1.zip
