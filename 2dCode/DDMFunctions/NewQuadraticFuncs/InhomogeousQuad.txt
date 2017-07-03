@@ -1,0 +1,5 @@
+Inhomogeneous for quad elements.
+
+Not Hooked up, it would be better to make this more user friendly first. 
+Adding loops to building inf matrices for elastics (could have multiple not just two)
+^ making the boundary flagging/drawing more intuitive.

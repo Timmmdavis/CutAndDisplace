@@ -1,0 +1,10 @@
+%Path Solver
+
+If you want to use the path solver chuck the files from:
+1)
+http://www.cs.wisc.edu/~ferris/path/pathlib.zip
+2)
+pathlib.zip\pathlib\examples\MATLAB\m-files
+
+Into this dir
+Then change the LinearCompFrictionSolver.m as needed
