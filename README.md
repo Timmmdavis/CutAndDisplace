@@ -261,3 +261,6 @@ Dr Juliet Crider, University of Washington.
 Dr Robert Simpson, Glasgow University.
 
 And others who have replied to emails regarding code, solutions etc.  
+
+Questions? 
+Contact "davis[at]gfz-potsdam.com"
