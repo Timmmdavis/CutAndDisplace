@@ -18,6 +18,6 @@ for i=1:nargin-4
     colormap(cmap)
     xlabel('x'); ylabel('y'); axis('equal'); 
     title(VarName);
-    divergingCentre( Data )
+    DivirgingCentre( Data )
 end
 
