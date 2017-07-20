@@ -261,4 +261,6 @@ Dr Juliet Crider, University of Washington.
 Dr Robert Simpson, Glasgow University.
 
 And others who have replied to emails regarding code, solutions etc.  
-"# BEM_DDM_MATLAB" 
+
+Questions? 
+Contact "davis[at]gfz-potsdam.com"
