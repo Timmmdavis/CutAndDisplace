@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%STEP 0: Bits you don’t need to touch. Just leave these on.
+%STEP 0: Bits you do not need to touch. Just leave these on.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   
 
@@ -328,7 +328,7 @@ colcount = size(X,2);
 
 % %maxgriX=2;mingriX=-2;maxgriY=2;mingriY=-2;
 % %%Random points within the calculated bounds
-% NumPnts=15000; %number of points, don’t have cells 
+% NumPnts=15000; %number of points, do not have cells 
 % lengthx=maxgriX-mingriX;
 % lengthy=maxgriY-mingriY;
 % xmv=(maxgriX+mingriX)/2; ymv=(maxgriY+mingriY)/2;

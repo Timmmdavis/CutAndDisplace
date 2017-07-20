@@ -1,5 +1,5 @@
-function divergingCentre( Var )
-%divergingCENTRE For a figure colourmapped with a diverging Cmap use this
+function DivergingCentre( Var )
+%DivergingCentre For a figure colourmapped with a diverging Cmap use this
 %to place the 0 value at 0 and not the mid value
 
 %Usage:

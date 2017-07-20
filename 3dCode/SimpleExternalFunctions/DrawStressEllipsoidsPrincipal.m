@@ -5,7 +5,7 @@ function  DrawStressEllipsoidsPrincipal(StressOutput,X,Y,Z,Triangles,Points)
 % stress tensors. 
 % Input 'XYZ' is the locations of the points we have the tensors for
 
-% Things that can but don’t need to be supplied:
+% Things that can but do not need to be supplied:
 % Triangles is the triangles the code used
 % Points the list of points 
 

@@ -26,7 +26,7 @@
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%STEP 0: Bits you don’t need to touch. Just leave these on.
+%STEP 0: Bits you do not need to touch. Just leave these on.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   
 
@@ -223,7 +223,7 @@ end
 
 
 % pause(5) %making sure fig has time to draw
-% %don’t want figures for the next bit
+% %do not want figures for the next bit
 % set(0,'DefaultFigureVisible','off') %SUPRESSING ALL FIGS
 
 %%

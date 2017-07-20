@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%STEP 0: Bits you don’t need to touch. Just leave these on.
+%STEP 0: Bits you do not need to touch. Just leave these on.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   
 clear;close all
@@ -330,7 +330,7 @@ dimz = length(X(1,:,:));
 % Z=zeros(size(X));
 
 %%Random points within the calculated bounds
-% NumPnts=1000; %number of points, don’t have cells , 10000
+% NumPnts=1000; %number of points, do not have cells , 10000
 % lengthx=maxgriX-mingriX;
 % lengthy=maxgriY-mingriY;
 % lengthz=maxgriZ-mingriZ;

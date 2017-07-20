@@ -32,7 +32,7 @@
 %   Copyright 2017, Tim Davis, The University of Aberdeen
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%STEP 0: Bit's  you don’t need to touch. Just leave these on.
+%STEP 0: Bit's  you do not need to touch. Just leave these on.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   
 
@@ -325,7 +325,7 @@ LvlstpX=0.001;
 LvlstpY=0.001;
 LvlstpXY=0.001;
 
-%Setting axis limit's  so supurious values don’t change the overall trend. 
+%Setting axis limit's  so supurious values do not change the overall trend. 
 %Only looking at finite values, No axis scaling to infs or nans. 
 %caxissxx=[min(Sxx_An(isfinite(Sxx_An(:)))),max(Sxx_An(isfinite(Sxx_An(:))))];
 %caxissyy=[min(Syy_An(isfinite(Syy_An(:)))),max(Syy_An(isfinite(Syy_An(:))))];

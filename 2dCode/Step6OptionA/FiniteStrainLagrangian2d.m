@@ -208,7 +208,7 @@ end %end the calculation of the gradient matrices
     ExyInfErrorPerc=abs(((exy-exyinf)./exy)*100);
     
     %Making sure max is 100% anymore and we put to Nan. Can get crazy
-    %values across the fault where we don’t really care
+    %values across the fault where we do not really care
     bad=abs(ExxInfErrorPerc)>100;
     ExxInfErrorPerc(bad)=100;
     bad=abs(EyyInfErrorPerc)>100;
@@ -217,7 +217,7 @@ end %end the calculation of the gradient matrices
     ExyInfErrorPerc(bad)=100;
 
     
-    %Turn off options below if you don’t want figures
+    %Turn off options below if you do not want figures
     
     %Drawing error maps
     X=X(:);

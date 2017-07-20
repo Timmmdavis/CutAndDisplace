@@ -19,7 +19,7 @@ for i=1:nargin-3
     xlabel('x'); ylabel('y'); axis('equal');
 
 	if flag==1
-	divergingCentre( Data )
+	DivergingCentre( Data )
 	end	
 	
 	%setting title

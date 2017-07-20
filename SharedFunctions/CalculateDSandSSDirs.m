@@ -3,7 +3,7 @@ function [ StrikeSlipCosine,DipSlipCosine ] = CalculateDSandSSDirs( FaceNormalVe
 %vector with 3 cols representing aX aY aZ
 
 %FaceNormalVector n*3 vector of direction cosines. 
-%CosAx,CosAy,CosAz %Split up cosines,if you don’t have 'FaceNormalVector'
+%CosAx,CosAy,CosAz %Split up cosines,if you do not have 'FaceNormalVector'
 %but just cosine vectors you just call as: 
 %[ StrikeSlipCosine,DipSlipCosine ] = CalculateDSandSSDirs( 1,CosAx,CosAy,CosAz )
 %plotting stuff at the bottom if you want to see these visually. 

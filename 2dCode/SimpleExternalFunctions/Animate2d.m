@@ -84,7 +84,7 @@ inv = linspace(0,1,sz); %linear vector that slowly forces the triangles to move 
 if Save==1
 isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0; %1 for octave, 0 for MATLAB
 if  isOctave==1;
-f = warndlg('Octave is about to spit loads of images in your current directory, do you really want to continue?, ctrl+C in cmd window to quit, if you do continue make sure your in a directory that you don’t mind filling with images');
+f = warndlg('Octave is about to spit loads of images in your current directory, do you really want to continue?, ctrl+C in cmd window to quit, if you do continue make sure your in a directory that you do not mind filling with images');
 drawnow     % Necessary to print the message
 %waitfor(f);
 elseif isOctave==0;

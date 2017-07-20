@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%STEP 0: Bits you don’t need to touch. Just leave these on.
+%STEP 0: Bits you do not need to touch. Just leave these on.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   
 
@@ -349,7 +349,7 @@ PlotOpeningVsShearOnElsQuad( NormAng,TensileDisp,ShearDisp,Points,x,y,HalfLength
 
 % %maxgriX=2;mingriX=-2;maxgriY=2;mingriY=-2;
 % %%Random points within the calculated bounds
-% NumPnts=15000; %number of points, don’t have cells 
+% NumPnts=15000; %number of points, do not have cells 
 % lengthx=maxgriX-mingriX;
 % lengthy=maxgriY-mingriY;
 % xmv=(maxgriX+mingriX)/2; ymv=(maxgriY+mingriY)/2;
@@ -486,7 +486,7 @@ Pxy=Sxy(1,1);
 [E1,E2,E1dir,E2dir]=EigCalc2d(Exx,Eyy,Exy);
 Dilatation2d=E1+E2;
 
-% %If the stresses don’t draw well use this function
+% %If the stresses do not draw well use this function
 % FilterValue=2.5;
 % [S1,S2,Sxx,Syy,Sxy] = NanOrRemoveBadPoints( FilterValue,5,1,S1,S2,Sxx,Syy,Sxy );
 
@@ -571,7 +571,7 @@ disp('mean');nanmean(abs(Res))
 % LvlstpY=0.001;
 % LvlstpXY=0.001;
 % 
-% %Setting axis limits so supurious values don’t change the overall trend. 
+% %Setting axis limits so supurious values do not change the overall trend. 
 % %Only looking at finite values, No axis scaling to infs or nans. 
 % %caxissxx=[min(Sxx_An(isfinite(Sxx_An(:)))),max(Sxx_An(isfinite(Sxx_An(:))))];
 % %caxissyy=[min(Syy_An(isfinite(Syy_An(:)))),max(Syy_An(isfinite(Syy_An(:))))];

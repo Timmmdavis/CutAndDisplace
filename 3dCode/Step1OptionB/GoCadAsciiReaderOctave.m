@@ -48,7 +48,7 @@ Triangles = str2double(Trgls);
 
 %Fixing a bug, this codebase relies on the fact the cols are the same as
 %numbers the triangles are pointing to in the first row of 'Points'.
-%Some program exports don’t get this right. 
+%Some program exports do not get this right. 
 for i=1:numel(Points(:,1));
     if Points(i,1) ~= i          %if the row is not equal to the first column on that row. 
         

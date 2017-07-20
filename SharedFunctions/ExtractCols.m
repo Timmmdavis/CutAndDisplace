@@ -8,7 +8,7 @@ function [ varargout ] = ExtractCols( Data,startat )
 if nargin ==1
     startat=0; %start at col 1. 
 else
-    startat=startat-1; %we add start at on. Starting at row 1 we don’t need to add to loop i. 
+    startat=startat-1; %we add start at on. Starting at row 1 we do not need to add to loop i. 
 end
 
 varargout= cell(1,nargout); %Preallocate cell array
@@ -20,7 +20,7 @@ end
 % ColumnNo=size(Data,2); %Sz=1=(Rows down),2=(Cols across)
 % chk=nargout==ColumnNo;
 % if chk==0
-%     error('number of aruguments out don’t match the column numbers of the input')
+%     error('number of aruguments out do not match the column numbers of the input')
 % end    
 
 

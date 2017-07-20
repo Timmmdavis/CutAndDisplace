@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%STEP 0: Bits you don’t need to touch. Just leave these on.
+%STEP 0: Bits you do not need to touch. Just leave these on.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   
 
@@ -95,7 +95,7 @@ cmap2 = colormap_cpt('Ccool-warm2');
 [Points,Triangles,BoundaryFlag] = DataAppender3d( PointsFBE1,PointsIFE1E2,TrianglesFBE1,TrianglesIFE1E2 );
 
 Cng=BoundaryFlag==1;
-BoundaryFlag(Cng)=2; %1 represents fixed elements that don’t exist in this problem
+BoundaryFlag(Cng)=2; %1 represents fixed elements that do not exist in this problem
 
 %Adding interface E2E1, Points towards E1
 [Points,Triangles,BoundaryFlag] = DataAppender3d( Points,PointsIFE2E1,Triangles,TrianglesIFE2E1,BoundaryFlag );

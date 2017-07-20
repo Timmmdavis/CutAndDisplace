@@ -392,7 +392,7 @@ function [yD1,xD1,yD2,xD2,yD3,xD3,yD4,xD4,yD5,xD5,timed,psy]=drawprep(x,y,f_k,ps
     xD5=[xD5,xloc5];    
     
     %now drawing each plot
-    %if you don’t want these as subplots just change the figure handles at
+    %if you do not want these as subplots just change the figure handles at
     %the top of this func
     subplot(h1)
     draw(xD1,yD1,iter)

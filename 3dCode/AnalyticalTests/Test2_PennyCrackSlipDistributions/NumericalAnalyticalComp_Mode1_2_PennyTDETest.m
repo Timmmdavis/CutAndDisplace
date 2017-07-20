@@ -20,7 +20,7 @@
 
 %   Copyright 2017, Tim Davis, The University of Aberdeen
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%STEP 0: Bits you don’t need to touch. Just leave these on.
+%STEP 0: Bits you do not need to touch. Just leave these on.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   
 
@@ -210,7 +210,7 @@ u2=((2*a*(1-nu)*ss)/(pi*mu))*sqrt(1-((r.^2)/(a^2)));
 u2=u2*2;
 
 
-%plotting N vals work for high sampling , put to 1 if you don’t want to
+%plotting N vals work for high sampling , put to 1 if you do not want to
 %filter numerical results
 figure;
 title({'Penny crack slip distributions'})

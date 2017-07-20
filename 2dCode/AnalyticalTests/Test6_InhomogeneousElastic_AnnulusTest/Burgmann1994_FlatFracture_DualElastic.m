@@ -17,7 +17,7 @@
 % tips fixes spurious stress values. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%STEP 0: Bits you don’t need to touch. Just leave these on.
+%STEP 0: Bits you do not need to touch. Just leave these on.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   
 
@@ -108,7 +108,7 @@ FlipNormalsFlag(end,1)=1; %Flag that tells the line builder to flip the normals 
 PointsxyFree2=[E1Fbnd(:,1)+100,E1Fbnd(:,2)];
 
 [Pointsxy,mystruct,BoundaryFlag] = DataAppender2d( Pointsxy,PointsxyFree2,mystruct,BoundaryFlag,4 );
-FlipNormalsFlag=[FlipNormalsFlag;0];% We don’t want to flip the last normals
+FlipNormalsFlag=[FlipNormalsFlag;0];% We do not want to flip the last normals
 
 %Quick Low Down on BoundaryFlag
 %0=free boundary E1
@@ -373,7 +373,7 @@ lambda= E.*nu./((1+nu).*(1-2.*nu));   %Lamé's  constant,  Equation 8.27 Pollard
 [E1,E2,E1dir,E2dir]=EigCalc2d(Exx,Eyy,Exy);
 Dilatation2d=E1+E2;
 
-%If the stresses don’t draw well use this function
+%If the stresses do not draw well use this function
 FilterValue=2.5;
 [S1,S2,Sxx,Syy,Sxy] = NanOrRemoveBadPoints( FilterValue,5,1,S1,S2,Sxx,Syy,Sxy );
 

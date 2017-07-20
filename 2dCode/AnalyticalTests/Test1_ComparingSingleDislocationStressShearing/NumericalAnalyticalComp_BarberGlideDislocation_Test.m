@@ -25,7 +25,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%STEP 0: Bits you don’t need to touch. Just leave these on.
+%STEP 0: Bits you do not need to touch. Just leave these on.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   
 
@@ -259,7 +259,7 @@ LvlstpX =0.1;
 LvlstpY =0.1;
 LvlstpXY=0.1;
 
-%Setting axis limits so supurious values don’t change the overall trend. 
+%Setting axis limits so supurious values do not change the overall trend. 
 %Only looking at finite values, No axis scaling to infs or nans. 
 caxissxx=[min(SxxBarb(isfinite(SxxBarb(:)))),max(SxxBarb(isfinite(SxxBarb(:))))];caxissxx=caxissxx/4;
 caxissyy=[min(SyyBarb(isfinite(SyyBarb(:)))),max(SyyBarb(isfinite(SyyBarb(:))))];caxissyy=caxissyy/4;

@@ -51,7 +51,7 @@ b=-1;
 %Setting up grid points U and V, these are mapped to a different location
 %later
 u = linspace(0,4,50);
-v = linspace(-0.3265,-4,46); %Points slightly below 0 as we don’t want observation points on the elements for the twodd code 
+v = linspace(-0.3265,-4,46); %Points slightly below 0 as we do not want observation points on the elements for the twodd code 
 % u = linspace(-0,4,50);
 % v = linspace(0,-4,50); 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -243,7 +243,7 @@ LvlstpX=0.2;
 LvlstpY=0.5;
 LvlstpXY=0.02;
 
-%Setting axis limits so supurious values don’t change the overall trend. 
+%Setting axis limits so supurious values do not change the overall trend. 
 caxissxx=[min(sigx(:)),max(sigx(:))];
 caxissyy=[min(sigy(:)),max(sigy(:))];
 caxissxy=[min(sigxy(:)),max(sigxy(:))];

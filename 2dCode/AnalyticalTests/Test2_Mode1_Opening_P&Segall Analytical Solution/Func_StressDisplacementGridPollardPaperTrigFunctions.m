@@ -18,7 +18,7 @@ function [SxxChange,SyyChange,SxyChange,u,v]=Func_StressDisplacementGridPollardP
 %Sxy driving stress shearing the crack
 % minx spacing maxx make a square grid around the crack a is defined below
 % so check this first then make your grid
-%cmap is a colourmap file, you wont need this if you don’t make the figures at the
+%cmap is a colourmap file, you wont need this if you do not make the figures at the
 %base
 
 %Setting up grid to analyse stresses and displacements on. It doesn't need

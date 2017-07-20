@@ -206,7 +206,7 @@ end
     if any(Fdisp)==1 && isa(A,'double')
     D = sparse(A)\B;
     %If not we are using a dense square matrix, this is faster if square as we
-    %don’t need to spend time allocating this as sparse. 
+    %do not need to spend time allocating this as sparse. 
     else
     D = A\B;
     end

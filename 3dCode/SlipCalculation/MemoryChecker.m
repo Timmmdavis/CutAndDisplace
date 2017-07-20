@@ -81,7 +81,7 @@ if  Orig <= ProbableSize && Orig >= SmallestProbableSize
     disp 'and';
     disp(MemLeft)
     BarChart(Orig,ProbableSize,SmallestProbableSize) 
-    f = warndlg('continue?, if you want to quit don’t close this, use (ctrl+c) in the cmd window');
+    f = warndlg('continue?, if you want to quit do not close this, use (ctrl+c) in the cmd window');
     drawnow     % Necessary to print the message
     waitfor(f) %waiting until figure is closed
     disp('Carrying on');

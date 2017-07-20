@@ -128,7 +128,7 @@ end
     %for option E traction has been already defined
 if Option=='E' || ~isempty(Tnn_i)&&~isempty(Tds_i)&&~isempty(Tss_i)
     
-    %If Tractions don’t exist yet (i.e. option E) then we create blank ones
+    %If Tractions do not exist yet (i.e. option E) then we create blank ones
     %to append the user defined ones too. 
     Tnn=zeros(NUM,1);
     Tss=zeros(NUM,1);
@@ -266,7 +266,7 @@ end
     %D = A\B; disp('sparse off, line 260 SlipCalc3d')
     D = sparse(A)\B;
     %If not we are using a dense square matrix, this is faster if square as we
-    %don’t need to spend time allocating this as sparse. 
+    %do not need to spend time allocating this as sparse. 
     else
 
     D = A\B;
