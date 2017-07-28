@@ -201,8 +201,8 @@ Sxy = -1;        			%Positive is right lateral movement
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Function that does the work:
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[StrikeSlipDispNegDr,DipSlipDispNegDr,TensileSlipDispNegDr,Sxx,Syy,Szz,...
-Sxy,Sxz,Syz]=SlipCalculator3d(MidPoint,Sxx,Syy,Szz,Sxy,Sxz,Syz,...
+[StrikeSlipDispNegDr,~,~,~,~,~,...
+~,~,~]=SlipCalculator3d(MidPoint,Sxx,Syy,Szz,Sxy,Sxz,Syz,...
 Tnn,Tss,Tds,mu,lambda,nu,P1,P2,P3,halfspace,FaceNormalVector,Fdisp,strain,Mu,Sf,Option);
 
     %%%%%%%%%%%%%%
@@ -227,8 +227,8 @@ Option='B'; %slip No Fric
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Function that does the work:
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[StrikeSlipDispNoFr,DipSlipDispNoFr,TensileSlipDispNoFr,Sxx,Syy,Szz,...
-Sxy,Sxz,Syz]=SlipCalculator3d(MidPoint,Sxx,Syy,Szz,Sxy,Sxz,Syz,...
+[StrikeSlipDispNoFr,~,~,~,~,~,...
+Sxy,~,~]=SlipCalculator3d(MidPoint,Sxx,Syy,Szz,Sxy,Sxz,Syz,...
 Tnn,Tss,Tds,mu,lambda,nu,P1,P2,P3,halfspace,FaceNormalVector,Fdisp,strain,Mu,Sf,Option);
 
 
@@ -248,16 +248,16 @@ PlotSlipDistribution3d(Triangles,Points,cmap2,StrikeSlipDisp,DipSlipDisp,Tensile
 FracMid=(MidPoint(:,3))<1 & (MidPoint(:,3))>-1; %Only finding slips in the central Y strip of fault
 Profile=-StrikeSlipDisp(FracMid); %Grabbing values of slip with friction
 Profile2=-StrikeSlipDispNoFr(FracMid); %Grabbing values of slip for no friction
-Profile3=StrikeSlipDispNegDr(FracMid); %Grabbing values of slip for no friction
+Profile3=StrikeSlipDispNegDr(FracMid); %Grabbing values of slip for neg friction
 Srt=(MidPoint((FracMid),1)); %Grabbing X points within Y distance to sort on
 C = [Srt,Profile,Profile2,Profile3];
 jnk = sortrows(C); %Sorted along X axis for slips. 
+%Grabbing values from filtered data
+x=jnk(:,1); %Points along crack
+PosFr=jnk(:,2);
+NoFr=jnk(:,3);
+NegFr=jnk(:,4);
 
-%Drawing figure of calculates slips
-figure;colormap(cmap),scatter(jnk(:,1),abs(jnk(:,2)),24,'k');
-hold on
-scatter(jnk(:,1),abs(jnk(:,3)),24,'k'); 
-scatter(jnk(:,1),abs(jnk(:,4)),18,'b','.'); 
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -273,8 +273,7 @@ a = 1;  %Unit half length
 Sr =  abs(Sxy); %Driving stress (positive is extension)
 G=mu; %ShearMod
 pr=0.25;%Poissions ratio
-%Points along crack
-x=jnk(:,1);
+
 %Pollard Burgmann_1994_eq5_UniformRemoteStress
 Slip_UniformRemote=(2*Sr).*((1-pr)/G).*(sqrt(a.^2-x.^2));
 %Pollard Burgmann_1994_eq14_LinearIncreasingFriction
@@ -287,25 +286,44 @@ Slip_IncreasingFriction=real(Slip_IncreasingFriction);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+%%For plots
+%Grabbing the right hand side of the crack
+rightcrack=x>0;
+%Spacing and points we will interpolate on
+RN = linspace(0,0.95,20);
+%Making sure we have unique points or the interpolation is unhappy. 
+[R2, ~] = uniquify(x(rightcrack));
+%Interpolating the numerical results for plotting (Makes it easier to see
+%errors)
+ShearDispInt = interp1(R2,PosFr(rightcrack),RN,'pchip');
+ShearDispNegFrInt = interp1(R2,NoFr(rightcrack),RN,'pchip');
+ShearDispNoFrInt = interp1(R2,NegFr(rightcrack),RN,'pchip');
+%Drawing the figure
+figure;
+hold on
+%Plotting analytical profiles
+plot(x(rightcrack),Slip_IncreasingFriction(rightcrack),'b','LineWidth',2.5);
+plot(x(rightcrack),Slip_UniformRemote(rightcrack),'g','LineWidth',2.5);
+%Plotting interpolated numerical disps every 20th halflength
+scatter(RN,abs(ShearDispInt),24,'k','filled');
+scatter(RN,abs(ShearDispNegFrInt),24,'k','filled');
+scatter(RN,abs(ShearDispNoFrInt),24,'k','filled');
+%Adding titles etc
+title('Slip Distribution');
+xlabel('Distance from crack centre')
+ylabel({'Crack wall displacement'}) 
+grid on
+legend('show')
+legend('Linear friction profile','No Friction','Numerical results')
+%Making the plot nicer
+titlesz=25;
+fntsz=21;
+ChangeFontSizes(fntsz,titlesz);
+
+
 %Calculating residual
 FrictionResidual=Slip_IncreasingFriction-abs(jnk(:,2));
 FrictionResidualNegDirStress=Slip_IncreasingFriction-abs(jnk(:,4));
-
-%Drawing figures of analytical profiles
-plot(x,Slip_IncreasingFriction,'g','LineWidth',2.5)
-plot(x,Slip_UniformRemote,'b','LineWidth',2.5)
-plot(x,(FrictionResidual),'--r')
-
-title('Frictional Slip Distribution')
-xlabel('Distance from crack centre')
-ylabel('Slip')
-xlim ([-1 1]);
-
-title({'SlipDistribution';'The numerical result shown here is the strike slip displacement for a vertical lying fracture'});
-xlabel('Distance from crack centre')
-ylabel({'Magnitude of slip';'No Friction Analytical = green';'Linear Fric Analytical = blue, Residual = dashed red';'ComplimentarySolver&NoFricResult = black + cyan dots'})
-xlim ([-1 1]);
-hold off
 
 fprintf('MaxSlipDifference %i.\n',max(abs(FrictionResidual(:))))
 
@@ -498,8 +516,8 @@ Option='B'; %slip from uniform remote stress with no friction
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Function that does the work:
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[StrikeSlipDispNoFr,DipSlipDispNoFr,TensileSlipDispNoFr,Sxx,Syy,Szz,...
-Sxy,Sxz,Syz]=SlipCalculator3d(MidPoint,Sxx,Syy,Szz,Sxy,Sxz,Syz,...
+[StrikeSlipDispNoFr,DipSlipDispNoFr,TensileSlipDispNoFr,~,~,~,...
+~,~,~]=SlipCalculator3d(MidPoint,Sxx,Syy,Szz,Sxy,Sxz,Syz,...
 Tnn,Tss,Tds,mu,lambda,nu,P1,P2,P3,halfspace,FaceNormalVector,Fdisp,strain,Mu,Sf,Option);
 
     %%%%%%%%%%%%%% 
@@ -526,7 +544,7 @@ Option='C'; %slip from uniform remote stress with no friction
     %Function that does the work:
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [StrikeSlipDisp,DipSlipDisp,TensileSlipDisp,Sxx,Syy,Szz,...
-Sxy,Sxz,Syz]=SlipCalculator3d(MidPoint,Sxx,Syy,Szz,Sxy,Sxz,Syz,...
+Sxy,~,Syz]=SlipCalculator3d(MidPoint,Sxx,Syy,Szz,Sxy,Sxz,Syz,...
 Tnn,Tss,Tds,mu,lambda,nu,P1,P2,P3,halfspace,FaceNormalVector,Fdisp,strain,Mu,Sf,Option);
 
 %redefine driving stress
@@ -534,8 +552,8 @@ Sxz = -1;
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Function that does the work:
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-[StrikeSlipDispNegDr,DipSlipDispNegDr,TensileSlipDispNegDr,Sxx,Syy,Szz,...
-Sxy,Sxz,Syz]=SlipCalculator3d(MidPoint,Sxx,Syy,Szz,Sxy,Sxz,Syz,...
+[StrikeSlipDispNegDr,DipSlipDispNegDr,TensileSlipDispNegDr,~,~,~,...
+~,Sxz,~]=SlipCalculator3d(MidPoint,Sxx,Syy,Szz,Sxy,Sxz,Syz,...
 Tnn,Tss,Tds,mu,lambda,nu,P1,P2,P3,halfspace,FaceNormalVector,Fdisp,strain,Mu,Sf,Option);
 
 
@@ -556,12 +574,12 @@ Profile3=DipSlipDispNegDr(FracMid); %Grabbing values of slip for no friction
 Srt=(MidPoint((FracMid),1)); %Grabbing X points within Y distance to sort on
 C = [Srt,Profile,Profile2,Profile3];
 jnk = sortrows(C); %Sorted along X axis for slips. 
+%Grabbing values from filtered data
+x=jnk(:,1); %Points along crack
+PosFr=jnk(:,2);
+NoFr=jnk(:,3);
+NegFr=jnk(:,4);
 
-%Drawing figure of calculates slips
-figure;colormap(cmap),scatter(jnk(:,1),abs(jnk(:,2)),24,'k');
-hold on
-scatter(jnk(:,1),abs(jnk(:,3)),24,'k'); 
-scatter(jnk(:,1),abs(jnk(:,4)),18,'b','.'); 
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -577,8 +595,6 @@ a = 1;  %Unit half length
 Sr =  abs(Sxz); %Driving stress (positive is tension)
 G=mu; %ShearMod
 pr=0.25;%Poissions ratio
-%Points along crack
-x=jnk(:,1);
 %Pollard Burgmann_1994_eq5_UniformRemoteStress
 Slip_UniformRemote=(2*Sr).*((1-pr)/G).*(sqrt(a.^2-x.^2));
 %Pollard Burgmann_1994_eq14_LinearIncreasingFriction
@@ -595,19 +611,38 @@ Slip_IncreasingFriction=real(Slip_IncreasingFriction);
 FrictionResidual=Slip_IncreasingFriction-abs(jnk(:,2));
 FrictionResidualNegDirStress=Slip_IncreasingFriction-abs(jnk(:,4));
 
-%Drawing figures of analytical profiles
-plot(x,Slip_IncreasingFriction,'g','LineWidth',2.5)
-plot(x,Slip_UniformRemote,'b','LineWidth',2.5)
-plot(x,(FrictionResidual),'--r')
-
-title({'SlipDistribution';'The numerical result shown here is the dip slip displacement for a flat lying fracture'});
+%%For plots
+%Grabbing the right hand side of the crack
+rightcrack=x>0;
+%Spacing and points we will interpolate on
+RN = linspace(0,0.95,20);
+%Making sure we have unique points or the interpolation is unhappy. 
+[R2, ~] = uniquify(x(rightcrack));
+%Interpolating the numerical results for plotting (Makes it easier to see
+%errors)
+ShearDispInt = interp1(R2,PosFr(rightcrack),RN,'pchip');
+ShearDispNegFrInt = interp1(R2,NoFr(rightcrack),RN,'pchip');
+ShearDispNoFrInt = interp1(R2,NegFr(rightcrack),RN,'pchip');
+%Drawing the figure
+figure;
+hold on
+%Plotting analytical profiles
+plot(x(rightcrack),Slip_IncreasingFriction(rightcrack),'b','LineWidth',2.5);
+plot(x(rightcrack),Slip_UniformRemote(rightcrack),'g','LineWidth',2.5);
+%Plotting interpolated numerical disps every 20th halflength
+scatter(RN,abs(ShearDispInt),24,'k','filled');
+scatter(RN,abs(ShearDispNegFrInt),24,'k','filled');
+scatter(RN,abs(ShearDispNoFrInt),24,'k','filled');
+%Adding titles etc
+title('Slip Distribution');
 xlabel('Distance from crack centre')
-ylabel({'Magnitude of slip';'No Friction Analytical = green';'Linear Fric Analytical = blue, Residual = dashed red';'ComplimentarySolver&NoFricResult = black dots'})
-xlim ([-1 1]);
-hold off
+ylabel({'Crack wall displacement'}) 
+grid on
+legend('show')
+legend('Linear friction profile','No Friction','Numerical results')
+%Making the plot nicer
 titlesz=25;
 fntsz=21;
-grid on
 ChangeFontSizes(fntsz,titlesz);
 
 fprintf('MaxSlipDifference %i.\n',max(abs(FrictionResidual(:))))

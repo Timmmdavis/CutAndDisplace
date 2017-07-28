@@ -27,7 +27,7 @@ function [sigx,sigy,sigxy,x,y] = SavageSlope1984FortranCodeMATLABFunc(ts,rg,pr,a
 % %later
 % u = linspace(-0,4,50);
 % v = linspace(0,-4,50); 
-[u,v] = meshgrid(u,v);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -64,7 +64,7 @@ aw = -awl-aw2;
 %phi is phi(w) for the gravity solution given by equation 6.
 phi = -aw.*so./dz+a.*b.*phia./(dz.*(w-ai).^2);
 
-%From equation 11
+%From equation 11.
 awt = -(a.*b.*ts)./(2.*(w-ai).^2);
 
 %From equation 10.

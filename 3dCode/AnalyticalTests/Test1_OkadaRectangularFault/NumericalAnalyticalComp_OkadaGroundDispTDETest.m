@@ -169,8 +169,9 @@ Syz = 0;
     %Option A = Simply define flat observation plane of points. XYZ with defined step size 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-
 [X,Y,Z] = meshgrid(-5:0.5:10,-5:0.5:10,0);
+rowcount = length(X(:,1)); 
+colcount = length(X(1,:));
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -199,20 +200,9 @@ Syz = 0;
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%STEP 7: VISULISATION AND ANALYSIS
+%STEP 7: VISUALISATION AND ANALYSIS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
-
-%Now calculating displacement due to same fault geometry with François
-%Beauducels Okada code
-%Observation Points
-z=0;
-[E,N,z] = meshgrid(-5:0.5:10,-5:0.5:10,z);
-
-%Poisson's ratio
-NU=0.25;
 
 %Calculating the depth of the centre of the fault using Pythagoras theorem
 dip=70;
@@ -223,21 +213,17 @@ MidDepth=MidDeptha/2+TipDepth;
 %Running the Okada function, see: http://uk.mathworks.com/MATLABcentral/fileexchange/25982-okada--surface-
 %deformation-due-to-a-finite-rectangular-source
 %For details
-[uE,uN,uZ,uNN,uNE,uEN,uEE]  = okada85(E,N,MidDepth,60,dip,5,width,90,1,0,'plot') ;
+[uE,uN,uZ,uNN,uNE,uEN,uEE]  = okada85(X,Y,MidDepth,60,dip,5,width,90,1,0,'plot') ;
 hold on
 
-%Plotting my strain vs the Okada strain
-figure;title('Exx vs OkadaCode, extension pos')
-subplot(1,2,1),scatter(X(:),Y(:),20,exx(:))
-xlabel('x'); ylabel('y'); axis('equal');    colormap(cmap);	colorbar;
-subplot(1,2,2),scatter(E(:),N(:),20,-uEE(:))
-xlabel('x'); ylabel('y'); axis('equal');    colormap(cmap);	colorbar;
+uxy=-(uEN(:)+uNE(:))/2;
 
-figure;title('Exy vs OkadaCode, extension pos')
-subplot(1,2,1),scatter(X(:),Y(:),20,exy(:))
-xlabel('x'); ylabel('y'); axis('equal');    colormap(cmap);	colorbar;
-subplot(1,2,2),scatter(E(:),N(:),20,-(uEN(:)+uNE(:))/2) %eq 7.129 Pollard and Fletcher
-xlabel('x'); ylabel('y'); axis('equal');    colormap(cmap);	colorbar;
+%Tri dislocations
+[E1,E2,E1dir,E2dir]=EigCalc2d(exx,eyy,exy);
+%Okada dislocations
+[E1ok,E2ok,E1dirok,E2dirok]=EigCalc2d(-uEE(:),-uNN(:),-uxy);
+
+[E1,E2,E1ok,E2ok ]=ReshapeData2d( rowcount,colcount,E1,E2,E1ok,E2ok );
 
 
 %Plotting the displacement induced in the TDE code and its fault
@@ -247,7 +233,7 @@ hold on
 trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),'FaceColor', 'cyan', 'faceAlpha',0.8);
 hold off
 %Drawing the displacement vectors induced by the Okada function
-subplot(1,2,2),quiver3(E,N,Z,uE,uN,uZ)
+subplot(1,2,2),quiver3(X,Y,Z,uE,uN,uZ)
 xlabel('x'); ylabel('y'); axis('equal'); title('Displacement OkadaCode')
 hold off
 
@@ -265,6 +251,27 @@ figure;subplot(1,3,1),contourf(X,Y,Resx);xlabel('x'); ylabel('y'); axis('equal')
 subplot(1,3,2),contourf(X,Y,Resy);xlabel('x'); ylabel('y'); axis('equal'); title('Disp residual uy');colorbar;
 subplot(1,3,3),contourf(X,Y,Resz);xlabel('x'); ylabel('y'); axis('equal'); title('Disp residual uz');colorbar;
 
+
+%Plotting Tri Dis displacements vs the Okada displacements
+DrawDeformedGrid2d( X,Y,Ux,Uy,5,cmap2,(E1+E2));hax1=gca;no1=gcf;title('Triangular dislocations');
+DrawDeformedGrid2d( X,Y,uE,uN,5,cmap2,(E1+E2));hax2=gca;no2=gcf;title('Rectangular dislocation');
+hf2=figure;
+s1=subplot(1,2,1);
+s2=subplot(1,2,2);
+pos1=get(s1,'Position');pos2=get(s2,'Position');
+delete(s1);delete(s2);
+hax_1=copyobj(hax1,hf2);
+hax_2=copyobj(hax2,hf2);
+set(hax_1, 'Position', pos1);colorbar;colormap(cmap2);
+xlabel('x'); ylabel('y');gca;% title('Triangles');
+set(hax_2, 'Position', pos2);colorbar;colormap(cmap2);
+xlabel('x'); ylabel('y');gca;%title('gggg');
+close(no1);close(no2);
+titlesz=25;
+fntsz=21;
+ChangeFontSizes(fntsz,titlesz);
+text(-25,13,'Ground displacements and dilatation, comparison of different analyical sources','Fontsize',25,'FontWeight','bold')
+
 bad=isnan(Resx);Resx=Resx(~bad);%removing nans to get proper mean
 fprintf('MaxResidualUx %i.\n',max(abs(Resx(:))))
 
@@ -280,3 +287,8 @@ if any(P>1e-8) %Around the precision and errors introduced. Small values.
 else
     disp('Everything looks good, tolerance checks max stress residuals and flags errors above 1e-8')
 end
+
+%Calculating residuals
+Resex=exx--uEE(:);
+Resey=exy-(-(uEN(:)+uNE(:))/2);
+

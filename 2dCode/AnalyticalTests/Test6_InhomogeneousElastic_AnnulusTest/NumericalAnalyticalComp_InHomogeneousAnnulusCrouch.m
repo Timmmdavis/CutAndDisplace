@@ -469,18 +469,15 @@ plot(rOvb,SttNorm,'LineWidth',2,'color','g');
 % ylabel('Srr & Stt normalised to driving stress');
 
 
-isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0; %1 for octave, 0 for MATLAB
-if  isOctave==1
+
 scatter(rOvb_a_r_b(:),SrrNorm_a_r_b(:),24,'k','filled');
 scatter(rOvb_a_r_b(:),SttNorm_a_r_b(:),24,'k','filled');
-elseif isOctave==0
-scatter(rOvb_a_r_b(:),SrrNorm_a_r_b(:),24,'k','filled');
-scatter(rOvb_a_r_b(:),SttNorm_a_r_b(:),24,'k','filled');
-end
 title('Stress across elastic interface'), 
 xlabel('Distance, interface at 1')
 ylabel('Stress components')
 grid on
+legend('show')
+legend('Stt','Srr','Numerical results')
 plot([1 1],[-1 1.5],'k--') %interface
 titlesz=25;
 fntsz=21;

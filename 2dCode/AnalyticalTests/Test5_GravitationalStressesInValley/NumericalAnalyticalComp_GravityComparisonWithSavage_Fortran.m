@@ -52,8 +52,7 @@ b=-1;
 %later
 u = linspace(0,4,50);
 v = linspace(-0.3265,-4,46); %Points slightly below 0 as we do not want observation points on the elements for the twodd code 
-% u = linspace(-0,4,50);
-% v = linspace(0,-4,50); 
+[u,v] = meshgrid(u,v);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [sigx,sigy,sigxy,xobs,yobs] = SavageSlope1984FortranCodeMATLABFunc(ts,rg,pr,a,b,u,v);
@@ -397,3 +396,11 @@ else
     disp('Everything looks good, checks the mean Sxx Syy Sxy residual of all points is below 0.01')
 end
 %disp('Compare the two plots of Sxx+Syy induced by the valley without graviational loading, ignore features above valley surface')
+
+
+SlipResPercx=mean(100-(abs((100./sigx(:)).*Sxx(:))));
+SlipResPercy=mean(100-(abs((100./sigy(:)).*Syy(:)))); 
+bad=abs((100./sigxy(:)))==inf;
+SlipResPercxy=100-(abs((100./sigxy(:)).*Sxy(:))); 
+SlipResPercxy(bad)=[];
+SlipResPercxy=mean(SlipResPercxy);

@@ -149,7 +149,7 @@ Sxx = 0;  Syy = 0;  Sxy = 0;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 
-X=linspace(0,100,100);
+X=linspace(0,100,50);
 Y=ones(1,numel(X))*-0.01;
 dimx = length(X(:,1));
 dimy = length(Y(:,1));
@@ -267,7 +267,7 @@ Sxz = 0;
 Syz = 0;   
 
 
-X=linspace(0,100,100);
+X=linspace(0,100,50);
 Y=zeros(1,numel(X));
 Z=ones(1,numel(X))*-0.01;
 
@@ -298,11 +298,16 @@ hold on
 plot(X,Uz3d,'LineWidth',2,'color','g')
 scatter(X(:),Ux2d(:),24,'k','filled')
 scatter(X(:),Uy2d(:),24,'k','filled')
-ylabel({'Displacement, 3d Ux = red, 2d Ux =dots';'3d Uz = pink, 2d Uy/z = dots'})
+ylabel({'Ground Displacement'})
+xlabel({'X distance from the problem centre'})
+title({'Half space ground displacement comparison, flat lying sill with constant opening'})
+legend('show')
+legend('Ux 3D solution','Uz 3D solution','2D solution results')
 titlesz=25;
 fntsz=21;
 ChangeFontSizes(fntsz,titlesz);
 grid on
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calculating residual and checking for errors. 

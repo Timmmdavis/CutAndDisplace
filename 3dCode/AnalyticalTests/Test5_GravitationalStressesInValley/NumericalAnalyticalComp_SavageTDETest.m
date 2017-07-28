@@ -72,8 +72,8 @@ cmap2 = colormap_cpt('Ccool-warm2');
     %The file must list the traingle vertex's then triangles. 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- string='ValleySurface_ProperEq_1000Faces.ts';  
- %string='ValleySurface_ProperEq_5700Faces.ts'; 
+ %string='ValleySurface_ProperEq_1000Faces.ts';  
+ string='ValleySurface_ProperEq_5700Faces.ts'; 
  [ Points,Triangles ] = GoCadAsciiReader( string,pathstring );
 
 %%
@@ -202,6 +202,7 @@ b=-1;
 %later
 u = linspace(0,4,50);
 v = linspace(-0.3265,-4,46); %Points slightly below 0 as we do not want observation points on the elements in the TDE code 
+[u,v] = meshgrid(u,v);
 [sigx,sigy,sigxy,xobs,yobs] = SavageSlope1984FortranCodeMATLABFunc(ts,rg,pr,a,b,u,v);
 %%%%%%%%%%%%%%%%%%%%%
 X=xobs;
@@ -383,6 +384,16 @@ else
 end
 
 
-
+%Percentages
+% SlipResPercx=mean(abs((100./sigx(:)).*Sxx(:))); 
+% SlipResPercy=mean(abs((100./sigy(:)).*Syy(:))); 
+% SlipResPercxy=mean(abs((100./sigxy(:)).*Sxy(:))); 
+%Mean Percentage Error
+SlipResPercx=mean(100-(abs((100./sigx(:)).*Sxx(:))));
+SlipResPercy=mean(100-(abs((100./sigy(:)).*Syy(:)))); 
+bad=abs((100./sigxy(:)))==inf;
+SlipResPercxy=100-(abs((100./sigxy(:)).*Sxy(:))); 
+SlipResPercxy(bad)=[];
+SlipResPercxy=mean(SlipResPercxy);
 
 

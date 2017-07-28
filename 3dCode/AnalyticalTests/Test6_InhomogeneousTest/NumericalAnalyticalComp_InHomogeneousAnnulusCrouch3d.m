@@ -80,21 +80,21 @@ cmap2 = colormap_cpt('Ccool-warm2');
 %   string='Tube_2000mRad_4000FacesINVHS.ts'; %Loading interface elastic 2
 % [ PointsIFE2E1,TrianglesIFE2E1 ] = GoCadAsciiReader( string,pathstring );		        
         
- string='Tube_1000mRad_1500FacesONVHS.ts'; %Loading inner annlus, free bnd elastic 1
-[ PointsFBE1,TrianglesFBE1 ] = GoCadAsciiReader( string,pathstring );		
-  string='Tube_2000mRad_1500FacesONVHS.ts'; %Loading interface elastic 1
-[ PointsIFE1E2,TrianglesIFE1E2 ]= GoCadAsciiReader( string,pathstring );		
-  string='Tube_2000mRad_1500FacesINVHS.ts'; %Loading interface elastic 2
-[ PointsIFE2E1,TrianglesIFE2E1 ] = GoCadAsciiReader( string,pathstring );		
+%  string='Tube_1000mRad_1500FacesONVHS.ts'; %Loading inner annlus, free bnd elastic 1
+% [ PointsFBE1,TrianglesFBE1 ] = GoCadAsciiReader( string,pathstring );		
+%   string='Tube_2000mRad_1500FacesONVHS.ts'; %Loading interface elastic 1
+% [ PointsIFE1E2,TrianglesIFE1E2 ]= GoCadAsciiReader( string,pathstring );		
+%   string='Tube_2000mRad_1500FacesINVHS.ts'; %Loading interface elastic 2
+% [ PointsIFE2E1,TrianglesIFE2E1 ] = GoCadAsciiReader( string,pathstring );		
 
 
  %%%        HighSampleSetup 
-%  string='Tube_1000mRad_1500FacesONHS.ts'; %Loading inner annlus, free bnd elastic 1
-%  [ PointsFBE1,TrianglesFBE1 ] = GoCadAsciiReader( string,pathstring );		
-%   string='Tube_2000mRad_1500FacesONHS.ts'; %Loading interface elastic 1
-% [ PointsIFE1E2,TrianglesIFE1E2 ]  = GoCadAsciiReader( string,pathstring );		
-%   string='Tube_2000mRad_1500FacesINHS.ts'; %Loading interface elastic 2
-% [ PointsIFE2E1,TrianglesIFE2E1 ] = GoCadAsciiReader( string,pathstring );	
+ string='Tube_1000mRad_1500FacesONHS.ts'; %Loading inner annlus, free bnd elastic 1
+ [ PointsFBE1,TrianglesFBE1 ] = GoCadAsciiReader( string,pathstring );		
+  string='Tube_2000mRad_1500FacesONHS.ts'; %Loading interface elastic 1
+[ PointsIFE1E2,TrianglesIFE1E2 ]  = GoCadAsciiReader( string,pathstring );		
+  string='Tube_2000mRad_1500FacesINHS.ts'; %Loading interface elastic 2
+[ PointsIFE2E1,TrianglesIFE2E1 ] = GoCadAsciiReader( string,pathstring );	
 
  
  
@@ -259,12 +259,15 @@ PlotSlipDistribution3d(Triangles,Points,cmap2,StrikeSlipDisp,DipSlipDisp,Tensile
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Option A = Simply define flat observation plane of points. XYZ with defined step size 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-clear size
-[X,Y] = meshgrid(-3000:50:3000,-3000:50:3000);
-% % % [X,Y] = meshgrid(1200:50:3500,-3581:50:-1500);
-dimx = length(X(:,1));
-dimy = length(X(1,:));
-Y=Y-freesurface_height;
+% clear size
+% [X,Y] = meshgrid(-3000:50:3000,-3000:50:3000);
+% % % % [X,Y] = meshgrid(1200:50:3500,-3581:50:-1500);
+% dimx = length(X(:,1));
+% dimy = length(X(1,:));
+% Y=Y-freesurface_height;
+
+X=linspace(1000,3000,21)';
+Y=zeros(size(X));
 
 
 %Creating the radial coordinates for these obs points, these will be used
@@ -282,19 +285,13 @@ Theta=radtodeg(TH);%figure;scatter(X(:),Y(:),20,Theta(:))
 % Good=Theta<15 & Theta>-15;   %4 deg rad
 % X=X(Good);Y=Y(Good);R=R(Good);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Removing values within in 100m of dislocations
-disp('Any points closer than 100m from dislocations removed')
-%Removing points close to freebnd1
-Bad=R<1100;
-X=X(~Bad);Y=Y(~Bad);Theta=Theta(~Bad);R=R(~Bad);
-%Removing points close to interface where BEM solution breaks down
-Bad=R<2100 & R>1900;
-X=X(~Bad);Y=Y(~Bad);Theta=Theta(~Bad);R=R(~Bad);
-%Removing points really far away so the graph is nicer
-Bad=R>3000;
-X=X(~Bad);Y=Y(~Bad);Theta=Theta(~Bad);R=R(~Bad);
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Removing points in hole (Holewidth)
+%Removing points near elements where BEM solution breaks down (tol width)
+%Removing points really far away from the hole so the graph is nicer
+Holewidth=1000; AnnWidth=2000; Toldis=100;
+bad= (R<Holewidth+Toldis | R<AnnWidth+Toldis & R>AnnWidth-Toldis | R>Holewidth+AnnWidth)  ;
+X(bad)=nan;Y(bad)=nan;Theta(bad)=nan;R(bad)=nan;
+disp('Any points closer than 100m from dislocations removed') %toldis
 
 %Flagging points in 2nd elastic
 OuterPart=R>2000;
@@ -306,10 +303,10 @@ ZE2=zeros(size(YE2));
 %Drawing the observation points on one of the previous figures
 %Octave can't handle transparent objects
 isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0; %1 for octave, 0 for MATLAB
-if  isOctave==1;
+if  isOctave==1
 scatter(XE1(:),YE1(:),'b');
 scatter(XE2(:),YE2(:),'r');
-elseif isOctave==0;
+elseif isOctave==0
 figure;scatter(XE1(:),YE1(:),'b','filled','MarkerFaceAlpha',1/8);hold on
 scatter(XE2(:),YE2(:),'r','filled','MarkerFaceAlpha',1/8);hold off
 end
@@ -402,30 +399,26 @@ rOvb_a_r_b=R/2000;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 [rOvb,SrrNorm,SttNorm]=AnnulusEq_Func(muE1,nuE1,muE2,nuE2);
-figure;plot(rOvb,SrrNorm,'LineWidth',4,'color','blue');
+figure;plot(rOvb,SrrNorm,'LineWidth',2,'color','blue');
 hold on
-plot(rOvb,SttNorm,'LineWidth',4,'color','m');
+plot(rOvb,SttNorm,'LineWidth',2,'color','g');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calculating Plotting numerical results
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%Octave can't handle transparent objects
-isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0; %1 for octave, 0 for MATLAB
-if  isOctave==1;
-scatter(rOvb_a_r_b(:),SrrNorm_a_r_b(:),2,'k'); 
-scatter(rOvb_a_r_b(:),SttNorm_a_r_b(:),2,'k');
-elseif isOctave==0;
-%scatter(rOvb_a_r_b(:),SrrNorm_a_r_b(:),12,'filled','MarkerFaceAlpha',1/8);
-%scatter(rOvb_a_r_b(:),SttNorm_a_r_b(:),12,'filled','MarkerFaceAlpha',1/8);
-scatter(rOvb_a_r_b(:),SrrNorm_a_r_b(:),24,'k','filled','MarkerFaceAlpha',1/8);
-scatter(rOvb_a_r_b(:),SttNorm_a_r_b(:),24,'k','filled','MarkerFaceAlpha',1/8);
-end
-title('Analytical - lines, Srr (blue) Stt (pink), Numerical result as points'), xlabel('rad/b')
-ylabel('Srr Stt Norm');
+
+scatter(rOvb_a_r_b(:),SrrNorm_a_r_b(:),24,'k','filled');
+scatter(rOvb_a_r_b(:),SttNorm_a_r_b(:),24,'k','filled');
+title('Stress across elastic interface'), 
+xlabel('Distance, interface at 1')
+ylabel('Stress components')
+grid on
+plot([1 1],[-1 1.5],'k--') %interface
+legend('show')
+legend('Stt','Srr','Numerical results')
 titlesz=25;
 fntsz=21;
-grid on
 ChangeFontSizes(fntsz,titlesz);
 
 %Calculating analytical solution stresses for points used in numerical calc

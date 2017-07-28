@@ -135,7 +135,7 @@ Sxy = 1;
 
 %Increasing Friction Eq14 Burgmann, Fig 6 ratio
 %This will be the friction at the tips
-Sg=1.5;
+Sg=1;
 Mu  = 0;     Mu=repmat(Mu,NUM,1);  %Coefficient of friction
 
 %Creating a linear friction profile
@@ -149,6 +149,13 @@ Option='C'; %slip from uniform remote stress with friction
 Sxy = -1;                   %Positive is left lateral movement
 %checking negative stress gives same result
 [ShearDispNegFr,TensileDispNegFr,Sxx,Syy,Sxy]=SlipCalculator2d(x,y,xe,ye,HalfLength,Beta,Sxx,Syy,Sxy,Tn,Ts,nu,E,halfspace,NUM,NormAng,strain,Fdisp,Mu,Sf,Option);
+
+
+%NO FRIC
+Option='B'; %slip from uniform remote stress with friction
+Sxy = 1;                   %Positive is left lateral movement
+[ShearDispNoFr,TensileDispNoFr,Sxx,Syy,Sxy]=SlipCalculator2d(x,y,xe,ye,HalfLength,Beta,Sxx,Syy,Sxy,Tn,Ts,nu,E,halfspace,NUM,NormAng,strain,Fdisp,Mu,Sf,Option);
+
 
 
 %%
@@ -186,30 +193,46 @@ Slip_IncreasingFriction=real(Slip_IncreasingFriction);
 %Calculating residual,drawing figures and checking for errors. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%For plots
+%Grabbing the right hand side of the crack
+rightcrack=xe>0;
+%Spacing and points we will interpolate on
+RN = linspace(0,0.95,20);
+%Making sure we have unique points or the interpolation is unhappy. 
+[R2, ~] = uniquify(xe(rightcrack));
+%Interpolating the numerical results for plotting (Makes it easier to see
+%errors)
+ShearDispInt = interp1(R2,ShearDisp(rightcrack),RN,'pchip');
+ShearDispNegFrInt = interp1(R2,ShearDispNegFr(rightcrack),RN,'pchip');
+ShearDispNoFrInt = interp1(R2,ShearDispNoFr(rightcrack),RN,'pchip');
+%Drawing the figure
+figure;
+hold on
+%Plotting analytical profiles
+plot(xe(rightcrack),Slip_IncreasingFriction(rightcrack),'b','LineWidth',2.5);
+plot(xe(rightcrack),Slip_UniformRemote(rightcrack),'g','LineWidth',2.5);
+%Plotting interpolated numerical disps every 20th halflength
+scatter(RN,abs(ShearDispInt),24,'k','filled');
+scatter(RN,abs(ShearDispNegFrInt),24,'k','filled');
+scatter(RN,abs(ShearDispNoFrInt),24,'k','filled');
+%Adding titles etc
+title('Slip Distribution');
+xlabel('Distance from crack centre')
+ylabel({'Crack wall displacement'}) 
+grid on
+legend('show')
+legend('Linear friction profile','No Friction','Numerical results')
+%Making the plot nicer
+titlesz=25;
+fntsz=21;
+ChangeFontSizes(fntsz,titlesz);
+
 %Calculating residual
 ShearDisp=abs(ShearDisp);
 FrictionResidual=(abs(Slip_IncreasingFriction)-abs(ShearDisp));
 FrictionResidualNegDirStress=abs(Slip_IncreasingFriction)-abs(ShearDispNegFr);
 MaxAnalyticalShear=max(abs(Slip_IncreasingFriction));
 SlipResPerc=(100/MaxAnalyticalShear).*FrictionResidual; %slip residual % relative to max slip from analyical
-
-%Drawing Figures
-figure;plot(xe,Slip_UniformRemote,'LineWidth',2,'color','b');title('SlipDistribution');
-xlabel('Distance from crack centre')
-ylabel({'Magnitude of slip','stairs = numerical result'})
-hold on
-plot(xe,Slip_IncreasingFriction,'LineWidth',2,'color','g')
-step=xe(1,1)-xe(2,1); stairs([xe(1,1)+step;xe;xe(end,end)-step],[0;(abs(ShearDisp));0],'r');
-step=xe(1,1)-xe(2,1); stairs([xe(1,1)+step;xe;xe(end,end)-step],[0;(abs(ShearDispNegFr));0],'b');
-plot(xe,(FrictionResidual),'--g')
-plot(xe,(Sf),'o','MarkerSize', 1)
-xlim ([-1 1])
-hold off
-grid on
-titlesz=25;
-fntsz=21;
-ChangeFontSizes(fntsz,titlesz);
-
 
 fprintf('Maximum Residual as a percent of the maximum analytical shear value %i.\n',max(abs(SlipResPerc)))
 
@@ -219,12 +242,6 @@ else
     disp('Everything looks good, checked the max % difference is below 0.5')
 end
 
-%better plot
-
-
-% pause(5) %making sure fig has time to draw
-% %do not want figures for the next bit
-% set(0,'DefaultFigureVisible','off') %SUPRESSING ALL FIGS
 
 %%
 %PART 1.2 Checking a fractures slip is reduced when I load this
@@ -244,12 +261,8 @@ Sxy = 1;
 
 Mu  = 0.2;     Mu=repmat(Mu,NUM,1);  %Coefficient of friction
 Sf  = zeros(size(Mu));  
-
+Option='C';
 [ShearDisp,TensileDisp,Sxx,Syy,Sxy]=SlipCalculator2d(x,y,xe,ye,HalfLength,Beta,Sxx,Syy,Sxy,Tn,Ts,nu,E,halfspace,NUM,NormAng,strain,Fdisp,Mu,Sf,Option);
-
-
-% % Plot displacement discontinuity magnitude for all elements
-% GraphSlipVsElNum( NUM,TensileDisp,ShearDisp )
 
 
 MaxDisp=max(abs(ShearDisp));

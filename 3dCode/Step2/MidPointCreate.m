@@ -74,7 +74,7 @@ end
 flag=FaceNormalVector(:,1)==0 & FaceNormalVector(:,2)==0; %only Az exists (ie normal points up)
 if any(flag)==1
     disp('WARNING!!')
-    disp('Your surface has flat triangles, this doesn t work correctly for friction... maybe other parts of the code.');
+    disp('Your surface has flat triangles, this does not work correctly for friction... maybe other parts of the code.');
     disp('Test properly or remesh surface');
 end    
 

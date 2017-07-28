@@ -194,94 +194,71 @@ Y=(MidPoint(:,2));
 %Eshelby Displacement solution for a penny shaped crack in a whole space
 %subject to a shearing load
 %Equations from Segall, P., 2010. Earthquake and volcano deformation. Princeton University Press.
-ss=Syz(1,1); %Driving shear, could use Sxz for flat penny also
+Ts=Syz(1,1); %Driving shear, could use Sxz for flat penny also
+Tn=Szz2(1,1); %Driving normal traction
 a=1; %Radius of penny
 r=linspace(0,1,250); %Obs points
-%One side of crack (eq 4.74 segall)
-u=((4*(1-nu)*a*ss)/(pi*(2-nu)*mu))*sqrt(1-((r.^2)/(a^2)));
-% (displacement of relative faces);
-u=u*2;
 
+[us]=Func_SlipPennyCrackSneddon(mu,nu,0,Ts,r);
 
-ss=Szz2(1,1);
-%Normal displacement, (eq 4.73 segall)
-u2=((2*a*(1-nu)*ss)/(pi*mu))*sqrt(1-((r.^2)/(a^2)));
-% (displacement of relative faces);
-u2=u2*2;
+[ut]=Func_SlipPennyCrackSneddon(mu,nu,Tn,0,r);
 
-
-%plotting N vals work for high sampling , put to 1 if you do not want to
-%filter numerical results
+%%For plots
+%Spacing and points we will interpolate on
+RN = linspace(0,0.95,20);
+%Making sure we have unique points or the interpolation is unhappy. 
+[R2, ~] = uniquify(R);
+[TotalShearing, okFlag] = uniquify(TotalShearing);
+%Interpolating the numerical results for plotting (Makes it easier to see
+%errors)
+TensileDispN = interp1(R2,TensileSlipDisp2,RN,'pchip');
+TotalShearingN = interp1(R2,TotalShearing,RN,'pchip');
+%Drawing the figure
 figure;
+hold on
+%Plotting analytical profiles
+plot(r,us,'b','LineWidth',2.5);
+plot(r,ut,'g','LineWidth',2.5);
+%Plotting interpolated numerical disps every 20th halflength
+scatter(RN,TensileDispN,24,'k','filled');
+scatter(RN,TotalShearingN,24,'k','filled');
+%Adding titles etc
 title({'Penny crack slip distributions'})
 xlabel('Distance from crack centre')
 ylabel('Crack Wall Displacement')
-hold on
-plot(r,u,'b','LineWidth',2.5);
-plot(r,u2,'g','LineWidth',2.5);
 grid on
-
-% %trying interpolation
-RN = linspace(0,0.95,20);
-[R2, okFlag] = uniquify(R);
-[vals, okFlag] = uniquify(TensileSlipDisp2);
-[TotalShearing, okFlag] = uniquify(TotalShearing);
-TensileDispN = interp1(R2,TensileSlipDisp2,RN,'pchip');
-TotalShearingN = interp1(R2,TotalShearing,RN,'pchip');
-
-% N=25;
-% TensileDispN = TensileSlipDisp2(1:N:end,:);
-% TotalShearingN = TotalShearing(1:N:end,:);
-% RN = R(1:N:end,:);
-
-scatter(RN,TensileDispN,24,'k','filled');
-scatter(RN,TotalShearingN,24,'k','filled');
+legend('show')
+legend('Shear displacement','Tensile displacement','Numerical results')
+%Making the plot nicer
 titlesz=25;
 fntsz=21;
 ChangeFontSizes(fntsz,titlesz);
 
-%MAX ERROR ON THE INTERPOLATED POINTS IN PERCENT:
+
+
+%Max error of the interpolated points (%)
 %Eshelby Displacement solution for a penny shaped crack in a whole space
 %subject to a shearing load
 %Equations from Segall, P., 2010. Earthquake and volcano deformation. Princeton University Press.
-ss=Syz(1,1); %Driving shear, could use Sxz for flat penny also
+Ts=Syz(1,1); %Driving shear, could use Sxz for flat penny also
+Tn=Szz2(1,1); %Driving normal traction
 a=1; %Radius of penny
 r=linspace(0,1,250); %Obs points
 %One side of crack (eq 4.74 segall)
-u=((4*(1-nu)*a*ss)/(pi*(2-nu)*mu))*sqrt(1-((RN.^2)/(a^2)));
-% (displacement of relative faces);
-u=u*2;
-ss=Szz2(1,1);
-%Normal displacement, (eq 4.73 segall)
-u2=((2*a*(1-nu)*ss)/(pi*mu))*sqrt(1-((RN.^2)/(a^2)));
-% (displacement of relative faces);
-u2=u2*2;
-%
-PercentErrorOpeningInterpPnts=((100./u2).*TensileDispN)-100;
-PercentErrorShrInterpPnts=((100./u).*TotalShearingN)-100;
+[us]=Func_SlipPennyCrackSneddon(mu,nu,0,Ts,RN);
+[ut]=Func_SlipPennyCrackSneddon(mu,nu,Tn,0,RN);
+
+PercentErrorOpeningInterpPnts=((100./ut).*TensileDispN)-100;
+PercentErrorShrInterpPnts=((100./us).*TotalShearingN)-100;
 
 
-% aninterpts=interp1(r,u2,R,'spline');
-% maxopenRes=aninterpts-TensileSlipDisp2;
-%disp('MaxDistanceFromAnalyticalSolutionTs');max(abs(maxopenRes(:))) %Printing this
 fprintf('MaxPercentFromAnalyticalSolutionTs %i.\n',max(abs(PercentErrorOpeningInterpPnts(:)))) %prints on one line unlike 'disp
- 
-% 
-% aninterpss=interp1(r,u,R,'spline');
-% maxshearRes=aninterpss-TotalShearing;
-%disp('MaxDistanceFromAnalyticalSolutionSS');max(abs(maxshearRes(:))) %Printing this
 fprintf('MaxPercentFromAnalyticalSolutionSS %i.\n',max(abs(PercentErrorShrInterpPnts(:)))) %prints on one line unlike 'disp
  
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Calculating residual and checking for errors. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% %Plotting residuals
-%   [Rsorted, SortIndex] = sort(R);
-%   OpenResSorted = maxopenRes(SortIndex);
-%   ShearResSorted = maxshearRes(SortIndex);
-%   plot(Rsorted,OpenResSorted,'r',Rsorted,ShearResSorted,'r');
 
 %Returns error if distance is too high
 P=[max(abs(PercentErrorOpeningInterpPnts(:))),max(abs(PercentErrorShrInterpPnts(:)))];
