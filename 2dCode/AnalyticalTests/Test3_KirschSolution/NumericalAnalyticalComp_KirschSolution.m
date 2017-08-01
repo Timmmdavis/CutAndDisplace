@@ -30,9 +30,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%   
 
-%===== add file paths ==========================
+% %===== add file paths ==========================
 pathstring = pwd;                                   %Get the address of the current working directory
-parts = strsplit(mfilename('fullpath'), '\');       %Getting the address of the script working directory and splitting into cell array
+if ispc; parts = strsplit(mfilename('fullpath'), '\');       %Getting the address of the script working directory and splitting into cell array
+else; parts = strsplit(mfilename('fullpath'), '/');  end
 [~,n] = find(~cellfun(@isempty,strfind(parts,'BEM_DDM_MATLAB'))); %finding the scripts root directory and its location (n)
 if ispc; addpath(genpath(strjoin(parts(1,1:n),'\'))); %adding all folders to the path that are in this dir 
 else; addpath(genpath(strjoin(parts(1,1:n),'/'))); end;%mac/linux
