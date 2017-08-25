@@ -93,7 +93,7 @@ flag = 2;
     display  =1;      
     if display        
         
-    figure;
+    %figure;
     figure('units','normalized','outerposition',[0 0 1 1])  %full screen  
     h1=subplot(5,2,1);
     title({'Newtonian convergence';'looking for the root of this function';'5 parts shown, mean avg of each subsection of the solution vec'}),

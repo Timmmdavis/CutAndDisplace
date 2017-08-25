@@ -249,9 +249,9 @@ if Option=='F'
     B=-[contvec;...
         Tnn(FreeBoundary1);Tss(FreeBoundary1);Tds(FreeBoundary1);...
         Tnn(FreeBoundary2);Tss(FreeBoundary2);Tds(FreeBoundary2)];
-else    
+else 
     %Creating vector of tractions at every element
-    B= [Tnn;-Tss;Tds];
+    B= [Tnn;Tss;Tds];    
 end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
