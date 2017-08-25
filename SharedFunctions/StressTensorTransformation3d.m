@@ -43,7 +43,7 @@ DotPro12=A11(i).*A12(i)+A21(i).*A22(i)+A31(i).*A32(i);
 DotPro13=A11(i).*A13(i)+A21(i).*A23(i)+A31(i).*A33(i);
 DotPro23=A12(i).*A13(i)+A22(i).*A23(i)+A32(i).*A33(i);
     if any(round(DotPro12,14)) || any(round(DotPro13,14)) || any(round(DotPro23,14)) %rounding so no precision issues close to eps
-        error('Direction cosines are not at 90 degrees to each other')
+        error('Direction cosines are at not 90 degrees to each other')
     end    
 end
 

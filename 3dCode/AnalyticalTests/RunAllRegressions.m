@@ -87,12 +87,6 @@ TakeScreenShotOfFigure(6)
 % disp(' ') %line break
 % TakeScreenShotOfFigure(7)
 
-disp(' ') %line break	
-disp('Starting Traction free surface test')
-run TractionFreeSurfaceTest
-disp('End, The surfaces are all free of tractions')
-disp(' ') %line break
-
 clear
 %ending timer
 elapsedTime = toc;

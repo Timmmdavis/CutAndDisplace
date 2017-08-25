@@ -28,12 +28,10 @@ CDnTds=C(2*ne+1:3*ne,1:ne);			%A3n
 CDssTds=C(2*ne+1:3*ne,ne+1:2*ne);	%A32
 CDdsTds=C(2*ne+1:3*ne,2*ne+1:3*ne);	%A33
                                                     clear C B
-%Making sure input frictions are vectors
-Mu=zeros(ne,1)+Mu; 
-Sf=zeros(ne,1)+Sf; 
-
+                                                    
 % Form ne by ne array with coefficients of friction on the diagonal.
 dMU = diag(Mu);
+%Sf=-Sf; %Conv, acts the same as 2d with this
 % Allocate ne by ne identity and zero matrices.
 ID = eye(ne);
 ZE = zeros(ne);
@@ -110,7 +108,6 @@ disp('StartingLCP')
 
 %%%%%%%LCP solve
 Z = fischer_newton3d(M,Q); disp('PreAllocating sparse in fischer_newton would be faster')
-close %clears the last fig 
 %%%%%%%LCP solve
 
 Timer = toc;
@@ -131,8 +128,8 @@ disp ('check Dss convention, different to normal solver when last checked')
 
 %Correcting the slip convention as the functions of Nikkhoo M. as these use the opposite sign convention to Ole Kavens frictional solution for slip.  
 TensileSlipDisp=-TensileSlipDisp;
-StrikeSlipDisp=-StrikeSlipDisp;
-DipSlipDisp=-DipSlipDisp;
+% StrikeSlipDisp=-StrikeSlipDisp;
+% DipSlipDisp=-DipSlipDisp;
 
 % %Stress driving displacement on elements, after frictional resistance is overcome
 % %You can put these into the regular C&S non frictiona; solver and get the same slip. 
