@@ -23,11 +23,4 @@ Mode3Disp=((2*(1-PR)/G)*sqrt(a.^2-x.^2))/1-PR;
 
 %%%Pressure vol relationship
 % %Elastic constant
-% C=2-((1-(2*nu))/(1-nu));
-% %RelFrm=Vol=Tn*Rel;
-% %For a given Tn then we can find the vol
-% RelFrm=(((pi/C)/G)*(a^2))*2;
-% 
-% %a=half length
-% %C=elastic constant
-% %G=shear mod
+% Vol=-(pi*(Tn+Ts)*a^2*(nu - 1))/mu

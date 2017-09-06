@@ -15,7 +15,7 @@ end
     con = 1/(4*pi*(1-pr)); 
 
     H=a;
-    Dxb = Sd; Dyb = Nd;
+    Dxb = Sd; Dyb = -Nd;
     sb = sin(Beta); cb = cos(Beta);
     s2b = sin(2*Beta); c2b = cos(2*Beta);
     s3b = sin(3*Beta); c3b = cos(3*Beta);

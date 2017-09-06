@@ -29,7 +29,7 @@ Disp=sqrt((us.^2)+(ut.^2));
 Disp=Disp*2;
 
 
-% %%%Pressure to vol relationship for crack loaded by normal stress
-% VPredicted=(((Tn*4)/mu)+((-5-1/3)*nu+(1+1/3)))*(a^3);
-% TnPred=(((VPredicted./(a^3))-((-5-1/3)*nu+(1+1/3)))*mu)/4;
-% test=1;
+% %%%Pressure to vol relationship for crack loaded by shear stress
+% Vol=(8*Ts*a^3*(nu - 1))/(3*mu*(nu - 2))
+% %%%Pressure to vol relationship for crack loaded by nrml stress
+% Vol=(2*Tn*a^3*(1 - r^2/a^2)^(1/2)*(nu - 1))/mu

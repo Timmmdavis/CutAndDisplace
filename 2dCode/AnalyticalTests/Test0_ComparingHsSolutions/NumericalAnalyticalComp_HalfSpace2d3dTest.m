@@ -138,10 +138,11 @@ title('fractures'), xlabel('x'), ylabel('y')
 	%Output 'stresses' are blank arrays of 0's as this option is not driven by boundary conditions. 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
+Option='A';     
 cc=zeros(NUM,1); 
-ShearDisp  = 0;      ShearDisp	= cc+(ShearDisp*-1);   %For fractures lying along Xaxis positive stress drives right lateral movement, along Y is left lat. Pollard fig6.13c
-TensileDisp =0.01;       TensileDisp	= cc+(TensileDisp*-1);  %Positive = extensional movement
-Sxx = 0;  Syy = 0;  Sxy = 0;   	
+ShearDisp  = 0;       ShearDisp	  = cc+(ShearDisp);      %Always left lateral any orientation for this option
+TensileDisp =0.01;       TensileDisp = cc+(TensileDisp); %Positive = extensional movement
+Sxx = 0;  Syy = 0;  Sxy = 0;   
  
 
 %%
@@ -255,9 +256,10 @@ a=size(P1);
 b=a(1,1);
 c=zeros(b,1); 
     
-StrikeSlipDisp  =0;      StrikeSlipDisp	= c+StrikeSlipDisp;   %Positive = left lat movement V
-DipSlipDisp     =0;       DipSlipDisp		= c+DipSlipDisp;      %Positive = reverse movement
-TensileSlipDisp =0.01;       TensileSlipDisp	= c+TensileSlipDisp;  %Positive = extensional movement
+StrikeSlipDisp  =1;      StrikeSlipDisp     = c+StrikeSlipDisp;     %Positive = RightLatMovement (any orientation)
+DipSlipDisp     =0;      DipSlipDisp		= c+DipSlipDisp;        %Positive = Reverse movement
+TensileSlipDisp =0.01;   TensileSlipDisp	= c+TensileSlipDisp;    %Positive = Opening movement
+
 clear a b c             	%a b and c are used to create an array of slips the size of the number of triangles on the fault surface.
 
 Sxx = 0; 					%Positive is compression 

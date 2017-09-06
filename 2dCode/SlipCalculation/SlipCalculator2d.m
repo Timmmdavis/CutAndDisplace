@@ -197,14 +197,14 @@ else %We need to do this for both elastics
 end    
     
 if Option=='B' || Option=='E'     
-    Ats = [-DnTn,-DsTn]; %Convention of C&S inf coeffs is geological see fig 5.1 of C&S
-    Ash = [-DnTs,-DsTs]; %Convention of C&S inf coeffs is geological see fig 5.1 of C&S
+    Ats = [-DnTn,-DsTn];
+    Ash = [-DnTs,-DsTs];
     clear DsTs DnTs DsTn DnTn                                              
     A=  [Ats;Ash];
     clear Ash Ats 
 elseif Option=='C'      
-    Ats = [DnTn,DsTn];   %for the linear friction solver we fill q with geo conv disps for opening
-    Ash = [-DnTs,-DsTs]; %Convention of C&S inf coeffs is geological see fig 5.1 of C&S
+    Ats = [-DnTn,-DsTn]; 
+    Ash = [-DnTs,-DsTs]; 
     clear DsTs DnTs DsTn DnTn                                              
     A=  [Ats;Ash];
     clear Ash Ats 
@@ -240,7 +240,7 @@ if Option=='F'
 elseif Option=='B' || Option=='D' || Option=='E'  
     B = [Tn;Ts];  
 elseif Option=='C'
-    B = [Tn;-Ts]; 
+    B = [Tn;Ts]; 
 end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

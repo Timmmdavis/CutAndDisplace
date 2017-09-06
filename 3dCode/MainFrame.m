@@ -174,9 +174,9 @@ Points=[Points(:,1),Points(:,2),Points(:,3),(Points(:,4)-freesurface_height)];
 % b=a(1,1);
 % c=zeros(b,1); 
 %     
-% StrikeSlipDisp  =0;      StrikeSlipDisp     = c+StrikeSlipDisp*-1;%Positive = RightLatMovement (any orientation)
-% DipSlipDisp     =-1;      DipSlipDisp		= c+DipSlipDisp;        %Positive = reverse movement
-% TensileSlipDisp =0;      TensileSlipDisp	= c+TensileSlipDisp;    %Positive = extensional movement
+% StrikeSlipDisp  =1;      StrikeSlipDisp     = c+StrikeSlipDisp;   %Positive = LeftLatMovement 
+% DipSlipDisp     =0;      DipSlipDisp		= c+DipSlipDisp;        %Positive = Reverse movement
+% TensileSlipDisp =0;      TensileSlipDisp	= c+TensileSlipDisp;    %Positive = Opening movement
 % clear a b c             	%a b and c are used to create an array of slips the size of the number of triangles on the fault surface.
 % 
 % Sxx = 0; 				
@@ -184,7 +184,8 @@ Points=[Points(:,1),Points(:,2),Points(:,3),(Points(:,4)-freesurface_height)];
 % Szz = 0; 
 % Sxy = 0; 					
 % Sxz = 0; 					
-% Syz = 0;   
+% Syz = 0;
+% Option='A'; 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Option B = Run Influence code to see how the fault reacts to a remote

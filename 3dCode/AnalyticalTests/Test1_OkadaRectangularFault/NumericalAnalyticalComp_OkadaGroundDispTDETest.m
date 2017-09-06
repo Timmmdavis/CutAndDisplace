@@ -134,9 +134,9 @@ a=size(P1);
 b=a(1,1);
 c=zeros(b,1); 
     
-StrikeSlipDisp  =0;      StrikeSlipDisp     = c+StrikeSlipDisp*-1;  %Positive = RightLatMovement (any orientation)
-DipSlipDisp     =1;      DipSlipDisp		= c+DipSlipDisp;        %Positive = reverse movement
-TensileSlipDisp =0;      TensileSlipDisp	= c+TensileSlipDisp;    %Positive = opening
+StrikeSlipDisp  =0;      StrikeSlipDisp     = c+StrikeSlipDisp;     %Positive = LeftLatMovement 
+DipSlipDisp     =1;      DipSlipDisp		= c+DipSlipDisp;        %Positive = Reverse movement
+TensileSlipDisp =0;      TensileSlipDisp	= c+TensileSlipDisp;    %Positive = Opening movement
 clear a b c             	%a b and c are used to create an array of slips the size of the number of triangles on the fault surface.
 
 Sxx = 0; 					

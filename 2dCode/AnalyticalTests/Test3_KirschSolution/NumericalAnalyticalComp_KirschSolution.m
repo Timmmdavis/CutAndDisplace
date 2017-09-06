@@ -162,7 +162,7 @@ hold off
  cc=zeros(NUM,1); 
     
  Tn = 1;    Tn=cc+Tn;	%'Tensile' traction
- Ts = 0;    Ts=cc+Ts;   %Shear traction always right lateral
+ Ts = 0;    Ts=cc+Ts;   
  Option='E';
 
 [ShearDisp,TensileDisp,Sxx,Syy,Sxy]=SlipCalculator2d(x,y,xe,ye,HalfLength,Beta,Sxx,Syy,Sxy,Tn,Ts,nu,E,halfspace,NUM,NormAng,strain,Fdisp,Mu,Sf,Option);

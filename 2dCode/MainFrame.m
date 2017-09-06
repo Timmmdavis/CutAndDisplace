@@ -187,8 +187,8 @@ hold off
     
 % Option='A';     
 % cc=zeros(NUM,1); 
-% ShearDisp  = 0;       ShearDisp	  = cc+(ShearDisp*-1);   %Always right lateral any orientation for this option
-% TensileDisp =1;       TensileDisp = cc+(TensileDisp*-1); %Positive = extensional movement
+% ShearDisp  = 0;       ShearDisp	  = cc+(ShearDisp); %Always left lateral any orientation for this option
+% TensileDisp =1;       TensileDisp = cc+(TensileDisp); %Positive = extensional movement
 % Sxx = 0;  Syy = 0;  Sxy = 0;   	
  
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -267,8 +267,8 @@ Option='C'; %slip from uniform remote stress with friction
     
 %  cc=zeros(NUM,1); 
 %     
-%  Tn = 0.5;    Tn=cc+Tn;	%Tensile traction
-%  Ts = 0;    Ts=cc+Ts;   %Shear traction always right lateral
+%  Tn = 0;    Tn=cc+Tn;	    %Tensile traction
+%  Ts = 0.5;  Ts=cc+Ts;       %Shear traction (Pos is counterclockwise from nrml)
 %  Option='E'; %Traction defined on elements (pressure)
 
 

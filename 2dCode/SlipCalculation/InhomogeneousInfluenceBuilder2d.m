@@ -18,7 +18,7 @@ FreeBoundary1,FreeBoundary2,FdispE1,FdispE2,FreeBoundaries,FixedDisps]...
     %E1 Elastic 1
     %%%%%%%
     Part=1; %Which elastic we want to extract
-    [xE1,yE1,xeE1,yeE1,aE1,BetaE1,nuE1,EE1,NormAngE1,NUME1,FdispE1,FB_E1,IF_E1] = ExtractElasticParts2dQuad( Part,BoundaryFlag,x,y,xe,ye,a,Beta,nu,E,NormAng );
+    [xE1,yE1,xeE1,yeE1,aE1,BetaE1,nuE1,EE1,NormAngE1,NUME1,FdispE1,FB_E1,IF_E1] = ExtractElasticParts2d( Part,BoundaryFlag,x,y,xe,ye,a,Beta,nu,E,NormAng );
     %E1 Elastic 1 creating big influence matrices
     [DsTnE1,DsTsE1,DnTnE1,DnTsE1,Ds_UxE1,Ds_UyE1,Dn_UxE1,Dn_UyE1]...
         = CalculateInfluenceMatrices2d(NUME1,halfspace,xE1,yE1,xeE1,yeE1,aE1,BetaE1,nuE1,EE1,NormAngE1,1 ); %we want disp so passing Fdisp as 1 whatever happens

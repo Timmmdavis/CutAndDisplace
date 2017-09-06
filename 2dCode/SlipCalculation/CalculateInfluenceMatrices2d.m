@@ -132,7 +132,7 @@ a22 = diag(a);
 LvlstpE1=mu./((pi*(1-nu))*a22(L)); 
 %Finds if intial value is positive or negative. Corrects self inf value and
 %retains original sign. 
-DnTn(L)=LvlstpE1;
+DnTn(L)=-LvlstpE1;
 DsTs(L)=-LvlstpE1;
 DsTn(L)=0;
 DnTs(L)=0;   

@@ -25,9 +25,9 @@ Z=Z-(FaceNormalVector(:,3)*1e-12);
 %creating the size
 NUM = size(X,1);
 isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0; %1 for octave, 0 for MATLAB
-if  isOctave==1;
+if  isOctave==1
 MemoryCheckerOctave(NUM); 
-elseif isOctave==0;
+elseif isOctave==0
 if FD==0
 MemoryChecker(NUM,0); %not creating disp matrices
 %disp('function MemoryChecker is off. Turn on. In line 31&34 function CalculateInfluencematrices3d')
@@ -50,9 +50,9 @@ end
 %magnitude of 1. (Strain inf matrix).
 %Appended in list so each elements influence is 'X' rows. 'X' being the
 %number of elements
-Ss=1;  %Positive =  right lat movement
-Ds=0;  %Positive = 	reverse movement
-Ts=0;  %Positive = 	closing movement
+Ss=1;  
+Ds=0;  
+Ts=0; 
 
 
 %creating some strings for the progress bar
@@ -66,9 +66,9 @@ NUM,X,Y,Z,P1,P2,P3,Ss,Ds,Ts,mu,lambda,nu,halfspace,FD,StringHS,StringFS);
 %magnitude of 1. (Strain inf matrix).
 %Appended in list so each elements influence is 'X' rows. 'X' being the
 %number of elements
-Ss=0;  %Positive =  right lat movement
-Ds=1;  %Positive = 	reverse movement
-Ts=0;  %Positive = 	closing movement
+Ss=0;  
+Ds=1;  
+Ts=0;  
 
 %creating some strings for the progress bar
 StringHS='2/3 CalculatingDdsInfMatrixHS';
@@ -81,9 +81,9 @@ NUM,X,Y,Z,P1,P2,P3,Ss,Ds,Ts,mu,lambda,nu,halfspace,FD,StringHS,StringFS);
 %magnitude of 1. (Strain inf matrix).
 %Appended in list so each elements influence is in 'X' rows. 'X' being the
 %number of elements. Then the next element is the next X amount of rows. 
-Ss=0;  %Positive =  right lat movement
-Ds=0;  %Positive = 	normal movement
-Ts=1;  %Positive = 	closing movement
+Ss=0; 
+Ds=0; 
+Ts=1; 
 
 %creating some strings for the progress bar
 StringHS='3/3 CalculatingDnInfMatrixHS';

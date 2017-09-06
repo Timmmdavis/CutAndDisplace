@@ -31,7 +31,7 @@ Tnn_i,Tss_i,Tds_i,mu,lambda,nu,P1,P2,P3,halfspace,FaceNormalVector,Fdisp,strain,
     %C=friction solver as in ritz 2012
     %D=remote stress, opening components not calculated. Fault satisfys
     %boundary conditions by shearing only.
-    %E=tractions defined on body, Ie pressure in a magma chamber
+    %E=tractions defined on body, 
     %F=Inhomogeneous
     
 %   Copyright 2017, Tim Davis, The University of Aberdeen
@@ -126,7 +126,7 @@ if Option=='B' || Option=='C' || Option=='D' || Option=='F'
 end
 
     %for option E traction has been already defined
-if Option=='E' || ~isempty(Tnn_i)&&~isempty(Tds_i)&&~isempty(Tss_i)
+if Option=='E' 
     
     %If Tractions do not exist yet (i.e. option E) then we create blank ones
     %to append the user defined ones too. 
@@ -201,7 +201,7 @@ else %We need to do this for both elastics
 end       
     
 if Option=='B' || Option=='E' || Option=='C'
-    Ats = [-DnTn,  -DssTn, -DdsTn]; %geological convention from coeff matrix builder, we want engin
+    Ats = [-DnTn,  -DssTn, -DdsTn]; 
     Ass = [-DnTss, -DssTss,-DdsTss];
     Ads = [-DnTds, -DssTds,-DdsTds];
     clear DnTn DssTn DdsTn DnTssDssTss DdsTss DnTds DssTds DdsTds
@@ -209,7 +209,7 @@ if Option=='B' || Option=='E' || Option=='C'
     clear Ats Ass Ads
 
 elseif Option=='D'                                                
-    Ats = [-DssTn, -DdsTn]; %geological convention from coeff matrix builder, we want engin
+    Ats = [-DssTn, -DdsTn]; 
     Ass = [-DssTss,-DdsTss];
     Ads = [-DssTds,-DdsTds];
     clear DnTn DssTn DdsTn DnTssDssTss DdsTss DnTds DssTds DdsTds
@@ -240,8 +240,8 @@ elseif Option=='F'
    
 end
 
-%    [ A ] = InfMatrixCheck( A );  
-     disp('inf check off, line 243 in *slipcalculator3d*, put back on'); 
+    [ A ] = InfMatrixCheck( A );  
+     %disp('inf check off, line 243 in *slipcalculator3d*, put back on'); 
     
 if Option=='F'
     zer=zeros(size(Dn_dzE2IF,1),1);     clear Dn_dzE2IF
@@ -263,7 +263,7 @@ end
     %If we have fixed displacements the matrix is no longer square, in this
     %case \ division is faster on sparse matrices 
     if any(Fdisp)==1 && isa(A,'double') %sparse doesn't work for singles
-    %D = A\B; disp('sparse off, line 260 SlipCalc3d')
+    %D = A\B; disp('sparse off, line 266 SlipCalc3d')
     D = sparse(A)\B;
     %If not we are using a dense square matrix, this is faster if square as we
     %do not need to spend time allocating this as sparse. 

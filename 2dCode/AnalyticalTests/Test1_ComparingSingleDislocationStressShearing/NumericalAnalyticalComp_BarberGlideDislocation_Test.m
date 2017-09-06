@@ -144,8 +144,8 @@ hold off
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
 cc=zeros(NUM,1); 
-ShearDisp  = 0.0001;  ShearDisp	= cc+(ShearDisp*-1);   %For fractures lying along Xaxis positive stress drives right lateral movement, along Y is left lat. Pollard fig6.13c
-TensileDisp =0;       TensileDisp	= cc+(TensileDisp*-1);  %Positive = extensional movement
+ShearDisp  = -0.0001;  ShearDisp	= cc+(ShearDisp);   
+TensileDisp =0;       TensileDisp	= cc+(TensileDisp);
 Sxx = 0;  Syy = 0;  Sxy = 0;   	
  
 

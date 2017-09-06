@@ -18,7 +18,7 @@ coeff_func(x,y,xe,ye,a,Beta,Sd,Nd,pr,E)
 
 
     H=a;
-    Dxb = Sd; Dyb = Nd;
+    Dxb = Sd; Dyb = -Nd; 
     sb = sin(Beta); cb = cos(Beta);
     s2b = sin(2*Beta); c2b = cos(2*Beta);
 % Define array of local coordinates for the observation grid relative to
