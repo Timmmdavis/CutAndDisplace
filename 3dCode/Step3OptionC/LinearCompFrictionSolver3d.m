@@ -54,41 +54,6 @@ Q = [(D(1:ne,:)              -(CDssTn*Sf) -(CDdsTn*Sf));
 	 2*Sf; 
 	 2*Sf];
 
-% %Flag of points that are closed. Only closed ones we add the SF
-% OpeningD = round(D(1:ne),9); %really small disps effectivly 0'd (below 1e-9)
-% Closed=OpeningD<=0; %Conv issue
-% %Elements without sliding friction
-% TDEls=D(1:ne);
-% DssEls=D(ne+1:2*ne);
-% DdsEls=D(((2*ne)+1):3*ne);
-% %Sliding friction included in displacement
-% ClosedTensileSF=    TDEls-  (CDssTn*Sf) -(CDdsTn*Sf);
-% ClosedStrikeSlipSF= DssEls- (CDssTss*Sf)-(CDdsTss*Sf);
-% ClosedDipSlipSF=    DdsEls- (CDssTds*Sf)-(CDdsTds*Sf);
-% %Vector of zeros
-% zervec=zeros(ne,1);
-% %For any closed elements these have sliding friction on these. 
-% if any(Closed==1)
-% TDEls(Closed)=ClosedTensileSF(Closed);
-% DssEls(Closed)=ClosedStrikeSlipSF(Closed);
-% DdsEls(Closed)=ClosedDipSlipSF(Closed);
-% zervec(Closed)=2*(Sf(Closed));
-% end
-% 
-% % Construct matrix M. Modified form of Equation 28 - Kaven 2012
-% M =  [(CDnTn -(CDssTn*dMU)  -(CDdsTn*dMU)),  CDssTn,  CDdsTn,  ZE, ZE;
-%       (CDnTss-(CDssTss*dMU) -(CDdsTss*dMU)), CDssTss, CDdsTss, ID, ZE;
-% 	  (CDnTds-(CDssTds*dMU) -(CDdsTds*dMU)), CDssTds, CDdsTds, ZE, ID;
-%       (2*dMU),                               -ID,      ZE,      ZE, ZE;
-% 	  (2*dMU),                                ZE,     -ID,      ZE, ZE];
-% 
-% % Construct 3ne by 1 column vector Q.
-% Q = [TDEls; 
-% 	 DssEls;
-% 	 DdsEls;
-% 	 zervec; 
-% 	 zervec];
-
                                                     clear CDnTn CDssTn CDdsTn CDnTss CDssTss CDdsTss CDnTds CDssTds CDdsTds ZE ID
                                                     clear dMU DD Str
   
@@ -102,11 +67,6 @@ disp('StartingLCP')
 %%%%%%%path
 %Z= pathlcp(M,Q);
 %%%%%%%path
-
-%%%%%%%LCP solve
-%Z = LCP3dSpd(M,Q); disp('Need to do some memory profiling')
-%Z = LCP3dSpd(M,Q,zeros(NUM*5,1),ones(NUM*5,1)+1e+20,x0); disp('Need to do some memory profiling')
-%%%%%%%LCP solve
 
 %%%%%%%LCP solve
 Z = fischer_newton3d(M,Q); disp('PreAllocating sparse in fischer_newton would be faster')
