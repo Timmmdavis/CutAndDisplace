@@ -318,7 +318,7 @@ PlotOpeningVsShearOnEls( NormAng,TensileDisp,ShearDisp,Points,x,y,HalfLength )
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-cells=11;   %Define the number of observations points on the square grid
+cells=16;   %Define the number of observations points on the square grid
 padding=10;  %How much extra bumph you want to add away from the fault sticks, reduce to 0 if having half space issues 
 [maxgriX,mingriX,maxgriY,mingriY,sz]=MinMaxDataExtents(Points,cells,padding);
 
