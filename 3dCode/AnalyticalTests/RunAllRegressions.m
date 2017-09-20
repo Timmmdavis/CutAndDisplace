@@ -1,4 +1,4 @@
-%Runs all the analytical 2d comparison test and prints results to cmd window
+%Runs all the analytical 3d comparison tests and prints results to cmd window
 %I recommend you take a look at these individually to see what the
 %residual values compare to in the figures. 
 

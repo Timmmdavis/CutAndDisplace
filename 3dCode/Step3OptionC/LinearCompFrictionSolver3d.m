@@ -6,28 +6,71 @@ function [TensileSlipDisp,StrikeSlipDisp,DipSlipDisp] = LinearCompFrictionSolver
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %   Copyright 2017, Tim Davis, The University of Aberdeen
+%Ritz ref here is:
+%Ritz, E., Mutlu, O. and Pollard, D.D., 2012. Integrating complementarity
+%into the 2D displacement discontinuity boundary element method to model
+%faults and fractures with frictional contact properties. Computers &
+%geosciences, 45, pp.304-312.
+
+%Kaven ref here is:
+%Kaven, J.O., Hickman, S.H., Davatzes, N.C. and Mutlu, O., 2012. Linear
+%complementarity formulation for 3D frictional sliding problems.
+%Computational Geosciences, 16(3), pp.613-624.
+
+
 %Inverted to be similar to C in Ritz script
 C = inv(A);
-                                                    clear A Atots B
+                                                    clear A 
+% Another way to get [C], Slower but more intuitive.
+% Z=zeros((NUM*3),1);
+% for i=1:(NUM*3)
+% Z=Z*0;
+% Z(i)=1;
+% C(:,i)=A\Z;
+% end
+% C=C';
 
-% Construct M and Q for the equation f(Z)=M*Z+Q, where
-%  f(Z) = |-Dn|  and  Z = |-tn|   
-%         |Dss+|          |tss+|   
-%         |Dds+|          |tds+|    
-%         |Tss-|          |Dss-|   
-%         |Tds-|          |Dds-|    
-%Now extract variables from inverted matrix C % Rename each submatrix for easier assmbly into M. Equation 28 - Kaven 2012
-% Taking shear 2 as ss and shear 3 as ds
-CDnTn=C(1:ne,1:ne);					%Ann
-CDssTn=C(1:ne,ne+1:2*ne);			%An2
-CDdsTn=C(1:ne,2*ne+1:3*ne);  		%An3
-CDnTss=C(ne+1:2*ne,1:ne);			%A2n 
-CDssTss=C(ne+1:2*ne,ne+1:2*ne);		%A22
-CDdsTss=C(ne+1:2*ne,2*ne+1:3*ne);	%A23
-CDnTds=C(2*ne+1:3*ne,1:ne);			%A3n
-CDssTds=C(2*ne+1:3*ne,ne+1:2*ne);	%A32
-CDdsTds=C(2*ne+1:3*ne,2*ne+1:3*ne);	%A33
-                                                    clear C B
+%Therefore each col in [C] represents how much each 
+%element must displace to cause a traction
+%of one unit at element i.
+
+% Construct a and b for the equation [y]=[a][x]+[b], where
+%  [y]  = |+Dn|     and [x] = |-tn|   
+%         |+Dss|              |-tss|   
+%         |+Dds|              |-tds|    
+%         |+Tss|              |-Dss|   
+%         |+Tds|              |-Dds|   
+% Where plus and minus follow the convention that positive (+) represents: 
+% Dn = Opening
+% Dss= Left lat movement
+% Dds= Reverse slip when normals face up
+% Tn = Tension
+% Tss= Positive when counter clockwise from normal
+% Tds= Positive when facing in positive z dir on tris normal side. 
+
+% Creating some lengths we can use for extraction of sub matricies/vectors
+% ne being the number of elements in one edge a submatrix/vector
+L1=1:ne;
+L2=ne+1:2*ne;
+L3=2*ne+1:3*ne;
+L4=3*ne+1:4*ne;
+L5=4*ne+1:5*ne;
+
+
+% Now extract variables from inverted matrix [C] 
+%Submatrix in 'column' 1, disps cause traction Tn
+CDnTn   =C(L1,L1);
+CDssTn  =C(L2,L1);	
+CDdsTn  =C(L3,L1);
+%Submatrix in 'column' 2, disps cause traction Tss
+CDnTss  =C(L1,L2);	
+CDssTss =C(L2,L2);	
+CDdsTss =C(L3,L2);
+%Submatrix in 'column' 3, disps cause traction Tds
+CDnTds  =C(L1,L3);  		
+CDssTds =C(L2,L3);	
+CDdsTds =C(L3,L3);	
+                                                    clear C 
 %Making sure input frictions are vectors
 Mu=zeros(ne,1)+Mu; 
 Sf=zeros(ne,1)+Sf; 
@@ -37,39 +80,36 @@ dMU = diag(Mu);
 % Allocate ne by ne identity and zero matrices.
 ID = eye(ne);
 ZE = zeros(ne);
-% Input frictional strength, Sf, Column vector exists.
 
-%Original formulation as ritz 2012
-% Construct matrix M. Modified form of Equation 28 - Kaven 2012
-M =  [(CDnTn -(CDssTn*dMU)  -(CDdsTn*dMU)),  CDssTn,  CDdsTn,  ZE, ZE;
-      (CDnTss-(CDssTss*dMU) -(CDdsTss*dMU)), CDssTss, CDdsTss, ID, ZE;
-	  (CDnTds-(CDssTds*dMU) -(CDdsTds*dMU)), CDssTds, CDdsTds, ZE, ID;
-      (2*dMU),                               -ID,      ZE,      ZE, ZE;
-	  (2*dMU),                                ZE,     -ID,      ZE, ZE];
+% Construct matrix [a]. Modified form of Equation 28 - Kaven 2012
+a =  [(CDnTn -(CDnTss*dMU)  -(CDnTds*dMU)),  CDnTss,  CDnTds,  ZE, ZE;
+      (CDssTn-(CDssTss*dMU) -(CDssTds*dMU)), CDssTss, CDssTds, ID, ZE;
+	  (CDdsTn-(CDdsTss*dMU) -(CDdsTds*dMU)), CDdsTss, CDdsTds, ZE, ID;
+      (2*dMU),                               -ID,      ZE,     ZE, ZE;
+	  (2*dMU),                                ZE,     -ID,     ZE, ZE];
 
-% Construct 3ne by 1 column vector Q.
-Q = [(D(1:ne,:)              -(CDssTn*Sf) -(CDdsTn*Sf)); 
-	 (D((ne+1):(2*ne),:)     -(CDssTss*Sf)-(CDdsTss*Sf));
-	 (D(((2*ne)+1):(3*ne),:) -(CDssTds*Sf)-(CDdsTds*Sf));
+% Construct column vector [b].
+b = [(D(L1,:)-(CDnTss*Sf) -(CDnTds*Sf)); 
+	 (D(L2,:)-(CDssTss*Sf)-(CDssTds*Sf));
+	 (D(L3,:)-(CDdsTss*Sf)-(CDdsTds*Sf));
 	 2*Sf; 
 	 2*Sf];
-
-                                                    clear CDnTn CDssTn CDdsTn CDnTss CDssTss CDdsTss CDnTds CDssTds CDdsTds ZE ID
-                                                    clear dMU DD Str
+                                                    clear CDnTn CDssTn CDdsTn CDnTss CDssTss CDdsTss CDnTds CDssTds CDdsTds 
+                                                    clear dMU ZE ID
   
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                                                    
-% Solve the complementarity problem using the PATH\LCP algorithm.
-% Source: http://pages.cs.wisc.edu/~ferris/path/
-% pathlcp.m must be in the same MATLAB directory.
-tic;
+% Solve the linear complementarity problem (calling function that does this)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                                                    
+tic; %Timing run time
 disp('StartingLCP')
+
 %%%%%%%path
-%Z= pathlcp(M,Q);
+%x= pathlcp(a,b);
 %%%%%%%path
 
 %%%%%%%LCP solve
-Z = fischer_newton3d(M,Q); disp('PreAllocating sparse in fischer_newton would be faster')
+x = fischer_newton3d(a,b); disp('PreAllocating sparse in fischer_newton would be faster')
 close %clears the last fig 
 %%%%%%%LCP solve
 
@@ -77,29 +117,36 @@ Timer = toc;
 disp('LcpSpeed(s)');disp(Timer);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-fZ = M*Z+Q;
-                                                    clear M Q
+%Calculating [y], comp eq: [y]=[a][x]+[b]
+y = a*x+b;
+                                                    clear a b 
                                                     
+%Extracting sub parts of vectors: 
+%[x]
+x1=x(L1,1);
+x2=x(L2,1);
+x3=x(L3,1);
+x4=x(L4,1);
+x5=x(L5,1);
+%[y]
+y1=y(L1,1);
+y2=y(L2,1);
+y3=y(L3,1);
+y4=y(L4,1);
+y5=y(L5,1);
+                                                    clear L1 L2 L3 L4 L5
+
 %Extracting slip                                      
-TensileSlipDisp =  -fZ(1:ne,:);                            
-StrikeSlipDisp = Z(3*ne+1:4*ne,1)-fZ(ne+1:2*ne,1);     
-DipSlipDisp = Z(4*ne+1:5*ne,1)-fZ(2*ne+1:3*ne,1);
+TensileSlipDisp = y1;                            
+StrikeSlipDisp  = y2-x4;     
+DipSlipDisp     = y3-x5;
 
-disp ('check Dss convention, different to normal solver when last checked')
-
-
-%Correcting the slip convention as the functions of Nikkhoo M. as these use the opposite sign convention to Ole Kavens frictional solution for slip.  
-TensileSlipDisp=-TensileSlipDisp;
-StrikeSlipDisp=-StrikeSlipDisp;
-DipSlipDisp=-DipSlipDisp;
-
-% %Stress driving displacement on elements, after frictional resistance is overcome
-% %You can put these into the regular C&S non frictiona; solver and get the same slip. 
-TnNeg=Z(1:ne,1); %compressive stress (if it exists but with the wrong sign, positive should be neg, engin conv) 
-Tn = TnDr+TnNeg; %Driving stress + compressive stress with wrong sign
-Tss = TssDr+((Z(ne+1:2*ne,1)-(fZ(3*ne+1:4*ne,1)))-(Mu.*TnNeg)+Sf); % =Ts+(TsLL-DnRL)-Mu*TnNeg+Sf
-Tds = TdsDr+((Z(2*ne+1:3*ne,1)-(fZ(4*ne+1:5*ne,1)))-(Mu.*TnNeg)+Sf); % =Ts+(TsLL-DnRL)-Mu*TnNeg+Sf
+%Extracting the resultant traction at each elements midpoint
+Tn=-x1;
+Tss=y4-x2;
+Tds=y5-x3;
+%This the remote stress left over once stress induced by the slip
+%from the boundary has been removed
 
 end
 
