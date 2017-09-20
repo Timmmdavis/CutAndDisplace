@@ -28,7 +28,7 @@ if nargin==5
 line([Points(:,1)';Points(:,2)'],[Points(:,3)';Points(:,4)'],'color','r')
 end
 axis equal,
-xlabel('x'); ylabel('y'); axis('equal'); title('S1S2 directions'); 
+xlabel('x'); ylabel('y'); axis('equal'); title('S1 (red) S2 (blue) directions'); 
 hold off
 
 end
