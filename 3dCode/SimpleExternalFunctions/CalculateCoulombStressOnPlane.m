@@ -60,7 +60,7 @@ figure;quiver3(X,Y,Z,Tx(:,1),Ty(:,1),Tz(:,1))
 xlabel('x'); ylabel('y'); axis('equal'); title('Total Traction Vector');
 hold on
 trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),Tnn);colormap(cmap)
-divergingCentre( Tnn )
+DivergingCentre( Tnn )
 hold off
 
 %Drawing shear traction and CSS 
@@ -68,7 +68,7 @@ figure;quiver3(X,Y,Z,TsVector(:,1),TsVector(:,2),TsVector(:,3))
 xlabel('x'); ylabel('y'); axis('equal'); title('Shear Traction Vector and CSS');
 hold on
 trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),CSS);colormap(cmap)
-divergingCentre( CSS )
+DivergingCentre( CSS )
 hold off
 
 
