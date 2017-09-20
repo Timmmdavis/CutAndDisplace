@@ -90,7 +90,7 @@ disp('StartingLCP')
 
 %%%%%%%LCP solve
 x = fischer_newton2d(a,b); 
-%close %clears the last fig 
+close %clears the last fig 
 %%%%%%%LCP solve
 
 Timer = toc;
