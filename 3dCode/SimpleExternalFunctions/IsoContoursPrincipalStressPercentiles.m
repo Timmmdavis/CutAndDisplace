@@ -20,15 +20,15 @@ Mid=15;  %% 50 would be the 50th percentile
 Low=10;  %% 25 would be the 50th percentile
 
 %finding percentile values for 3d plotting
-S1_High = prctile(S1(:),High);%75th percentile
-S1_Mid = prctile(S1(:),Mid);%50th percentile
-S1_Low = prctile(S1(:),Low);%25th percentile
-S2_High = prctile(S2(:),High);%75th percentile
-S2_Mid = prctile(S2(:),Mid);%50th percentile
-S2_Low = prctile(S2(:),Low);%25th percentile
-S3_High = prctile(S3(:),High);%75th percentile
-S3_Mid = prctile(S3(:),Mid);%50th percentile
-S3_Low = prctile(S3(:),Low);%25th percentile
+S1_High = Percentile(S1(:),High);%75th percentile
+S1_Mid = Percentile(S1(:),Mid);%50th percentile
+S1_Low = Percentile(S1(:),Low);%25th percentile
+S2_High = Percentile(S2(:),High);%75th percentile
+S2_Mid = Percentile(S2(:),Mid);%50th percentile
+S2_Low = Percentile(S2(:),Low);%25th percentile
+S3_High = Percentile(S3(:),High);%75th percentile
+S3_Mid = Percentile(S3(:),Mid);%50th percentile
+S3_Low = Percentile(S3(:),Low);%25th percentile
 
 
 %Drawing isosurfaces of the principal stresses. 
@@ -95,6 +95,15 @@ all_ha = findobj( figure_handle, 'type', 'axes', 'tag', '' );
 hlink = linkprop(all_ha,{'CameraPosition','CameraUpVector'});
 rotate3d on
 
+
+%https://de.mathworks.com/matlabcentral/answers/127944-how-to-pick-the-j-th-percentile-of-a-vector
+function val = Percentile(arr, pct)
+
+    len = length(arr);
+    ind = floor(pct/100*len);
+    newarr = sort(arr);
+    val = newarr(ind);
+end
 
 end
 
