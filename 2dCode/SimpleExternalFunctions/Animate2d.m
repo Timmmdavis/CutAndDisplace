@@ -18,7 +18,7 @@ Save=0; %logical flag, 1 for saving the film and 0 for not. Saves in the current
 fps=15; %frames per second (24 default)
 
 %Scaling displacement for animation
-Scale=0.1; %Scale the displacement so its bigger or smaller. 1 is the same
+Scale=1; %Scale the displacement so its bigger or smaller. 1 is the same
 mo=0.1; %the original seperation between the dislocation faces, not
 %needed if there is tensile displacement but for a shear fault it makes 
 %a better animation. Put to 0 if not wanted
@@ -34,7 +34,7 @@ figure;
 TensileCosine=[-cos(NormAng),cos(Beta)];
 ShearCosine=[cos(Beta),-cos(NormAng)];
 
-TS_XY=(bsxfun(@times,TensileDisp,TensileCosine));
+TS_XY=(bsxfun(@times,-TensileDisp,TensileCosine));
 SS_XY=(bsxfun(@times,ShearDisp,ShearCosine));
 
 
@@ -113,6 +113,9 @@ scatter([PointsNewMvXN(:,1);PointsNewMvXN(:,2)],[PointsNewMvYN(:,1);PointsNewMvY
 %Setting the axis limits and creating the title
 xlabel('x'); ylabel('y');axis('equal');  
 title('Animation of displacement'),
+titlesz=25;
+fntsz=21;
+ChangeFontSizes(fntsz,titlesz);
 
 % % %Drawing the movement in the first direction, default colourmap
 % % hold on

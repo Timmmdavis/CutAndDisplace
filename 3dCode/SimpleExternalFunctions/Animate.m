@@ -21,8 +21,8 @@ fps=15; %frames per second (24 default)
 CreateVid=1; %1 for video, 0 for images (can be used to create a gif and works in octave). 
 
 %Scaling displacement for animation
-Scale=1000; %Scale the displacement so its bigger or smaller. 1 is the same
-mo=0.01; %the original seperation between the front and back faces, not
+Scale=1; %Scale the displacement so its bigger or smaller. 1 is the same
+mo=0.5; %the original seperation between the front and back faces, not
 %needed if there is tensile displacement but for a shear fault it makes 
 %a better animation. Put to 0 if not wanted
 pad=0.5;%Adding some paddding to your axis limits if needed
@@ -39,7 +39,7 @@ figure;
 
 
 SS_XYZ=(bsxfun(@times,StrikeSlipDisp,StrikeSlipCosine));
-DS_XYZ=(bsxfun(@times,-DipSlipDisp,DipSlipCosine)); %My cosines dip down, positive is thrusting in DipSlipDisp
+DS_XYZ=(bsxfun(@times,DipSlipDisp,DipSlipCosine));
 TS_XYZ=(bsxfun(@times,TensileSlipDisp,FaceNormalVector));
 
 TotalMovementXYZ=SS_XYZ+DS_XYZ+TS_XYZ;
@@ -178,6 +178,11 @@ xlim(xl)
 ylim(yl)
 zlim(zl)
 title('Animation of triangle displacement'),
+
+titlesz=25;
+fntsz=21;
+ChangeFontSizes(fntsz,titlesz);
+
 %# set previous Camera* properties
 if ~isempty(g)
     set(gca, g); 
