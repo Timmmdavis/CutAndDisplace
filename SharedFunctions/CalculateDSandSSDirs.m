@@ -61,45 +61,26 @@ RotationAxis='z';
 [StrikeSlipCosine]=ApplyRotationLoop(PointingAlongXAxis,RotateAroundZ,RotationAxis);
 
 %%%%%%%%%%%%%
-%making sure flat triangles follow the same but opp conv as the nikko TDE Script
-%that is ss points NORTH and ds points WEST (when the normal points
-%up). Using flipped conv as we are not using geological but engin conv. 
+%making sure flat triangles follow the same conv as the nikko TDE Script
+%that is: "% Calculate unit strike, dip and normal to TD vectors: For a horizontal TD 
+% as an exception, if the normal vector points upward, the strike and dip 
+% vectors point Northward and Westward, whereas if the normal vector points
+% downward, the strike and dip vectors point Southward and Westward, "
 
-%flag when DS is pretty much flat cosaz=10e-14 
-flag= round(DipSlipCosine(:,3),14)==0;
-if any(flag) %no point doing loop unless we need to
-    for i=1:numel(flag)     %loop through flag 
-        if flag(i)==0       %if that one is 0 skip
-            continue
-        end                 %else we know this tri is flat so...
-        if CosAz(i) > 0 %flat tri faces up
-        DipSlipCosine(i,:)= [1 0 0];        %pointing east
-        StrikeSlipCosine(i,:)= [0 -1 0];    %pointing south
-        else            %tri faces down
-        DipSlipCosine(i,:)= [-1 0 0];       %pointing west
-        StrikeSlipCosine(i,:)= [0 1 0];     %pointing north   
+%Mehdi Nikkhoo's check for flat tris, we use the same conv
+eZ = [0 0 1]';
+for i=1:numel(FaceNormalVector(:,1))
+Vstrike = cross(eZ,FaceNormalVector(i,:)');
+    if norm(Vstrike)==0
+    %conv as Nikkhoo
+    DipSlipCosine(i,:)= [-1 0 0];      %pointing west
+        if StrikeSlipCosine(i,2)>=0
+            StrikeSlipCosine(i,:)= [0 1 0]; %pointing north
+        else
+            StrikeSlipCosine(i,:)= [0 -1 0]; %pointing south   
         end
     end
 end
-%flag when DS is pretty much flat cosaz=10e-14 
-% flag= round(DipSlipCosine(:,3),14)==0; %%This works with friction better
-% %but not perfectly, get weird SS bits . Better to keep friction going only
-% %on dipping surfaces.
-% if any(flag) %no point doing loop unless we need to
-%     for i=1:numel(flag)     %loop through flag 
-%         if flag(i)==0       %if that one is 0 skip
-%             continue
-%         end                 %else we know this tri is flat so...
-%         if CosAz(i) > 0 %flat tri faces up
-%         DipSlipCosine(i,:)= [-1 0 0];       %pointing west
-%         StrikeSlipCosine(i,:)= [0 -1 0];    %pointing south
-%         else            %tri faces down
-%         DipSlipCosine(i,:)= [1 0 0];        %pointing east
-%         StrikeSlipCosine(i,:)= [0 1 0];     %pointing north   
-%         end
-%     end
-% end
-
 
 
 %Turn this on to check these are direction cosines and to drawing figures

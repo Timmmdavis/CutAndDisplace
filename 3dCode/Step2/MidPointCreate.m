@@ -67,17 +67,6 @@ for i = 1:numel(Triangles(:,1))
     FaceNormalVector(i,:)=[Ax,Ay,Az];
 end
 
-
-%Adding warning for surfaces with flat triangles, when calculating shear or
-%normal traction on these both are calculated where really only one should
-%be. 
-flag=FaceNormalVector(:,1)==0 & FaceNormalVector(:,2)==0; %only Az exists (ie normal points up)
-if any(flag)==1
-    disp('WARNING!!')
-    disp('Your surface has flat triangles, this does not work correctly for friction... maybe other parts of the code.');
-    disp('Test properly or remesh surface');
-end    
-
 if draw==1
 % Drawing the calculated trianglulation
 figure ('name','Step 2.1'); trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),'FaceAlpha',(.8),'facecolor', 'cyan');

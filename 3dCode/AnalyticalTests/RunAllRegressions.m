@@ -53,7 +53,7 @@ run NumericalAnalyticalComp_BurgmannFrictionProfileTDETest
 disp('End, 3d Fracture wall displacement profile matches frictional Burgmann/Pollard analytical solution')
 disp(' ') %line break
 
-close;close;close;close;close; %getting to the actual comp to an solution
+close;close;close; %getting to the actual comp to an solution
 TakeScreenShotOfFigure(4)
 	
 disp(' ') %line break
