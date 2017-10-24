@@ -18,15 +18,19 @@ function [S1,S2,S3,S1dir,S2dir,S3dir] = EigCalc3d(Sxx,Syy,Szz,Sxy,Sxz,Syz)
 %Preallocating array
 n = numel(Sxx);
 tensor=zeros (n*3,3);
+
 %Filling this array with 3x3 tensors, every 3 rows is each point
-J=(1:3:n*3);
-for i = 1:n 
-    
-    tensor(J(:,i):J(:,i)+2,:)=[Sxx(i), Sxy(i), Sxz(i);
-                               Sxy(i), Syy(i), Syz(i);
-                               Sxz(i), Syz(i), Szz(i)]; 
-                 
-end
+%Indexing way to accumulate mats
+N=3;
+tensor(1:N:end,1) = Sxx(1:1:end,:);
+tensor(1:N:end,2) = Sxy(1:1:end,:);
+tensor(1:N:end,3) = Sxz(1:1:end,:);
+tensor(2:N:end,1) = Sxy(1:1:end,:);
+tensor(2:N:end,2) = Syy(1:1:end,:);
+tensor(2:N:end,3) = Syz(1:1:end,:);
+tensor(3:N:end,1) = Sxz(1:1:end,:);
+tensor(3:N:end,2) = Syz(1:1:end,:);
+tensor(3:N:end,3) = Szz(1:1:end,:);
 
 %Eig can't handle nan's so we turn these to 0's and put the calculated s1s2s3 to nans after 
 NanFlag = isnan(tensor);
@@ -36,10 +40,12 @@ tensor(NanFlag)=0;
 %Preallocating array
 V=zeros (n*3,3); %Eigen vectors - http://eqseis.geosc.psu.edu/~cammon/HTML/UsingMATLAB/PDF/ML2%20Eigenvalues.pdf
 D=zeros (n*3,3); %Eigen values -  also see Pollard 2005 addition resources MATLAB introduction WordDoc
-for J=(1:3:n*3); 
+
+for J=(1:3:n*3) 
     [V(J:J+2,:),D(J:J+2,:)] = eig(tensor(J:J+2,:));
     V(J:J+2,:)=V(J:J+2,:)'; %Flipping the direction cosines as its easier to extract these like this. 
 end
+
 
 %Putting anywhere where there were nans in the tensor to nan
 D(NanFlag)=nan;
@@ -48,7 +54,7 @@ V(NanFlag)=nan;
 %Now getting a col vec of S3 S2 S1 which is for each point
 J=(1:3:size(D(:,1)));
 for i = 1:n 
-    [B(J(:,i):J(:,i)+2,:),I(J(:,i):J(:,i)+2,:)]=sort(diag(D(J(:,i):J(:,i)+2,:)));
+    [B(J(:,i):J(:,i)+2,:),~]=sort(diag(D(J(:,i):J(:,i)+2,:)));
 end  
 
 %B output is S1S2S3 in a single column list, s1(a),s2(a),s3(a),s1(b),s2(b) etc. S1 S2 and S3 are then extracted to thier own arrays ready for 

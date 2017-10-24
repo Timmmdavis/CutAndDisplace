@@ -65,7 +65,7 @@ Dn = 0;
 %coefficients
 StringHS='1/2 CalculatingShearDispInfMatrixHS';
 StringFS='1/2 CalculatingShearDispInfMatrixFS';
-[DsInfMatrix]=CreateCoeffsLoop(InfMatrix,...
+[DsInfMatrix]=CreateCoeffsLoop2d(InfMatrix,...
     NUM,x,y,xe,ye,a,Beta,Ds,Dn,nu,E,halfspace,StringHS,StringFS);
 
 %Setting up normal disp coeff matrix
@@ -73,7 +73,7 @@ Ds = 0;
 Dn = 1;
 StringHS='2/2 CalculatingNormalDispInfMatrixHS';
 StringFS='2/2 CalculatingNormalDispInfMatrixFS';
-[DnInfMatrix]=CreateCoeffsLoop(InfMatrix,...
+[DnInfMatrix]=CreateCoeffsLoop2d(InfMatrix,...
     NUM,x,y,xe,ye,a,Beta,Ds,Dn,nu,E,halfspace,StringHS,StringFS);
 
 clear halfspace x y xe ye Beta Ds Dn first i last
@@ -85,40 +85,36 @@ clear halfspace x y xe ye Beta Ds Dn first i last
 %  elements influence on every other element. 
 dimx = NUM;
 dimy = NUM;
-% Now extract seperate stress column vectors into square matrices, reshaped
-% so each elements influence is a seperate column. Extracting like this as
-% its memory efficient
-Ds_sxx = DsInfMatrix (:,1);   Ds_sxx = reshape(Ds_sxx,dimx,dimy); DsInfMatrix=DsInfMatrix(:,2:5);
-Ds_syy = DsInfMatrix (:,1);   Ds_syy = reshape(Ds_syy,dimx,dimy); DsInfMatrix=DsInfMatrix(:,2:4);
-Ds_sxy = DsInfMatrix (:,1);   Ds_sxy = reshape(Ds_sxy,dimx,dimy); DsInfMatrix=DsInfMatrix(:,2:3);
+%External function, extracting cols
 if FD==1
-Ds_Ux  = DsInfMatrix (:,1);   Ds_Ux = reshape(Ds_Ux,dimx,dimy);   DsInfMatrix=DsInfMatrix(:,2); 
-Ds_Uy  = DsInfMatrix (:,1);   Ds_Uy = reshape(Ds_Uy,dimx,dimy);   
+[ DsSxx,DsSyy,DsSxy,Ds_Ux,Ds_Uy ] = ExtractCols( DsInfMatrix );     
+[ DsSxx,DsSyy,DsSxy,Ds_Ux,Ds_Uy ]=ReshapeMultipleArrays(dimx,dimy,DsSxx,DsSyy,DsSxy,Ds_Ux,Ds_Uy); 
+else
+[ DsSxx,DsSyy,DsSxy ] = ExtractCols( DsInfMatrix );     
+[ DsSxx,DsSyy,DsSxy ]=ReshapeMultipleArrays(dimx,dimy,DsSxx,DsSyy,DsSxy);     
 end
 clear DsInfMatrix
 
-Dn_sxx = DnInfMatrix (:,1);   Dn_sxx = reshape(Dn_sxx,dimx,dimy); DnInfMatrix=DnInfMatrix(:,2:5);
-Dn_syy = DnInfMatrix (:,1);   Dn_syy = reshape(Dn_syy,dimx,dimy); DnInfMatrix=DnInfMatrix(:,2:4);
-Dn_sxy = DnInfMatrix (:,1);   Dn_sxy = reshape(Dn_sxy,dimx,dimy); DnInfMatrix=DnInfMatrix(:,2:3);
 if FD==1
-Dn_Ux  = DnInfMatrix (:,1);   Dn_Ux  = reshape(Dn_Ux,dimx,dimy);  DnInfMatrix=DnInfMatrix(:,2); 
-Dn_Uy  = DnInfMatrix (:,1);   Dn_Uy  = reshape(Dn_Uy,dimx,dimy);
+[ DnSxx,DnSyy,DnSxy,Dn_Ux,Dn_Uy ] = ExtractCols( DnInfMatrix );     
+[ DnSxx,DnSyy,DnSxy,Dn_Ux,Dn_Uy ]=ReshapeMultipleArrays(dimx,dimy,DnSxx,DnSyy,DnSxy,Dn_Ux,Dn_Uy); 
+else
+[ DnSxx,DnSyy,DnSxy ] = ExtractCols( DnInfMatrix );     
+[ DnSxx,DnSyy,DnSxy ]=ReshapeMultipleArrays(dimx,dimy,DnSxx,DnSyy,DnSxy);     
 end
 clear DnInfMatrix
 clear dimx dimy
 
-
-
 %Converts the stress influence matrices on every elements centre point to
 %a XY traction influence matrix.
-[ DsTx,DsTy ] = TractionVectorCartesianComponents2d( Ds_sxx,Ds_syy,Ds_sxy,nx,ny );
-[ DnTx,DnTy ] = TractionVectorCartesianComponents2d( Dn_sxx,Dn_syy,Dn_sxy,nx,ny );
-                                                    clear Ds_sxx Ds_syy Ds_sxy Dn_sxx Dn_syy Dn_sxy
-
+[ DsTx,DsTy ] = TractionVectorCartesianComponents2d( DsSxx,DsSyy,DsSxy,nx,ny );
+[ DnTx,DnTy ] = TractionVectorCartesianComponents2d( DnSxx,DnSyy,DnSxy,nx,ny );
+                                                    clear DsSxx DsSyy DsSxy DnSxx DnSyy DnSxy
+                                                    
 %Converts the traction XY to normal and shear traction components.
 [ DsTn,DsTs ] = CalculateNormalShearTraction2d( DsTx,DsTy,nx,ny);
 [ DnTn,DnTs ] = CalculateNormalShearTraction2d( DnTx,DnTy,nx,ny);
-                                                    clear ShTx ShTy DnTx DnTy
+                                                    clear DsTx DnTx DsTy DnTy
 
 % % %eq 5.63 C&S Element self effects, not needed but closer to real solution
 %Rounding to closest self effect value (This doesn't mess up the sign convention due to movement
@@ -138,41 +134,11 @@ DsTn(L)=0;
 DnTs(L)=0;   
                                                   
 if FD==0
-Dn_Ux  = [];
-Dn_Uy  = [];
-Ds_Ux  = [];
-Ds_Uy  = [];
+[Dn_Ux,Dn_Uy,Ds_Ux,Ds_Uy ] = CreateBlankVars;        
 end
                                                     
 end
 
-function [infmatrix]=CreateCoeffsLoop(infmatrix,...
-    NUM,x,y,xe,ye,a,Beta,Ds,Dn,nu,E,halfspace,StringHS,StringFS)
-%Loop that calls the DDM functions of C&S and fills large column
-%coeff matrices
-if halfspace==1
-    % Creating a progress bar that completes during loop
-    progressbar(StringHS)
-    for i=1:NUM
-        %Creating size and space that will be filled in the influence
-        %matrix in each loop
-        first = (i-1)*NUM+1;
-        last = i*NUM;
-        %Calling TWODD function
-        infmatrix(first:last,:) = coeffhs_func(x,y,xe(i),ye(i),a(i),Beta(i),Ds,Dn,nu,E);
-        % Updating progress bar
-        progressbar(i/NUM) 
-    end
-    else 
-    progressbar(StringFS)
-    for i=1:NUM
-        first = (i-1)*NUM+1;
-        last = i*NUM;
-        infmatrix(first:last,:) = coeff_func(x,y,xe(i),ye(i),a(i),Beta(i),Ds,Dn,nu,E);
-        progressbar(i/NUM) 
-    end
-end
 
-end
 
 

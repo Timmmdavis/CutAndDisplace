@@ -38,7 +38,7 @@ function [pointsxy,mystruct]=m_shaperead(fname,UBR);
 % its mine, so you can't sell it.
 
 
-if nargin<2,
+if nargin<2
  UBR=[-Inf -Inf Inf Inf];
 end;
  
@@ -56,7 +56,7 @@ end;
 fidb=fopen([fname '.shx'],'r','b');  % big-endian open
 
 
-if fidb==-1,
+if fidb==-1
  error(['Cannot file filename: ' fname '.shx']);
 end;
  
@@ -88,7 +88,7 @@ fclose(fidl);
  
 fidl=fopen([fname '.dbf'],'r','l'); % little-endian read
 
-if fidl==-1,
+if fidl==-1
  disp(['Cannot file filename: ' fname '.dbf']);
  dbf={};
  fnam={};
@@ -103,7 +103,7 @@ else
   rlen=fread(fidl,1,'int16');
 
   nfield=(hlen-32-1)/32;
-  for k=1:nfield,    % 
+  for k=1:nfield    % 
     status=fseek(fidl,32*k,'bof');
     fnam{k}=char(fread(fidl,11,'uchar')');
     fnam{k}=fnam{k}(fnam{k}>0);
@@ -113,26 +113,26 @@ else
   end;
 
   dbf=cell(nrec,nfield);
-  for k=1:nrec,
+  for k=1:nrec
     if rem(k,500)==0, fprintf('-'); end;
     
     status=fseek(fidl,hlen+1+(k-1)*rlen,'bof');
-    for l=1:nfield,
+    for l=1:nfield
     
-      switch ftype(l),
-	case 'N',
+      switch ftype(l)
+	case 'N'
           str=char([fread(fidl,flen(l),'uchar')']);
           dbf{k,l}=sscanf(str,'%f');          % was %d but found a file with E+XXX numbers
-	case 'F',
+	case 'F'
           str=char([fread(fidl,flen(l),'uchar')']);
           dbf{k,l}=sscanf(str,'%f');
-	case 'I',
+	case 'I'
           dbf{k,l}=fread(fidl,4,'int32');
-	case 'C',
+	case 'C'
           str=char(fread(fidl,flen(l),'uchar')');
 	  str(str==13)=' ';  % CR added in some strings, change to space
           dbf{k,l}= deblank(str);
-	case 'D',
+	case 'D'
        	  str=char(fread(fidl,8,'uchar')');
           dbf{k,l}=datenum(str,'yyyymmdd');
 	otherwise
@@ -140,7 +140,7 @@ else
        end; 
     end;
   end;  
-  fprintf('\n');
+  %fprintf('\n');
   fclose(fidl);
 end;
 
@@ -160,7 +160,7 @@ M=struct('version',head2(1),'shape_type',head2(2),...
 
 M.fieldnames=fnam;
 M.dbfdata=dbf;
-for k=1:nfield,
+for k=1:nfield
   M=setfield(M,fnam{k},dbf(:,k));
 end;
 
@@ -169,31 +169,31 @@ end;
 
 fidl=fopen([fname '.shp'],'r','l');
 
-if fidl==-1,
+if fidl==-1
  error(['Cannot find filename: ' fname '.shp']);
 end;
 
 ikp=ones(lrec,1);
 
-for k=1:lrec,
+for k=1:lrec
   if rem(k,500)==0, fprintf('.'); end;
   
   fseek(fidl,recn16(k,1)*2+8,'bof');
   stype=fread(fidl,1,'int32');
   M.type=stype;
-  switch stype,
-    case 0, % null
+  switch stype
+    case 0 % null
     
-    case 1, % point
+    case 1 % point
       M.ctype='point';
       pt=fread(fidl,2,'double')';
       M.ncst{k,1}=pt;
   
-    case 3, % polyline
+    case 3 % polyline
       M.ctype='polyline';
       mbr=fread(fidl,4,'double');
 
-      if mbr(1)<UBR(3) & mbr(3)>UBR(1) & mbr(2)<UBR(4) & mbr(4)>UBR(2),
+      if mbr(1)<UBR(3) && mbr(3)>UBR(1) && mbr(2)<UBR(4) && mbr(4)>UBR(2)
 	nparts=fread(fidl,1,'int32');
 	npts=fread(fidl,1,'int32');
 	parts=fread(fidl,nparts,'int32');
@@ -203,7 +203,7 @@ for k=1:lrec,
 	parts=[parts;length(pts)];
 
 	ncst=NaN(length(pts)+length(parts)-2,2);
-	for k2=1:length(parts)-1,
+	for k2=1:length(parts)-1
           ncst([parts(k2)+1:parts(k2+1)]+(k2-1),:)=pts([parts(k2)+1:parts(k2+1)],:);
 	end;
 	M.mbr(k,:)=mbr;	
@@ -213,10 +213,10 @@ for k=1:lrec,
         ikp(k)=0;
       end;	  
       
-    case 5, % polygon
+    case 5 % polygon
       M.ctype='polygon';
       mbr=fread(fidl,4,'double');
-      if mbr(1)<UBR(3) & mbr(3)>UBR(1) & mbr(2)<UBR(4) & mbr(4)>UBR(2),
+      if mbr(1)<UBR(3) && mbr(3)>UBR(1) && mbr(2)<UBR(4) && mbr(4)>UBR(2)
 	 nparts=fread(fidl,1,'int32');
 	 npts=fread(fidl,1,'int32');
 	 parts=fread(fidl,nparts,'int32');
@@ -227,7 +227,7 @@ for k=1:lrec,
 	 parts=[parts;length(pts)];
 
 	 ncst=NaN(length(pts)+length(parts)-2,2);
-	 for k2=1:length(parts)-1,
+	 for k2=1:length(parts)-1
            ncst([parts(k2)+1:parts(k2+1)]+(k2-1),:)=pts([parts(k2)+1:parts(k2+1)],:);
 	 end;	
 	 M.mbr(k,:)=mbr;	
@@ -237,10 +237,10 @@ for k=1:lrec,
         ikp(k)=0;
       end;	  
       
-    case 8, % multipoint
+    case 8 % multipoint
       M.ctype='multipoint';
       mbr=fread(fidl,4,'double');
-      if mbr(1)<UBR(3) & mbr(3)>UBR(1) & mbr(2)<UBR(4) & mbr(4)>UBR(2),
+      if mbr(1)<UBR(3) && mbr(3)>UBR(1) && mbr(2)<UBR(4) && mbr(4)>UBR(2)
 	 npts=fread(fidl,1,'int32');
 	 pts=fread(fidl,[2 npts],'double')';
 	 M.mbr(k,:)=mbr;	
@@ -250,15 +250,15 @@ for k=1:lrec,
         ikp(k)=0;
       end;	  
       
-    case 11, % pointZ
+    case 11 % pointZ
       M.ctype='pointZ';
       pt=fread(fidl,3,'double')';
       M.ncst{k,1}=pt;
 
-    case 13, % polylineZ
+    case 13 % polylineZ
       M.ctype='polylineZ';
       mbr=fread(fidl,4,'double')';
-      if mbr(1)<UBR(3) & mbr(3)>UBR(1) & mbr(2)<UBR(4) & mbr(4)>UBR(2),
+      if mbr(1)<UBR(3) && mbr(3)>UBR(1) && mbr(2)<UBR(4) && mbr(4)>UBR(2)
 	 nparts=fread(fidl,1,'int32');
 	 npts=fread(fidl,1,'int32');
 	 parts=fread(fidl,nparts,'int32');
@@ -271,7 +271,7 @@ for k=1:lrec,
 	 parts=[parts;length(pts)];
 
 	 ncst=NaN(length(pts)+length(parts)-2,2);
-	 for k2=1:length(parts)-1,
+	 for k2=1:length(parts)-1
            ncst([parts(k2)+1:parts(k2+1)]+(k2-1),1:2)=pts([parts(k2)+1:parts(k2+1)],:);
            ncst([parts(k2)+1:parts(k2+1)]+(k2-1),3)=ptsZ([parts(k2)+1:parts(k2+1)] );
 	 end;
@@ -283,10 +283,10 @@ for k=1:lrec,
         ikp(k)=0;
       end;	  
 
-    case 15, % polygonZ
+    case 15 % polygonZ
       M.ctype='polygonZ';
       mbr=fread(fidl,4,'double')';
-      if mbr(1)<UBR(3) & mbr(3)>UBR(1) & mbr(2)<UBR(4) & mbr(4)>UBR(2),
+      if mbr(1)<UBR(3) && mbr(3)>UBR(1) && mbr(2)<UBR(4) && mbr(4)>UBR(2)
 	 nparts=fread(fidl,1,'int32');
 	 npts=fread(fidl,1,'int32');
 	 parts=fread(fidl,nparts,'int32');
@@ -299,7 +299,7 @@ for k=1:lrec,
 	 parts=[parts;length(pts)];
 
 	 ncst=NaN(length(pts)+length(parts)-2,2);
-	 for k2=1:length(parts)-1,
+	 for k2=1:length(parts)-1
            ncst([parts(k2)+1:parts(k2+1)]+(k2-1),1:2)=pts([parts(k2)+1:parts(k2+1)],:);
            ncst([parts(k2)+1:parts(k2+1)]+(k2-1),3)=ptsZ([parts(k2)+1:parts(k2+1)] );
 	 end;
@@ -311,10 +311,10 @@ for k=1:lrec,
         ikp(k)=0;
       end;	  
 
-    case 18, % multipointZ
+    case 18 % multipointZ
       M.ctype='multipointZ';
       mbr=fread(fidl,4,'double');
-      if mbr(1)<UBR(3) & mbr(3)>UBR(1) & mbr(2)<UBR(4) & mbr(4)>UBR(2),
+      if mbr(1)<UBR(3) && mbr(3)>UBR(1) && mbr(2)<UBR(4) && mbr(4)>UBR(2)
 	 npts=fread(fidl,1,'int32');
 	 pts=fread(fidl,[2 npts],'double')';
 	 mbrZ=fread(fidl,2,'double')';
@@ -338,7 +338,7 @@ irem=find(~ikp);
 M.dbfdata(irem,:)=[];
 M.ncst(irem,:)=[];
 M.mbr(irem,:)=[];
-for k=1:nfield,
+for k=1:nfield
   M.(fnam{k})(irem,:)=[];
 end;
 
@@ -346,10 +346,12 @@ pp=(M(1).ncst); %extracting from array
 points= cell2mat(pp);   %converting to matrix.
 if numel(points(1,:))==2
     pointsxy=[points(:,1),points(:,2)];
+    pointsxy=[NaN(1,2);pointsxy;NaN(1,2)]; %Adding nan at front and end(first line so its easier to loop)
 else
-pointsxy=[points(:,1),points(:,3)];
+    pointsxy=[points(:,1),points(:,2),points(:,3)];
+    pointsxy=[NaN(1,3);pointsxy;NaN(1,3)]; %Adding nan at front and end(first line so its easier to loop)
 end
-pointsxy=[NaN(1,2);pointsxy;NaN(1,2)]; %Adding nan at front and end(first line so its easier to loop)
+
 NaNIndex = find(isnan(pointsxy(:,1))); %Find seperate lines
 Els=[]; %empty array
 % for i =(1:numel(NaNIndex)-1)

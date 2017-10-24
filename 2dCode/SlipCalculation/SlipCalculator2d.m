@@ -214,14 +214,14 @@ elseif Option=='F'
     zerinfA=zeros(size(DsTnE1FB,1),size(Dn_UyE2IF,2));%Sz=1=(Rows down),2=(Cols across)
     zerinfB=zeros(size(DnTnE2FB,1),size(DsTsE1FB,2)); 
     %Setting up the matrix
-    A=   [[DnTnE1IF,    DsTnE1IF,   -DnTnE2IF,    -DsTnE2IF]; %stress infs that must be satisfied at interface
-          [DnTsE1IF,    DsTsE1IF,   -DnTsE2IF,    -DsTsE2IF];
+    A=   [[DnTnE1IF,    DsTnE1IF,   -DnTnE2IF,   -DsTnE2IF ]; %stress infs that must be satisfied at interface
+          [DnTsE1IF,    DsTsE1IF,   -DnTsE2IF,   -DsTsE2IF ];
           [Dn_UxE1IF,   Ds_UxE1IF,  -Dn_UxE2IF,  -Ds_UxE2IF]; %disp infs that must be satisfied at interface
           [Dn_UyE1IF,   Ds_UyE1IF,  -Dn_UyE2IF,  -Ds_UyE2IF];
-          [DnTnE1FB,    DsTnE1FB,      zerinfA,     zerinfA]; %stress infs, only the influence on freeboundary
-          [DnTsE1FB,    DsTsE1FB,      zerinfA,     zerinfA]
-          [zerinfB,     zerinfB,     DnTnE2FB,    DsTnE2FB]; %stress infs, only the influence on freeboundary
-          [zerinfB,     zerinfB,     DnTsE2FB,    DsTsE2FB]];      
+          [DnTnE1FB,    DsTnE1FB,    zerinfA,     zerinfA  ]; %stress infs, only the influence on freeboundary
+          [DnTsE1FB,    DsTsE1FB,    zerinfA,     zerinfA  ];
+          [zerinfB,     zerinfB,     DnTnE2FB,    DsTnE2FB ]; %stress infs, only the influence on freeboundary
+          [zerinfB,     zerinfB,     DnTsE2FB,    DsTsE2FB ]];      
     clear DsTnE1IF DsTsE1IF DnTnE1IF DnTsE1IF DsTnE2IF DsTsE2IF DnTnE2IF DnTsE2IF zerinfA
     clear Ds_UxE1IFDs_UyE1IFDn_UxE1IFDn_UyE1IF Ds_UxE2IFDs_UyE2IFDn_UxE2IFDn_UyE2IF
     clear DsTnE1FB DsTsE1FB DnTnE1FB DnTsE1FB
@@ -229,7 +229,8 @@ elseif Option=='F'
 end
    
     %checking the created influence matrix
-    [ A ] = InfMatrixCheck( A ); 
+    %[ A ] = InfMatrixCheck( A );
+    %INF MAT CHECK OFF!
     
     %Creating vector of tractions at every element
 if Option=='F'
@@ -247,7 +248,7 @@ end
     %The linear equations: 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    tic
+    %tic
 
     %  Solve the matrix system [A][D]=[B] to get the displacement discontinuity vector D
     %If we have fixed displacements the matrix is no longer square, in this
@@ -260,7 +261,7 @@ end
     D = A\B;
     end
     
-    toc
+    %toc
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Grabbing the data back
@@ -268,19 +269,24 @@ end
     
     %  Extract displacements from D vector into subvectors
   
-if Option=='B' || Option=='E'     
-    TensileDisp= D(1:NUM);          % Dn elements are in upper half of D
-    ShearDisp = D(NUM+1:2*NUM);     % Ds elements are in lower half of D   
-elseif Option=='D'      
-    ShearDisp=D;                    % Ds elements in D 
+if Option=='B' || Option=='E'  
+    
+    [ TensileDisp,ShearDisp ] = ExtractArraysFromVector( D );
+
+elseif Option=='D'    
+    
+    [ ShearDisp ] = ExtractArraysFromVector( D );
     TensileDisp=zeros(size(D));     % No Dn by its nature
+    
 elseif Option=='F'  
-    TensileDispE1       = D(1:NUME1,:);                            %Elastic1
-    ShearDispE1         = D(NUME1+1:2*NUME1,:);                    %Elastic1
-    TensileDispE2       = D(2*NUME1+1:2*NUME1+NUME2,:);            %Elastic2
-    ShearDispE2         = D((((2*NUME1)+NUME2+1)):end,:);          %Elastic2
+    
+    DE1=D(1:(2*NUME1),:);
+    DE2=D((2*NUME1)+1:end,:);
+    [ TensileDispE1,ShearDispE1 ] = ExtractArraysFromVector( DE1 );
+    [ TensileDispE2,ShearDispE2 ] = ExtractArraysFromVector( DE2 );
     TensileDisp=[TensileDispE1;TensileDispE2];
-    ShearDisp=[ShearDispE1;ShearDispE2];         
+    ShearDisp=[ShearDispE1;ShearDispE2];   
+    
 elseif Option=='C' 
     %friction solver
     [ShearDisp,TensileDisp]=LinearCompFrictionSolver(D,A,Sf,Mu,NUM,Tn,Ts);

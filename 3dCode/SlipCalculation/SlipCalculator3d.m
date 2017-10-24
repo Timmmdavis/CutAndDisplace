@@ -201,36 +201,36 @@ else %We need to do this for both elastics
 end       
     
 if Option=='B' || Option=='E' || Option=='C'
-    Ats = [-DnTn,  -DssTn, -DdsTn]; 
-    Ass = [-DnTss, -DssTss,-DdsTss];
-    Ads = [-DnTds, -DssTds,-DdsTds];
+    Atn = [-DnTn,  -DssTn, -DdsTn]; 
+    Atss = [-DnTss, -DssTss,-DdsTss];
+    Atds = [-DnTds, -DssTds,-DdsTds];
     clear DnTn DssTn DdsTn DnTssDssTss DdsTss DnTds DssTds DdsTds
-    A= [Ats;Ass;Ads];  %Concatenate ready for equation 
-    clear Ats Ass Ads
+    A= [Atn;Atss;Atds];  %Concatenate ready for equation 
+    clear Atn Atss Atds
 
 elseif Option=='D'                                                
-    Ats = [-DssTn, -DdsTn]; 
-    Ass = [-DssTss,-DdsTss];
-    Ads = [-DssTds,-DdsTds];
+    Atn =  [-DssTn, -DdsTn]; 
+    Atss = [-DssTss,-DdsTss];
+    Atds = [-DssTds,-DdsTds];
     clear DnTn DssTn DdsTn DnTssDssTss DdsTss DnTds DssTds DdsTds
-    A= [Ats;Ass;Ads];  %Concatenate ready for equation 
-    clear Ats Ass Ads
+    A= [Atn;Atss;Atds];  %Concatenate ready for equation 
+    clear Atn Atss Atds
     
 elseif Option=='F'         
     zerinfA=zeros(size(DnTnE1FB,1),size(Dn_dzE2IF,2)); %Sz=1=(Rows down),2=(Cols across)
     zerinfB=zeros(size(DnTnE2FB,1),size(Dn_dzE1IF,2)); 
     
-    A=[[DnTnE1IF,  DssTnE1IF,  DdsTnE1IF,   -DnTnE2IF,     -DssTnE2IF,    -DdsTnE2IF  ];
-       [DnTssE1IF, DssTssE1IF, DdsTssE1IF,  -DnTssE2IF,    -DssTssE2IF,   -DdsTssE2IF ];
-       [DnTdsE1IF, DssTdsE1IF, DdsTdsE1IF,  -DnTdsE2IF,    -DssTdsE2IF,   -DdsTdsE2IF ];
-       [Dn_dxE1IF, Dss_dxE1IF,  Dds_dxE1IF,   -Dn_dxE2IF,    -Dss_dxE2IF,    -Dds_dxE2IF  ];
-       [Dn_dyE1IF, Dss_dyE1IF,  Dds_dyE1IF,   -Dn_dyE2IF,    -Dss_dyE2IF,    -Dds_dyE2IF  ];
-       [Dn_dzE1IF, Dss_dzE1IF,  Dds_dzE1IF,   -Dn_dzE2IF,    -Dss_dzE2IF,    -Dds_dzE2IF  ];
-       [DnTnE1FB,  DssTnE1FB,  DdsTnE1FB,   zerinfA,         zerinfA,         zerinfA ];
-       [DnTssE1FB, DssTssE1FB, DdsTssE1FB,  zerinfA,         zerinfA,         zerinfA ];
-       [DnTdsE1FB, DssTdsE1FB, DdsTdsE1FB,  zerinfA,         zerinfA,         zerinfA ];    
-       [zerinfB,    zerinfB,   zerinfB,     DnTnE2FB,       DssTnE2FB,     DdsTnE2FB  ]; %stress infs, only the influence on freeboundary
-       [zerinfB,    zerinfB,   zerinfB,     DnTssE2FB,      DssTssE2FB,    DdsTssE2FB ];
+    A=[[DnTnE1IF,  DssTnE1IF,  DdsTnE1IF,   -DnTnE2IF,     -DssTnE2IF,    -DdsTnE2IF ];
+       [DnTssE1IF, DssTssE1IF, DdsTssE1IF,  -DnTssE2IF,    -DssTssE2IF,   -DdsTssE2IF];
+       [DnTdsE1IF, DssTdsE1IF, DdsTdsE1IF,  -DnTdsE2IF,    -DssTdsE2IF,   -DdsTdsE2IF];
+       [Dn_dxE1IF, Dss_dxE1IF, Dds_dxE1IF,  -Dn_dxE2IF,    -Dss_dxE2IF,   -Dds_dxE2IF];
+       [Dn_dyE1IF, Dss_dyE1IF, Dds_dyE1IF,  -Dn_dyE2IF,    -Dss_dyE2IF,   -Dds_dyE2IF];
+       [Dn_dzE1IF, Dss_dzE1IF, Dds_dzE1IF,  -Dn_dzE2IF,    -Dss_dzE2IF,   -Dds_dzE2IF];
+       [DnTnE1FB,  DssTnE1FB,  DdsTnE1FB,   zerinfA,        zerinfA,       zerinfA   ];
+       [DnTssE1FB, DssTssE1FB, DdsTssE1FB,  zerinfA,        zerinfA,       zerinfA   ];
+       [DnTdsE1FB, DssTdsE1FB, DdsTdsE1FB,  zerinfA,        zerinfA,       zerinfA   ];    
+       [zerinfB,    zerinfB,   zerinfB,     DnTnE2FB,       DssTnE2FB,     DdsTnE2FB ]; %stress infs, only the influence on freeboundary
+       [zerinfB,    zerinfB,   zerinfB,     DnTssE2FB,      DssTssE2FB,    DdsTssE2FB];
        [zerinfB,    zerinfB,   zerinfB,     DnTdsE2FB,      DssTdsE2FB,    DdsTdsE2FB]];
     
     clear DnTnE1IF DnTssE1IF DnTdsE1IF DssTnE1IF DssTssE1IF DssTdsE1IF DdsTnE1IF DdsTssE1IF DdsTdsE1IF zerinfSm
@@ -272,7 +272,8 @@ end
     D = A\B;
 
     end
-    
+
+        
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Grabbing the data back
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -280,38 +281,33 @@ end
 
     %  Extract displacements from D vector into subvectors
 if Option=='B' || Option=='E'     
-    TensileSlipDisp = D(1:NUM,:);         
-    StrikeSlipDisp = D((NUM+1):(2*NUM),:);
-    DipSlipDisp = D(((2*NUM)+1):(3*NUM),:);
+
+    [ TensileSlipDisp,StrikeSlipDisp,DipSlipDisp ] = ExtractArraysFromVector( D );
+    
 elseif Option=='D'      
-    StrikeSlipDisp = D(1:NUM,:);        
-    DipSlipDisp = D((NUM+1):(2*NUM),:);
+    
+    [ StrikeSlipDisp,DipSlipDisp ] = ExtractArraysFromVector( D );
     TensileSlipDisp=zeros(size(StrikeSlipDisp));
+    
 elseif Option=='F'  
-    TensileSlipDispE1   = D(1:NUME1,:);                          %Elastic1
-    StrikeSlipDispE1    = D((NUME1+1):(2*NUME1),:);              %Elastic1
-    DipSlipDispE1       = D(((2*NUME1)+1):(3*NUME1),:);          %Elastic1
-    TensileSlipDispE2   = D((3*NUME1)+1:(3*NUME1)+NUME2,:);      %Elastic2 
-    StrikeSlipDispE2    = D((3*NUME1)+1+NUME2:(3*NUME1)+2*NUME2,:);     %2     
-    DipSlipDispE2       = D((3*NUME1)+1+(2*NUME2):end,:);        %Elastic1   
+    
+    DE1=D(1:(3*NUME1),:);
+    DE2=D((3*NUME1)+1:end,:);
+    [ TensileSlipDispE1,StrikeSlipDispE1,DipSlipDispE1 ] = ExtractArraysFromVector( DE1 );
+    [ TensileSlipDispE2,StrikeSlipDispE2,DipSlipDispE2 ] = ExtractArraysFromVector( DE2 );
     TensileSlipDisp     =[TensileSlipDispE1;TensileSlipDispE2];
     StrikeSlipDisp      =[StrikeSlipDispE1;StrikeSlipDispE2];     
     DipSlipDisp         =[DipSlipDispE1;DipSlipDispE2];
     
 elseif Option=='C' 
-    %passing results into friction solver
+    %friction solver
      [TensileSlipDisp,StrikeSlipDisp,DipSlipDisp] = LinearCompFrictionSolver3d(D,A,Sf,Mu,NUM,Tnn,Tss,Tds);
 
 end
     clear A B
                                                
 if Option=='E'
-    Pxx=0;
-    Pyy=0;
-    Pzz=0;
-    Pxy=0;
-    Pxz=0;
-    Pyz=0;
+[Pxx,Pyy,Pzz,Pxy,Pxz,Pyz ] = CreateBlankVars;        
 end
 
 
