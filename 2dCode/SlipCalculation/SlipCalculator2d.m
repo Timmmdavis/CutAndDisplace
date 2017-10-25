@@ -54,9 +54,7 @@ Pxx,Pyy,Pxy,Tn,Ts,nu,E,halfspace,NUM,NormAng,strain,Fdisp,Mu,Sf,Option)
 if Option=='B' || Option=='C' || Option=='D' || Option=='F'
 
      %for the imported stress making sure these are col vectors
-    [ Pxx ] = RowVecToCol( Pxx );
-    [ Pyy ] = RowVecToCol( Pyy );
-    [ Pxy ] = RowVecToCol( Pxy );
+    [ Pxx,Pyy,Pxy ] = RowVecToCol( Pxx,Pyy,Pxy );
 
     if strain==1
         %Hooke's law strain to stress
@@ -100,13 +98,13 @@ if Option~='F' %not inhomo calc
 else %Inhomo calc
 
     [DsTnE1FB,DsTsE1FB,DnTnE1FB,DnTsE1FB,DsTnE1IF,DsTsE1IF,DnTnE1IF,DnTsE1IF,...
-    Ds_UxE1FB,Ds_UyE1FB,Dn_UxE1FB,Dn_UyE1FB,Ds_UxE1IF,Ds_UyE1IF,Dn_UxE1IF,Dn_UyE1IF,...
-    DsTnE2FB,DsTsE2FB,DnTnE2FB,DnTsE2FB,DsTnE2IF,DsTsE2IF,DnTnE2IF,DnTsE2IF,...
-    Ds_UxE2FB,Ds_UyE2FB,Dn_UxE2FB,Dn_UyE2FB,Ds_UxE2IF,Ds_UyE2IF,Dn_UxE2IF,Dn_UyE2IF,...
-    NUME1,NUME2,nuE1,EE1,nuE2,EE2,...
-    FreeBoundary1,FreeBoundary2,FdispE1,FdispE2,FreeBoundaries,FixedDisps]...
-    = InhomogeneousInfluenceBuilder2d...
-    (x,y,xe,ye,a,Beta,nu,E,halfspace,NormAng,Fdisp);
+     Ds_UxE1FB,Ds_UyE1FB,Dn_UxE1FB,Dn_UyE1FB,Ds_UxE1IF,Ds_UyE1IF,Dn_UxE1IF,Dn_UyE1IF,...
+     DsTnE2FB,DsTsE2FB,DnTnE2FB,DnTsE2FB,DsTnE2IF,DsTsE2IF,DnTnE2IF,DnTsE2IF,...
+     Ds_UxE2FB,Ds_UyE2FB,Dn_UxE2FB,Dn_UyE2FB,Ds_UxE2IF,Ds_UyE2IF,Dn_UxE2IF,Dn_UyE2IF,...
+     NUME1,NUME2,nuE1,EE1,nuE2,EE2,...
+     FreeBoundary1,FreeBoundary2,FdispE1,FdispE2,FreeBoundaries,FixedDisps]...
+     = InhomogeneousInfluenceBuilder2d...
+     (x,y,xe,ye,a,Beta,nu,E,halfspace,NormAng,Fdisp);
       
 end
     
@@ -196,23 +194,23 @@ else %We need to do this for both elastics
     Ts(FD)=0;
 end    
     
-if Option=='B' || Option=='E'     
+if Option=='B' || Option=='E' || Option=='C'   
+  
     Ats = [-DnTn,-DsTn];
     Ash = [-DnTs,-DsTs];
     clear DsTs DnTs DsTn DnTn                                              
     A=  [Ats;Ash];
     clear Ash Ats 
-elseif Option=='C'      
-    Ats = [-DnTn,-DsTn]; 
-    Ash = [-DnTs,-DsTs]; 
-    clear DsTs DnTs DsTn DnTn                                              
-    A=  [Ats;Ash];
-    clear Ash Ats 
-elseif Option=='D'                                                
+	
+elseif Option=='D'      
+                                          
     A = [-DsTn;-DsTs];
+	
 elseif Option=='F'         
+
     zerinfA=zeros(size(DsTnE1FB,1),size(Dn_UyE2IF,2));%Sz=1=(Rows down),2=(Cols across)
     zerinfB=zeros(size(DnTnE2FB,1),size(DsTsE1FB,2)); 
+	
     %Setting up the matrix
     A=   [[DnTnE1IF,    DsTnE1IF,   -DnTnE2IF,   -DsTnE2IF ]; %stress infs that must be satisfied at interface
           [DnTsE1IF,    DsTsE1IF,   -DnTsE2IF,   -DsTsE2IF ];
@@ -222,26 +220,24 @@ elseif Option=='F'
           [DnTsE1FB,    DsTsE1FB,    zerinfA,     zerinfA  ];
           [zerinfB,     zerinfB,     DnTnE2FB,    DsTnE2FB ]; %stress infs, only the influence on freeboundary
           [zerinfB,     zerinfB,     DnTsE2FB,    DsTsE2FB ]];      
+		  
     clear DsTnE1IF DsTsE1IF DnTnE1IF DnTsE1IF DsTnE2IF DsTsE2IF DnTnE2IF DnTsE2IF zerinfA
     clear Ds_UxE1IFDs_UyE1IFDn_UxE1IFDn_UyE1IF Ds_UxE2IFDs_UyE2IFDn_UxE2IFDn_UyE2IF
     clear DsTnE1FB DsTsE1FB DnTnE1FB DnTsE1FB
     clear zerinfB DnTnE2FB DnTsE2FB DsTnE2FB DsTsE2FB zerinfB E2FB    
+	
 end
    
-    %checking the created influence matrix
-    %[ A ] = InfMatrixCheck( A );
-    %INF MAT CHECK OFF!
+    [ A ] = InfMatrixCheck( A );  
+     %disp('inf check off, line 243 in *slipcalculator3d*, put back on'); 
     
     %Creating vector of tractions at every element
 if Option=='F'
     zer=zeros(size(Dn_UyE2IF,1),1);
     contvec=[zer;zer;zer;zer];
     B=-[contvec;Tn(FreeBoundary1);Ts(FreeBoundary1);Tn(FreeBoundary2);Ts(FreeBoundary2)];
-
-elseif Option=='B' || Option=='D' || Option=='E'  
+else
     B = [Tn;Ts];  
-elseif Option=='C'
-    B = [Tn;Ts]; 
 end
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -294,8 +290,6 @@ end
     clear A B
 
 if Option=='E'
-    Pxx=0;
-    Pyy=0;
-    Pxy=0;
+	[Pxx,Pyy,Pxy ] = CreateBlankVars; 
 end
 end %end entire func

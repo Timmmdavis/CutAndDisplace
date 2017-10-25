@@ -41,13 +41,8 @@ Tnn_i,Tss_i,Tds_i,mu,lambda,nu,P1,P2,P3,halfspace,FaceNormalVector,Fdisp,strain,
 if Option=='B' || Option=='C' || Option=='D' || Option=='F'
 
     %for the imported stress making sure these are col vectors
-    [ Pxx ] = RowVecToCol( Pxx );
-    [ Pyy ] = RowVecToCol( Pyy );
-    [ Pzz ] = RowVecToCol( Pzz );
-    [ Pxy ] = RowVecToCol( Pxy );
-    [ Pxz ] = RowVecToCol( Pxz );
-    [ Pyz ] = RowVecToCol( Pyz );
-
+    [ Pxx,Pyy,Pzz,Pxy,Pxz,Pyz ] = RowVecToCol( Pxx,Pyy,Pzz,Pxy,Pxz,Pyz );
+    
     if strain==1
         %Converting the input strain boundary condition on every faults midpoint to stress
         %Hooke's law, Equation 7.131 and 7.132 in David Pollards Book.  
@@ -93,17 +88,17 @@ if Option~='F'  %any option but inhomo
 else %Inhomo calc
     
     [DnTnE1FB,DnTssE1FB,DnTdsE1FB,DssTnE1FB,DssTssE1FB,DssTdsE1FB,DdsTnE1FB,DdsTssE1FB,DdsTdsE1FB,...
-    DnTnE1IF,DnTssE1IF,DnTdsE1IF,DssTnE1IF,DssTssE1IF,DssTdsE1IF,DdsTnE1IF,DdsTssE1IF,DdsTdsE1IF,...
-    Dn_dxE1FB,Dn_dyE1FB,Dn_dzE1FB,Dss_dxE1FB,Dss_dyE1FB,Dss_dzE1FB,Dds_dxE1FB,Dds_dyE1FB,Dds_dzE1FB,...
-    Dn_dxE1IF,Dn_dyE1IF,Dn_dzE1IF,Dss_dxE1IF,Dss_dyE1IF,Dss_dzE1IF,Dds_dxE1IF,Dds_dyE1IF,Dds_dzE1IF,...
-    DnTnE2FB,DnTssE2FB,DnTdsE2FB,DssTnE2FB,DssTssE2FB,DssTdsE2FB,DdsTnE2FB,DdsTssE2FB,DdsTdsE2FB,...
-    DnTnE2IF,DnTssE2IF,DnTdsE2IF,DssTnE2IF,DssTssE2IF,DssTdsE2IF,DdsTnE2IF,DdsTssE2IF,DdsTdsE2IF,...
-    Dn_dxE2FB,Dn_dyE2FB,Dn_dzE2FB,Dss_dxE2FB,Dss_dyE2FB,Dss_dzE2FB,Dds_dxE2FB,Dds_dyE2FB,Dds_dzE2FB,...
-    Dn_dxE2IF,Dn_dyE2IF,Dn_dzE2IF,Dss_dxE2IF,Dss_dyE2IF,Dss_dzE2IF,Dds_dxE2IF,Dds_dyE2IF,Dds_dzE2IF,...
-    NUME1,NUME2,nuE1,muE1,nuE2,muE2,...
-    FreeBoundary1,FreeBoundary2,FdispE1,FdispE2,FreeBoundaries,FixedDisps]...
-    = InhomogeneousInfluenceBuilder3d...
-    (MidPoint,P1,P2,P3,mu,lambda,FaceNormalVector,halfspace,nu,Fdisp);
+     DnTnE1IF,DnTssE1IF,DnTdsE1IF,DssTnE1IF,DssTssE1IF,DssTdsE1IF,DdsTnE1IF,DdsTssE1IF,DdsTdsE1IF,...
+     Dn_dxE1FB,Dn_dyE1FB,Dn_dzE1FB,Dss_dxE1FB,Dss_dyE1FB,Dss_dzE1FB,Dds_dxE1FB,Dds_dyE1FB,Dds_dzE1FB,...
+     Dn_dxE1IF,Dn_dyE1IF,Dn_dzE1IF,Dss_dxE1IF,Dss_dyE1IF,Dss_dzE1IF,Dds_dxE1IF,Dds_dyE1IF,Dds_dzE1IF,...
+     DnTnE2FB,DnTssE2FB,DnTdsE2FB,DssTnE2FB,DssTssE2FB,DssTdsE2FB,DdsTnE2FB,DdsTssE2FB,DdsTdsE2FB,...
+     DnTnE2IF,DnTssE2IF,DnTdsE2IF,DssTnE2IF,DssTssE2IF,DssTdsE2IF,DdsTnE2IF,DdsTssE2IF,DdsTdsE2IF,...
+     Dn_dxE2FB,Dn_dyE2FB,Dn_dzE2FB,Dss_dxE2FB,Dss_dyE2FB,Dss_dzE2FB,Dds_dxE2FB,Dds_dyE2FB,Dds_dzE2FB,...
+     Dn_dxE2IF,Dn_dyE2IF,Dn_dzE2IF,Dss_dxE2IF,Dss_dyE2IF,Dss_dzE2IF,Dds_dxE2IF,Dds_dyE2IF,Dds_dzE2IF,...
+     NUME1,NUME2,nuE1,muE1,nuE2,muE2,...
+     FreeBoundary1,FreeBoundary2,FdispE1,FdispE2,FreeBoundaries,FixedDisps]...
+     = InhomogeneousInfluenceBuilder3d...
+     (MidPoint,P1,P2,P3,mu,lambda,FaceNormalVector,halfspace,nu,Fdisp);
     
 end
 
@@ -201,15 +196,17 @@ else %We need to do this for both elastics
 end       
     
 if Option=='B' || Option=='E' || Option=='C'
-    Atn = [-DnTn,  -DssTn, -DdsTn]; 
+
+    Atn  = [-DnTn,  -DssTn, -DdsTn ]; 
     Atss = [-DnTss, -DssTss,-DdsTss];
     Atds = [-DnTds, -DssTds,-DdsTds];
     clear DnTn DssTn DdsTn DnTssDssTss DdsTss DnTds DssTds DdsTds
     A= [Atn;Atss;Atds];  %Concatenate ready for equation 
     clear Atn Atss Atds
 
-elseif Option=='D'                                                
-    Atn =  [-DssTn, -DdsTn]; 
+elseif Option=='D'             
+                                   
+    Atn =  [-DssTn, -DdsTn ]; 
     Atss = [-DssTss,-DdsTss];
     Atds = [-DssTds,-DdsTds];
     clear DnTn DssTn DdsTn DnTssDssTss DdsTss DnTds DssTds DdsTds
@@ -217,6 +214,7 @@ elseif Option=='D'
     clear Atn Atss Atds
     
 elseif Option=='F'         
+
     zerinfA=zeros(size(DnTnE1FB,1),size(Dn_dzE2IF,2)); %Sz=1=(Rows down),2=(Cols across)
     zerinfB=zeros(size(DnTnE2FB,1),size(Dn_dzE1IF,2)); 
     
@@ -268,9 +266,7 @@ end
     %If not we are using a dense square matrix, this is faster if square as we
     %do not need to spend time allocating this as sparse. 
     else
-
     D = A\B;
-
     end
 
         
@@ -307,7 +303,7 @@ end
     clear A B
                                                
 if Option=='E'
-[Pxx,Pyy,Pzz,Pxy,Pxz,Pyz ] = CreateBlankVars;        
+	[Pxx,Pyy,Pzz,Pxy,Pxz,Pyz ] = CreateBlankVars;        
 end
 
 
