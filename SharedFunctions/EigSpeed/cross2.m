@@ -3,8 +3,8 @@ function c = cross2(a, b, idA, idB)
 %   This function exploits the BAXFUN engine (MATLAB Central, file #23084),
 %   which enables multiple products and array expansion (AX).
 %
-% Copyright (c) 2009, Paolo de Leva
-% All rights reserved.
+%   Copyright (c) 2009, Paolo de Leva
+%   All rights reserved.
 %
 %   When A and B are 3-element vectors (e.g. 3×1, 1×3, or 1×1×3 arrays):
 %

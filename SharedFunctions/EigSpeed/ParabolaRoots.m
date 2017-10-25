@@ -1,6 +1,9 @@
 function roots = ParabolaRoots(varargin)
 % function roots = ParabolaRoots(P)
 %
+% Copyright (c) 2010, Bruno Luong
+% All rights reserved.
+%
 % Find roots of second order polynomials
 %
 % INPUT

@@ -15,7 +15,7 @@ function [S1,S2,S1dir,S2dir]=EigCalc2dSpeed(Sxx,Syy,Sxy)
 %Calclating 2d strain eigenValues
 %[E1,E2,E1dir,E2dir]=EigCalc2d(Exx,Eyy,Exy);
 
-%   Copyright 2017, Tim Davis, The University of Aberdeen
+%   Copyright 2017, Tim Davis, The University of Potsdam
 
 %Preallocating array
 n = numel(Sxx);
@@ -87,6 +87,10 @@ S2dir=[S1dir(2,:),-S1dir(1,:)];
 
 function D = eig2(A)
 % function D = eig2(A)
+%
+% Copyright (c) 2010, Bruno Luong
+% All rights reserved.
+%
 %
 % Compute in one shot the eigen-values of multiples (2 x 2) matrices
 %

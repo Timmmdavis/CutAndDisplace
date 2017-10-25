@@ -13,6 +13,8 @@ function [S1,S2,S3,S1dir,S2dir,S3dir] = EigCalc3dSpeed(Sxx,Syy,Szz,Sxy,Sxz,Syz)
 %[S1,S2,S3,S1dir,S2dir,S3dir] = EigCalc3d(Sxx(:),Syy(:),Szz(:),Sxy(:),Sxz(:),Syz(:));
 %Calclating 2d strain eigenValues
 %[E1,E2,E3,E1dir,E2dir,E3dir] = EigCalc3d(Exx(:),Eyy(:),Ezz(:),Exy(:),Exz(:),Eyz(:));
+
+
 %   Copyright 2017, Tim Davis, The University of Potsdam
 
 %Preallocating array
