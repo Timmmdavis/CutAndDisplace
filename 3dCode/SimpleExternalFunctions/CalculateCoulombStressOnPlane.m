@@ -27,33 +27,31 @@ CosAz=FaceNormalVector(:,3);
 %Calculating traction on second surface 
 [ Tx,Ty,Tz ] = TractionVectorCartesianComponents3d(  Sxx,Syy,Szz,Sxy,Sxz,Syz,CosAx,CosAy,CosAz );
 
-% %Total traction vector
-T=sqrt((Tx.^2)+(Ty.^2)+(Tz.^2)); %TractionVectorOnPlane
+%Calculates the directions of the dipslip and ss directions
+[ StrikeSlipCosine,DipSlipCosine ] = CalculateDSandSSDirs( FaceNormalVector,CosAx,CosAy,CosAz );
 
-%Pollard and fletcher Book Eq 6.53 %Max Shear stress
+%TractionStrikeSlip
+[ Tss ] = CalculateTractionInChosenDirection3d( Tx,Ty,Tz,CosAx,CosAy,CosAz,StrikeSlipCosine );
+%TractionStrikeSlip
+[ Tds ] = CalculateTractionInChosenDirection3d( Tx,Ty,Tz,CosAx,CosAy,CosAz,DipSlipCosine );
+
+%Cart vector components of the strike slip traction 
+TssCart=bsxfun(@times,StrikeSlipCosine,Tss);
+%Cart vector components of the dip slip traction 
+TdsCart=bsxfun(@times,DipSlipCosine,Tds);
+
+%3D vector addition of these Cart components (normalised as we want the
+%vector). This is the max shear vector direction.
+TsVector=normr(TssCart+TdsCart);
+
+%Total traction vector on the plane
+T=sqrt((Tx.^2)+(Ty.^2)+(Tz.^2)); 
+
+%Max Shear stress %Pollard and Fletcher Book Eq 6.53 
 Ts_maxShr=sqrt((abs(T).^2)-(abs(Tnn).^2));
 
-%CoulombShearStress %Pollard and fletcher Book Eq  9.40 
-CSS=abs(Ts_maxShr)+(Mu.*Tnn)-Cohesion;
-
-%Creating and drawing Shearing traction vector
-TsVector=zeros(size(FaceNormalVector));
-
-%Equations below taken in part from
-%Professor Ramón Arrowsmith's online lectures
-%"arrowsmith510.asu.edu/TheLectures/Lecture16/Lecture16_3Dstress.ppt"
-%Now for the shear traction; use the McKenzie construction
-for i=1:size(FaceNormalVector(:,1))
-N=FaceNormalVector(i,:)';
-T=[Tx(i,:);Ty(i,:);Tz(i,:)];
-B = cross(T,N);         %vector normal to the plane containing T and N
-Ts = cross(N,B);        %shear traction direction
-Ts_mag=Ts_maxShr(i);        %Shear traction magnitude
-Ts(1) = Ts(1)./Ts_mag;  %X dir
-Ts(2) = Ts(2)./Ts_mag;  %Y dir
-Ts(3) = Ts(3)./Ts_mag;  %Z dir
-TsVector(i,:)=Ts';
-end
+%Function to calculate CSC
+[ CSS ] = CalculateCoulombShearStress( Tnn,Ts_maxShr,Mu,Cohesion );
 
 %Drawing total traction and normal stress
 figure;quiver3(X,Y,Z,Tx(:,1),Ty(:,1),Tz(:,1))

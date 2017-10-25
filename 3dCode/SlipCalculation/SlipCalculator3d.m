@@ -306,38 +306,5 @@ if Option=='E'
 	[Pxx,Pyy,Pzz,Pxy,Pxz,Pyz ] = CreateBlankVars;        
 end
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Calculating and plotting the traction vectors.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% %Total traction vector
-% T=sqrt((Tx.^2)+(Ty.^2)+(Tz.^2)); %Bars, see Pollard Book Eq 6.53,http://math.stackexchange.com/questions/586245/what-does-double-vertical-line-means-in-linear-algebra/586375
-% %Redef normal stress
-% Tn=NormalTraction;
-% %Trig to find shear
-% tosqrt=(T.^2)-(Tn.^2);
-% TsTrig=sqrt(abs(tosqrt));
-% 
-% %Creating and drawing Shearing traction vector
-% ShearToFill=zeros(size(FaceNormalVector));
-% for i=1:size(FaceNormalVector(:,1));
-% N=FaceNormalVector(i,:)';
-% T=[Tx(i,:);Ty(i,:);Tz(i,:)];
-% %Equations below taken in part from
-% %''arrowsmith510.asu.edu/TheLectures/Lecture16/Lecture16_3Dstress.ppt''
-% %Now for the shear traction; use the McKenzie construction
-% B = cross(T,N); %vector normal to the plane containing T and N
-% Ts = cross(N,B); %shear traction direction
-% Ts_mag =  sqrt(Ts(1)^2 + Ts(2)^2 + Ts(3)^2);%TsTrig(i); 
-% Ts(1) = Ts(1)./Ts_mag;
-% Ts(2) = Ts(2)./Ts_mag;
-% Ts(3) = Ts(3)./Ts_mag;
-% ShearToFill(i,:)=Ts';
-% end
-% figure;quiver3(MidPoint(:,1),MidPoint(:,2),MidPoint(:,3),ShearToFill(:,1),ShearToFill(:,2),ShearToFill(:,3))
-% xlabel('x'); ylabel('y'); axis('equal'); title('Shear Traction Vector');
-% figure;quiver3(MidPoint(:,1),MidPoint(:,2),MidPoint(:,3),Tx(:,1),Ty(:,1),Tz(:,1))
-% xlabel('x'); ylabel('y'); axis('equal'); title('Total Traction Vector');
-
-end %end entire func
+end %end func
 

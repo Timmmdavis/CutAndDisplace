@@ -21,11 +21,11 @@ fps=15; %frames per second (24 default)
 CreateVid=1; %1 for video, 0 for images (can be used to create a gif and works in octave). 
 
 %Scaling displacement for animation
-Scale=1; %Scale the displacement so its bigger or smaller. 1 is the same
-mo=0.5; %the original seperation between the front and back faces, not
+Scale=500; %Scale the displacement so its bigger or smaller. 1 is the same
+mo=0.1; %the original seperation between the front and back faces, not
 %needed if there is tensile displacement but for a shear fault it makes 
 %a better animation. Put to 0 if not wanted
-pad=0.5;%Adding some paddding to your axis limits if needed
+pad=0.1;%Adding some paddding to your axis limits if needed
 Axisoff=1; %turning of the axes
 
 %%%%
@@ -37,7 +37,7 @@ figure;
 
 [ StrikeSlipCosine,DipSlipCosine ] = CalculateDSandSSDirs( FaceNormalVector );
 
-
+%Calculate magnitude of displacement vectors (Cart coords)
 SS_XYZ=(bsxfun(@times,StrikeSlipDisp,StrikeSlipCosine));
 DS_XYZ=(bsxfun(@times,DipSlipDisp,DipSlipCosine));
 TS_XYZ=(bsxfun(@times,TensileSlipDisp,FaceNormalVector));
@@ -61,20 +61,11 @@ PointsNew2=reshape(PointsNew.',[],sz)'; %each row now contains t1XYZ t2XYZ t2XYZ
 
 %Calculating the points of the triangles as these move, this is along the
 %normal direction
-N=3;        %for logical indexing the XYZ
-PointsNewMvX=(bsxfun(@plus,PointsNew2(:,1:N:end),(FaceNormalVector(:,1).*mo))); 
-PointsNewMvY=(bsxfun(@plus,PointsNew2(:,2:N:end),(FaceNormalVector(:,2).*mo))); 
-PointsNewMvZ=(bsxfun(@plus,PointsNew2(:,3:N:end),(FaceNormalVector(:,3).*mo))); 
-PointsNewP=[reshape(PointsNewMvX.',1,[])',reshape(PointsNewMvY.',1,[])',reshape(PointsNewMvZ.',1,[])'];
-PointsNew2P=reshape(PointsNewP.',[],sz)'; %each row now contains t1XYZ t2XYZ t2XYZ etc
-%Calculating the points of the triangles as these move, this is opposite to
-%the normal direction (and the DS and SS dir cosines), if needed you can draw these
-%in the func that creates them.
-PointsNewMvX=(bsxfun(@minus,PointsNew2(:,1:N:end),(FaceNormalVector(:,1).*mo))); 
-PointsNewMvY=(bsxfun(@minus,PointsNew2(:,2:N:end),(FaceNormalVector(:,2).*mo))); 
-PointsNewMvZ=(bsxfun(@minus,PointsNew2(:,3:N:end),(FaceNormalVector(:,3).*mo))); 
-PointsNewN=[reshape(PointsNewMvX.',1,[])',reshape(PointsNewMvY.',1,[])',reshape(PointsNewMvZ.',1,[])'];
-PointsNew2N=reshape(PointsNewN.',[],sz)'; %each row now contains t1XYZ t2XYZ t2XYZ etc
+[PointsNew2P]=DisplaceTris(PointsNew2,[FaceNormalVector(:,1).*mo,FaceNormalVector(:,2).*mo,FaceNormalVector(:,3).*mo]);
+PointsNew2P=reshape(PointsNew2P.',[],sz)'; %each row now contains t1XYZ t2XYZ t2XYZ etc
+%opposite to the normal direction
+[PointsNew2N]=DisplaceTris(PointsNew2,[-FaceNormalVector(:,1).*mo,-FaceNormalVector(:,2).*mo,-FaceNormalVector(:,3).*mo]);
+PointsNew2N=reshape(PointsNew2N.',[],sz)'; %each row now contains t1XYZ t2XYZ t2XYZ etc
 
 trisurf(TrianglesNew,PointsNew2(:,1),PointsNew2(:,2),PointsNew2(:,3),'FaceColor','m');
 xlabel('x'); ylabel('y');axis('equal');
@@ -84,33 +75,21 @@ zlS=zlim;
 
 clf('reset')
 %Getting final state, want to set the axes to this
-PointsNewMvX=(bsxfun(@plus,PointsNew2P(:,1:N:end),(TotalMovementXYZ(:,1)))); 
-PointsNewMvY=(bsxfun(@plus,PointsNew2P(:,2:N:end),(TotalMovementXYZ(:,2)))); 
-PointsNewMvZ=(bsxfun(@plus,PointsNew2P(:,3:N:end),(TotalMovementXYZ(:,3)))); 
-PointsNew3=[reshape(PointsNewMvX.',1,[])',reshape(PointsNewMvY.',1,[])',reshape(PointsNewMvZ.',1,[])'];
-PointsNewMvX=(bsxfun(@minus,PointsNew2N(:,1:N:end),(TotalMovementXYZ(:,1)))); 
-PointsNewMvY=(bsxfun(@minus,PointsNew2N(:,2:N:end),(TotalMovementXYZ(:,2)))); 
-PointsNewMvZ=(bsxfun(@minus,PointsNew2N(:,3:N:end),(TotalMovementXYZ(:,3)))); 
-PointsNew3N=[reshape(PointsNewMvX.',1,[])',reshape(PointsNewMvY.',1,[])',reshape(PointsNewMvZ.',1,[])'];
+[PointsNew3]=DisplaceTris(PointsNew2P,TotalMovementXYZ);
+[PointsNew3N]=DisplaceTris(PointsNew2P,-TotalMovementXYZ);
+
+%Draw this
 trisurf(TrianglesNew,PointsNew3(:,1),PointsNew3(:,2),PointsNew3(:,3));
 hold on
 trisurf(TrianglesNew,PointsNew3N(:,1),PointsNew3N(:,2),PointsNew3N(:,3),'FaceColor','m');
 xlabel('x'); ylabel('y');axis('equal');
-xlF=xlim;%final axis limits 
-ylF=ylim;
-zlF=zlim;
-xlB=[xlS;xlF];
-ylB=[ylS;ylF];
-zlB=[zlS;zlF];
-
+%final axis limits 
+xlF=xlim;		ylF=ylim;		zlF=zlim;
+xlB=[xlS;xlF];	ylB=[ylS;ylF];	zlB=[zlS;zlF];
 xl=[min(xlB(:,1))-pad,max(xlB(:,2))+pad];
 yl=[min(ylB(:,1))-pad,max(ylB(:,2))+pad];
 zl=[min(zlB(:,1))-pad,max(zlB(:,2))+pad];
-xlim(xl)
-ylim(yl)
-zlim(zl)
-
-
+xlim(xl);		ylim(yl);		zlim(zl)
 if Axisoff==1
 axis off; %Turn of the axes
 set(gcf,'NumberTitle','off')%hide title
@@ -150,18 +129,10 @@ for i=1:sz
 
 %Calculating the points of the triangles as these move, this is along the
 %normal direction
-PointsNewMvX=(bsxfun(@plus,PointsNew2P(:,1:N:end),(TotalMovementXYZ(:,1).*inv(i)))); 
-PointsNewMvY=(bsxfun(@plus,PointsNew2P(:,2:N:end),(TotalMovementXYZ(:,2).*inv(i)))); 
-PointsNewMvZ=(bsxfun(@plus,PointsNew2P(:,3:N:end),(TotalMovementXYZ(:,3).*inv(i)))); 
-PointsNew3=[reshape(PointsNewMvX.',1,[])',reshape(PointsNewMvY.',1,[])',reshape(PointsNewMvZ.',1,[])'];
+[PointsNew3]=DisplaceTris(PointsNew2P,[TotalMovementXYZ(:,1).*inv(i),TotalMovementXYZ(:,2).*inv(i),TotalMovementXYZ(:,3).*inv(i)]);
+%Neg Dir
+[PointsNew3N]=DisplaceTris(PointsNew2N,[TotalMovementXYZ(:,1).*-inv(i),TotalMovementXYZ(:,2).*-inv(i),TotalMovementXYZ(:,3).*-inv(i)]);
 
-%Calculating the points of the triangles as these move, this is opposite to
-%the normal direction (and the DS and SS dir cosines), if needed you can draw these
-%in the func that creates them.
-PointsNewMvX=(bsxfun(@minus,PointsNew2N(:,1:N:end),(TotalMovementXYZ(:,1).*inv(i)))); 
-PointsNewMvY=(bsxfun(@minus,PointsNew2N(:,2:N:end),(TotalMovementXYZ(:,2).*inv(i)))); 
-PointsNewMvZ=(bsxfun(@minus,PointsNew2N(:,3:N:end),(TotalMovementXYZ(:,3).*inv(i)))); 
-PointsNew3N=[reshape(PointsNewMvX.',1,[])',reshape(PointsNewMvY.',1,[])',reshape(PointsNewMvZ.',1,[])'];
 
 %Restting the figure on each loop
 clf('reset')
@@ -179,8 +150,7 @@ ylim(yl)
 zlim(zl)
 title('Animation of triangle displacement'),
 
-titlesz=25;
-fntsz=21;
+titlesz=25;fntsz=21;
 ChangeFontSizes(fntsz,titlesz);
 
 %# set previous Camera* properties
@@ -192,9 +162,6 @@ axis off; %Turn of the axes
 set(gcf,'NumberTitle','off') %hide title
 end
 
-%# possibly adjust them for the current frame
-...
-
 %# save all Camera* properties
 g.CameraPosition     = get(gca, 'CameraPosition');  
 g.CameraTarget       = get(gca, 'CameraTarget');    
@@ -205,8 +172,6 @@ g.CameraViewAngle    = get(gca, 'CameraViewAngle');
 drawnow
 %Pausing so the timing is not dependant on the machine
 pause(0.005)
-
-
 
 if Save==1
 
@@ -281,3 +246,10 @@ clear Save fps Scale mo StrikeSlipCosine DipSlipCosine SS_XYZ DS_XYZ TS_XYZ Tota
 clear PointsNew sz TrianglesNew PointsNew2 N PointsNewMvX PointsNewMvY PointsNewMvZ PointsNewP PointsNew2P PointsNewN PointsNew2N
 clear test g v M hAxes inv PointsNew3 PointsNew3N
 
+function [PointsNewLoc]=DisplaceTris(Points,Movement)
+N=3;
+PointsNewMvX=bsxfun(@plus,Points(:,1:N:end),(Movement(:,1))); 
+PointsNewMvY=bsxfun(@plus,Points(:,2:N:end),(Movement(:,2))); 
+PointsNewMvZ=bsxfun(@plus,Points(:,3:N:end),(Movement(:,3))); 
+PointsNewLoc=[reshape(PointsNewMvX.',1,[])',reshape(PointsNewMvY.',1,[])',reshape(PointsNewMvZ.',1,[])'];
+end
