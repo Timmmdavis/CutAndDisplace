@@ -247,6 +247,7 @@ clear PointsNew sz TrianglesNew PointsNew2 N PointsNewMvX PointsNewMvY PointsNew
 clear test g v M hAxes inv PointsNew3 PointsNew3N
 
 function [PointsNewLoc]=DisplaceTris(Points,Movement)
+%Takes inputs and moves each triangles points by the amount specified in the 3*3 vector 'Movement'
 N=3;
 PointsNewMvX=bsxfun(@plus,Points(:,1:N:end),(Movement(:,1))); 
 PointsNewMvY=bsxfun(@plus,Points(:,2:N:end),(Movement(:,2))); 
