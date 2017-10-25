@@ -7,7 +7,9 @@ function [DssExx,DssEyy,DssEzz,DssExy,DssExz,DssEyz,DdsExx,DdsEyy,DdsEzz,DdsExy,
 %   Copyright 2017, Tim Davis, The University of Potsdam
 
 %Would be good to have a memory check here! 
-
+%creating the size
+NUM = size(X(:),1);
+NUM2 = size(P1(:,1),1);
 
 Stressinfmatrix = zeros(NUM*NUM2,6); 
 %Stressinfmatrix = zeros(NUM*NUM,6,'single'); disp('influence matrices in CalculateInfluencematrices3d are currently single precision')
@@ -27,7 +29,7 @@ Ts=0;
 StringHS='1/3 CalculatingDssInfMatrixHS';
 StringFS='1/3 CalculatingDssInfMatrixFS';
 %Passing to internal function at the base of the file
-[Dssinfmatrix]=CreateCoeffsLoop3d(Stressinfmatrix,...
+[Dssinfmatrix]=CreateCoeffsLoop3d(Stressinfmatrix,[],...
 NUM,X,Y,Z,P1,P2,P3,Ss,Ds,Ts,mu,lambda,nu,halfspace,FD,StringHS,StringFS);
 
 %Runs the script to create strain at every faults midpoint from a Dds
@@ -42,7 +44,7 @@ Ts=0;
 StringHS='2/3 CalculatingDdsInfMatrixHS';
 StringFS='2/3 CalculatingDdsInfMatrixFS';
 %Passing to internal function at the base of the file
-[Ddsinfmatrix]=CreateCoeffsLoop3d(Stressinfmatrix,...
+[Ddsinfmatrix]=CreateCoeffsLoop3d(Stressinfmatrix,[],...
 NUM,X,Y,Z,P1,P2,P3,Ss,Ds,Ts,mu,lambda,nu,halfspace,FD,StringHS,StringFS);
 
 %Runs the script to create strain at every faults midpoint from a Dn
@@ -57,7 +59,7 @@ Ts=1;
 StringHS='3/3 CalculatingDnInfMatrixHS';
 StringFS='3/3 CalculatingDnInfMatrixFS';
 %Passing to internal function at the base of the file
-[Dninfmatrix]=CreateCoeffsLoop3d(Stressinfmatrix,...
+[Dninfmatrix]=CreateCoeffsLoop3d(Stressinfmatrix,[],...
 NUM,X,Y,Z,P1,P2,P3,Ss,Ds,Ts,mu,lambda,nu,halfspace,FD,StringHS,StringFS);
 
 clear halfspace P1 P2 P3 Ds Ss Ts X Y Z first i last Stressinfmatrix Dispinfmatrix

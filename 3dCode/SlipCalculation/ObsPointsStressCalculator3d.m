@@ -26,7 +26,7 @@ StrainStressRemote = [Exx,Eyy,Ezz,Exy,Exz,Eyz,SxxReg,SyyReg,SzzReg,SxyReg,SxzReg
 %Calculate influence matricies
 [DssExx,DssEyy,DssEzz,DssExy,DssExz,DssEyz,DdsExx,DdsEyy,DdsEzz,DdsExy,DdsExz,DdsEyz,...
 DnExx,DnEyy,DnEzz,DnExy,DnExz,DnEyz]=CalculateInfluenceMatrices3d_ObsPoints...
-(Ss,Ds,Ts,mu,lambda,X,Y,Z,P1,P2,P3,halfspace,nu);
+(mu,lambda,X,Y,Z,P1,P2,P3,halfspace,nu);
 
 %Accumulate arrays 
 Aexx=[DnExx,DssExx,DdsExx];
