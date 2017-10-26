@@ -290,6 +290,8 @@ end
     clear A B
 
 if Option=='E'
-	[Pxx,Pyy,Pxy ] = CreateBlankVars; 
+	Pxx=0;
+    Pyy=0;
+    Pxy=0;
 end
 end %end entire func

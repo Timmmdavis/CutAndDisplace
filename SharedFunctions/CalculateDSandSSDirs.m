@@ -17,48 +17,35 @@ CosAy=FaceNormalVector(:,2);
 CosAz=FaceNormalVector(:,3);
 end
 
-oneslist=ones(size(FaceNormalVector(:,1)));
 
-%Equations from Pollard Fletcher 2.102. Note these need some modification
-%if to be used as real Strike/Dip Values. Fixes are given below but commented out 
-AzimuthFromCosines = atan2d(CosAx,CosAy);   %extracting az (-180 to 180 degrees)
-DipFromCosines = asind(-CosAz);             %extracting dip
-
-
-%%%%%%%%%%%%%%%%%%%%%
-%Dipslip
-%Creating direction cosines for a vector pointing down the DipSlip
-%direction of each triangle. First we rotate the triangles normals to face
-%north, these are then rotated around the Z axis to point down dip. These
-%are then rotated back to the original azimuth. 
-
-%Rotate every vector around az so its pointing north
-RotateAroundZ=degtorad(AzimuthFromCosines);
-RotationAxis='z';
-[PointingNorthCosine]=ApplyRotationLoop(FaceNormalVector,RotateAroundZ,RotationAxis);
-
-%Rotate so its down dip instead of normal to the triangle (around x axis)
-RotateAroundX=oneslist.*90;
-RotateAroundX=degtorad(RotateAroundX);
-RotationAxis='x';
-[DownDipPointingNorth]=ApplyRotationLoop(PointingNorthCosine,RotateAroundX,RotationAxis);
-
-%Rotate entire thing so its pointing along az again (Z rotation)
-RotateAroundZ=degtorad(-AzimuthFromCosines);
-RotationAxis='z';
-[DipSlipCosine]=ApplyRotationLoop(DownDipPointingNorth,RotateAroundZ,RotationAxis);
-
-
-%%%%%%%%%%%%%%
+%STRIKESLIP
 %Creating direction cosines for a vector pointing along the StrikeSlip
 %direction of each triangle. This is rotated so it represents Right Hand Rule i.e.. strike
 %is 90deg to the right of the dip azimuth. 
+%Just the 2D components of the normal vector (looking from above)
+Res2D=[CosAx,CosAy,zeros(size(CosAx))];
+%Normalise these (each row)
+Res2D=normr(Res2D);
+%Find vector that is 90 to this in 2D (XY)
+StrikeSlipCosine=[-Res2D(:,2),Res2D(:,1),zeros(size(CosAx))];
 
-PointingAlongXAxis=zeros(size(DipSlipCosine));
-PointingAlongXAxis(:,1)=-oneslist; %Each row is [1,0,0]; which is direction cosines of vect pointing along -x 
-RotateAroundZ=degtorad(-AzimuthFromCosines); %done above but allocating again for saftey
-RotationAxis='z';
-[StrikeSlipCosine]=ApplyRotationLoop(PointingAlongXAxis,RotateAroundZ,RotationAxis);
+%DIPSLIP
+%Creating direction cosines for a vector pointing down the DipSlip
+%direction of each triangle. 
+%Calculate the new CosAz vector
+DSCosAz=cos(acos(CosAz)-(pi/2));    %(90deg to original)
+%Calculate the length of vector NxNy when looked above in XY
+L=sin(acos(DSCosAz));     
+downdip=CosAz<0; %Cos az points down so we flip the length sign
+L(downdip)=-L(downdip);
+%Calculate the angle a that NxNy vectors face in, this doesnt change when
+%vector is rotated around dip  
+a=atan2(CosAy,CosAx);   
+%Calculate new lengths
+DSCosAx=cos(a).*L;
+DSCosAy=sin(a).*L;
+DipSlipCosine=[-DSCosAx,-DSCosAy,DSCosAz];
+
 
 %%%%%%%%%%%%%
 %making sure flat triangles follow the same conv as the nikko TDE Script
@@ -95,51 +82,4 @@ end
 end
 
 
-function [RotatedCosine]=ApplyRotationLoop(InputCosine,Angle,RotationAxis)
-RotatedCosine=zeros(size(InputCosine));
 
-%Preallocating array
-n = numel(Angle);
-RotationMatrix=zeros (3,3,n);
-
-%Filling this array with 3x3 tensors, each 3rd dim is each point
-%Accumulated using indexing
-if RotationAxis=='x'
-    %[1,    0,      0       ]
-    %[0,    cos(a), -sin(a) ]
-    %[0,    sin(a), cos(a)  ]
-RotationMatrix(1,1,1:1:end) = 1;
-RotationMatrix(2,2,1:1:end) =  cos(Angle(1:1:end,:));
-RotationMatrix(2,3,1:1:end) = -sin(Angle(1:1:end,:));
-RotationMatrix(3,2,1:1:end) =  sin(Angle(1:1:end,:));
-RotationMatrix(3,3,1:1:end) =  cos(Angle(1:1:end,:));
-
-elseif RotationAxis=='y'   
-    %[cos(a),   0,  sin(a)  ]
-    %[0,        1,  0       ]
-    %[-sin(a),  0,  cos(a)  ]
-RotationMatrix(1,1,1:1:end) = cos(Angle(1:1:end,:));
-RotationMatrix(1,3,1:1:end) = sin(Angle(1:1:end,:));
-RotationMatrix(2,2,1:1:end) = 1;
-RotationMatrix(3,1,1:1:end) = -sin(Angle(1:1:end,:));
-RotationMatrix(3,3,1:1:end) = cos(Angle(1:1:end,:));
-else % RotationAxis must =='z'    
-    %[cos(a),   -sin(a),  0]
-    %[sin(a),    cos(a),  0]
-    %[0,             0,   1]    
-RotationMatrix(1,1,1:1:end) = cos(Angle(1:1:end,:));
-RotationMatrix(1,2,1:1:end) = -sin(Angle(1:1:end,:));
-RotationMatrix(2,1,1:1:end) = sin(Angle(1:1:end,:));
-RotationMatrix(2,2,1:1:end) = cos(Angle(1:1:end,:));
-RotationMatrix(3,3,1:1:end) = 1;
-end
-
-for i=1:numel(Angle) %its 3 cols wide  
-    
-        %Grab the current bit in the loop
-    R=RotationMatrix(:,:,i);
-    zp = InputCosine(i,:)';
-    Rotated=R*zp;
-    RotatedCosine(i,:)= Rotated';
-end
-end
