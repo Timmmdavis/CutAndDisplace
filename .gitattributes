@@ -1,0 +1,16 @@
+$ cat .gitattributes
+#Setting any .m file to MATLAB by default
+*.m linguist-language=Matlab
+
+#Setting folders containing the fault files to be ignored (.ts & .shp extension).
+3dCode/FaultData/* linguist-vendored
+2dCode/FaultData/* linguist-vendored
+Images/* linguist-vendored
+
+#To summarise, as of today, 25 Oct 2017:
+#vendored files are not suppressed in diffs
+#generated files are suppressed in diffs
+#any file/directory can be marked as generated using an over-ride: *.whatever linguist-generated
+#any file/directory can be excluded from being detected as generated using an over-ride: *.whatever linguist-generated=false
+#any file/directory can be marked as vendored using an over-ride: *.whatever linguist-vendored
+#any file/directory can be excluded from being detected as vendored using an over-ride: *.whatever linguist-vendored=false
