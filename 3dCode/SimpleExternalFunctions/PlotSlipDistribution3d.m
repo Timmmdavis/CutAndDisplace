@@ -52,7 +52,7 @@ for i=1:numel(varargin)
     %Colourbar and X Y labels. 
     colorbar; 
     xlabel('x'); ylabel('y'); axis('equal');
-
+    WhiteFigure;
     %Put 0 at the centre of the Cmap? 1=yes
 	if Flag==1
         DivergingCentre( Data )

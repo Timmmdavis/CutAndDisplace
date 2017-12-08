@@ -112,7 +112,7 @@ TsMaxShr=sqrt((abs(T).^2)-(abs(Tn).^2));
 figure;quiver3(X,Y,Z,Tx(:,1),Ty(:,1),Tz(:,1))
 xlabel('x'); ylabel('y'); axis('equal'); title('Total Traction Vector');
 hold on
-trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),Tn);
+trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),Tn); WhiteFigure;
 if isempty(cmap); colormap('default'); else; colormap(cmap); end %draw with the imported value
 DivergingCentre( Tn )
 hold off
@@ -121,7 +121,7 @@ hold off
 figure;quiver3(X,Y,Z,TsMaxShrDir(:,1),TsMaxShrDir(:,2),TsMaxShrDir(:,3))
 xlabel('x'); ylabel('y'); axis('equal'); title('Shear Traction Vector and CSS');
 hold on
-trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),CSS);
+trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),CSS); WhiteFigure;
 if isempty(cmap); colormap('default'); else; colormap(cmap); end %draw with the imported value
 DivergingCentre( CSS )
 hold off

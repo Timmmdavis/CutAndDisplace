@@ -138,6 +138,7 @@ if exist('Ndirneg','var');	set(Ndirneg,'color',C3,'showarrowhead','off','linewid
 
 title({'\fontsize{14}Principal directions','\fontsize{8}S1,Ext red,Comp yellow, S2,Ext green,Comp olivegreen, S3,Ext blue,Comp grey, scaled by magnitude'})
 axis equal ;xlabel('x'); ylabel('y');zlabel('z');
+WhiteFigure;
 %Setting styles for each set of lines
 
 chk=exist('Triangles','var');

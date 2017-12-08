@@ -151,6 +151,7 @@ for i=1:numel(S1)
     hold on
 end
 xlabel('x'); ylabel('y');zlabel('z');axis equal ;
+WhiteFigure;
 
 %Only setting tranparency if MATLAB
 if isOctave==0

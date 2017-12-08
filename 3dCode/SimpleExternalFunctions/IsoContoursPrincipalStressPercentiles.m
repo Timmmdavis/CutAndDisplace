@@ -86,6 +86,8 @@ S3_Low  = Percentile(S3(:),P_Low);  %25th percentile
 
 %Drawing isosurfaces of the principal stresses. 
 figure_handle = figure;
+%Getting figure and inflating this to full screen size
+set(figure_handle, 'Position', get(0,'Screensize'));
 
 %Drawing S1
 subplot(1,3,1), 
@@ -94,9 +96,12 @@ C_Low= normr([255,165,0]);%orange
 C_Mid= normr([255,48,48]);%red
 C_High=normr([255,255,0]);%yellow
 DrawIsosurface(X,Y,Z,S1,S1_Low,S1_Mid,S1_High,C_Low,C_Mid,C_High,Alpha)
-title({'\fontsize{14}Sig1...MostExtensional','\fontsize{8}Percentiles,Red=50th Orange=25th Yellow=75th'})
+title({'\fontsize{14}Sig1...MostExtensional',...
+    ['\fontsize{8}Percentiles,Red=',num2str(P_Mid),...
+     'th Orange=',num2str(P_Low),...
+     'th Yellow=',num2str(P_High),'th']})
 if ~isempty(Triangles)
-trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),'FaceAlpha',(.2),'FaceColor', [0.5 0 0.9 ]);
+trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),'FaceAlpha',0.8,'FaceColor', [0.5 0 0.9 ]);
 end
 hold off;
 
@@ -107,9 +112,13 @@ C_Low= normr([32,178,170]);%turquoise
 C_Mid= normr([192,255,62]);%olive green
 C_High=normr([255,255,0]); %purple
 DrawIsosurface(X,Y,Z,S2,S2_Low,S2_Mid,S2_High,C_Low,C_Mid,C_High,Alpha)
-title({'\fontsize{14}Sig2...2ndPrincipal','\fontsize{8}Percentiles,Olive green=50th Turquoise=25th Purple=75th'})
+title({'\fontsize{14}Sig2...2ndPrincipal',...
+    ['\fontsize{8}Percentiles,OliveGreen=',num2str(P_Mid),...
+     'th Turquoise=',num2str(P_Low),...
+     'th Purple=',num2str(P_High),'th']})
+
 if ~isempty(Triangles)
-trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),'FaceAlpha',(.2),'FaceColor', [0.5 0 0.9 ]);
+trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),'FaceAlpha',0.8,'FaceColor', [0.5 0 0.9 ]);
 end
 hold off;
 
@@ -120,12 +129,16 @@ C_Low= normr([152,245,255]);%blue
 C_Mid= normr([148,148,148]);%grey
 C_High=normr([148,0,211]);  %dark purple
 DrawIsosurface(X,Y,Z,S3,S3_Low,S3_Mid,S3_High,C_Low,C_Mid,C_High,Alpha)
-title({'\fontsize{14}Sig3...MostCompressional','\fontsize{8}Percentiles,Grey=50th Blue=25th Dark purple=75th'})
+title({'\fontsize{14}Sig3...MostCompressional',...
+    ['\fontsize{8}Percentiles,Grey=',num2str(P_Mid),...
+     'th Blue=',num2str(P_Low),...
+     'th DarkPurple=',num2str(P_High),'th']})
 if ~isempty(Triangles)
-trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),'FaceAlpha',(.2),'FaceColor', [0.5 0 0.9 ]);
+trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),'FaceAlpha',0.8,'FaceColor', [0.5 0 0.9 ]);
 end
 hold off;
 
+WhiteFigure;
 %Linking all axes together to spin axes at the same time
 all_ha = findobj( figure_handle, 'type', 'axes', 'tag', '' );
 hlink = linkprop(all_ha,{'CameraPosition','CameraUpVector'});

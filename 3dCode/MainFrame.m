@@ -138,10 +138,10 @@ Points=[Points(:,1),Points(:,2),Points(:,3),(Points(:,4)-freesurface_height)];
     %Choose to define in stress or strain.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-% 	%%%%%%%%%%%%%%
-%   %StrainInput       
-% 	%%%%%%%%%%%%%%
-% 
+	%%%%%%%%%%%%%%
+  %StrainInput       
+	%%%%%%%%%%%%%%
+
 % %Put to 1 to define the stresses defined in 'stress input' as strain values    
 % strain=0;                   
 %     
@@ -152,9 +152,9 @@ Points=[Points(:,1),Points(:,2),Points(:,3),(Points(:,4)-freesurface_height)];
 % 
 % Sxx = 0;                    
 % Syy = 0; 
-% Szz = 0;
+% Szz = 0.01;
 % Sxy = 0;        			
-% Sxz = 1;
+% Sxz = 0;
 % Syz = 0; 
 % 
 % Option='B'; 
@@ -188,37 +188,37 @@ Points=[Points(:,1),Points(:,2),Points(:,3),(Points(:,4)-freesurface_height)];
     %the boundary value problem through shearing of elements alone. 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-	%%%%%%%%%%%%%%
-    %StrainInput        
-	%%%%%%%%%%%%%%
-    
-% %Put to 1 to define the stresses defined in 'stress input' as strain values    
-% strain=0;    
-
-
-	%%%%%%%%%%%%%%
-    %StressInput
-	%%%%%%%%%%%%%%
-     
-Sxx = 0;         			
-Syy = 0; 
-Szz = 1; 
-Sxy = 0;                    
-Sxz = 0;
-Syz = 0;
-
-Option='D';
+% 	%%%%%%%%%%%%%%
+%     %StrainInput        
+% 	%%%%%%%%%%%%%%
+%     
+% % %Put to 1 to define the stresses defined in 'stress input' as strain values    
+% % strain=0;    
+% 
+% 
+% 	%%%%%%%%%%%%%%
+%     %StressInput
+% 	%%%%%%%%%%%%%%
+%      
+% Sxx = 0;         			
+% Syy = 0; 
+% Szz = 1; 
+% Sxy = 0;                    
+% Sxz = 0;
+% Syz = 0;
+% 
+% Option='D';
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Option E = Defining boundary conditions as traction at the element
     %centres. 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-% Tss = 0;     %positive - right lateral
-% Tds = 0;     %positive (normals point to sky) - drives slip down dip 
-% Tn = 1;     %positive is pressure that loads the boundary in tension
-% 
-% Option='E';
+Tss = 0;     %positive - right lateral
+Tds = 0.1;     %positive (normals point to sky) - drives slip down dip 
+Tn = 0;     %positive is pressure that loads the boundary in tension
+
+Option='E';
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -264,7 +264,7 @@ PlotSlipDistribution3d(Triangles,Points,cmap2,Dss,Dds,Dn)
     
 
 %Define the number of cells on the square grid
-cells=5;   
+cells=10;   
 %How many extra cells you want to add away from the faults, 
 %reduce to 0 if having half space issues 
 padding=0;  
@@ -354,8 +354,8 @@ padding=0;
 
 % %Secondary Surface
 % SecondSurface=1; %Flag set
-% string='RFaultEWStrike_1000Faces.ts';
-% [ PointsObs,TrianglesObs ] = GoCadAsciiReader( string,pathstring );
+% string='SphereUniformDistributionON2_500Faces.ts';
+% [ PointsObs,TrianglesObs ] = GoCadAsciiReader( string );
 % PointsObs=[PointsObs(:,1),PointsObs(:,2),PointsObs(:,3),(PointsObs(:,4)-freesurface_height)];
 % [MidPointObs,FaceNormalVectorObs] = MidPointCreate(PointsObs,TrianglesObs);
 % X=MidPointObs(:,1);
@@ -372,7 +372,7 @@ trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),'FaceAlpha',(.2),'FaceColo
 hold on
 scatter3(X(:),Y(:),Z(:),5,'k')  %Showing surface and obs points
 xlabel('x'); ylabel('z'); axis('equal'); title('Surface and Obs Points');
-
+WhiteFigure;
 
 
 
@@ -455,7 +455,7 @@ else
         ( dimx,dimy,dimz,X,Y,Z,S1,S2,S3,Sxx,Syy,Szz,Sxy,Sxz,Syz );
     %Drawing isocontours of the stress
     IsoContoursPrincipalStressPercentiles...
-        ( S1,S2,S3,X,Y,Z,'Triangles',Triangles,'Points',Points,'Alpha',0.2);
+        ( S1,S2,S3,X,Y,Z,'Triangles',Triangles,'Points',Points,'Alpha',0.8);
 end
 
 

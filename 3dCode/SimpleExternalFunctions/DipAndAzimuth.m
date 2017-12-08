@@ -73,12 +73,15 @@ Strike(FullStr)=Strike(FullStr)+360;
 
 figure;trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),Azimuth);
 xlabel('x'); ylabel('y'); axis('equal'); title('Azimuth ^{\circ}');colorbar;
-
+WhiteFigure;
+ 
 figure;trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),Dip);
 xlabel('x'); ylabel('y'); axis('equal'); title('Dip ^{\circ}');colorbar;
+WhiteFigure;
 
 figure;trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),Strike);
 xlabel('x'); ylabel('y'); axis('equal'); title('Strike ^{\circ}');colorbar;
+WhiteFigure;
 
 
 

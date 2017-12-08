@@ -282,7 +282,6 @@ This part of the document goes through the notation used in the code so you can 
 ### 4.2. Tensors
 
 #### 2*2 2D stress tensor
-<a href="https://pangea.stanford.edu/projects/structural_geology/chapters/chapter06/browser/06_13abc.html" target="_blank">Diagram of 2D stress tensor</a>
 [Diagram of 2D stress tensor](https://pangea.stanford.edu/projects/structural_geology/chapters/chapter06/browser/06_13abc.html) 
 
         [ Sxx Sxy ]    
@@ -472,19 +471,19 @@ The basic boundary elements are from:
 *Crouch, S.L. and Starfield, A.M., 1982. Boundary element methods in solid mechanics: with applications in rock mechanics and geological engineering. Allen & Unwin.*
 
 3D:
-*Nikkhoo, M. and Walter, T.R., 2015. Triangular dislocation: an analytical, artefact-free solution. Geophysical Journal International, 201(2), pp.1117-1139.*
+[*Nikkhoo, M. and Walter, T.R., 2015. Triangular dislocation: an analytical, artefact-free solution. Geophysical Journal International, 201(2), pp.1117-1139.*](http://gfzpublic.gfz-potsdam.de/pubman/item/escidoc:1101001:4/component/escidoc:1127889/1101001.pdf)
 
 ## 6. Code highlights and applications
 [Index ^](#cutanddisplace)
 
 *   Frictional effects across fault surfaces, both coefficient of friction and cohesion. Using the formulations described in:
 
-    *Ritz, E., Mutlu, O. and Pollard, D.D., 2012. Integrating complementarity into the 2D displacement discontinuity boundary element method to model faults and fractures with frictional contact properties. Computers & Geosciences, 45, pp.304-312.*
-    *Kaven, J.O., Hickman, S.H., Davatzes, N.C. and Mutlu, O., 2012. Linear complementarity formulation for 3D frictional sliding problems. Computational Geosciences, 16(3), pp.613-624.*
+    [*Ritz, E., Mutlu, O. and Pollard, D.D., 2012. Integrating complementarity into the 2D displacement discontinuity boundary element method to model faults and fractures with frictional contact properties. Computers & Geosciences, 45, pp.304-312.*](https://www.sciencedirect.com/science/article/pii/S0098300411004079)
+    [*Kaven, J.O., Hickman, S.H., Davatzes, N.C. and Mutlu, O., 2012. Linear complementarity formulation for 3D frictional sliding problems. Computational Geosciences, 16(3), pp.613-624.*](https://link.springer.com/article/10.1007/s10596-011-9272-0)
 
 *   Gravitational effects of topography as described in:
 
-    *Martel, S.J. and Muller, J.R., 2000. A two-dimensional boundary element method for calculating elastic gravitational stresses in slopes. Pure and Applied Geophysics, 157(6-8), pp.989-1007.*
+    [*Martel, S.J. and Muller, J.R., 2000. A two-dimensional boundary element method for calculating elastic gravitational stresses in slopes. Pure and Applied Geophysics, 157(6-8), pp.989-1007.*](https://link.springer.com/article/10.1007/s000240050014)
 
 *   Elemental locking as described in 2D by (useful for magma chamber modelling):
 
@@ -503,18 +502,17 @@ The basic boundary elements are from:
     Dirk-Jan Kroon's MATLAB script 'finite strain' 
     and 
     the finite strain calculation of: 
-    *Cardozo, N. and Allmendinger, R.W., 2009. SSPX: A program to compute strain from displacement/velocity data. Computers & Geosciences, 35(6), pp.1343-1357.*
+    [*Cardozo, N. and Allmendinger, R.W., 2009. SSPX: A program to compute strain from displacement/velocity data. Computers & Geosciences, 35(6), pp.1343-1357.*](http://www.sciencedirect.com/science/article/pii/S0098300408002410)
 
 ## 7. Acknowledgements
 [Index ^](#cutanddisplace)
 
-Thanks to: 
+Thanks to:  
+[Dr David Healy](https://www.abdn.ac.uk/staffnet/profiles/d.healy), University of Aberdeen (MSc supervisor).
 
-Dr David Healy, University of Aberdeen (MSc supervisor).
+[Dr Juliet Crider](http://www.ess.washington.edu/people/profile.php?pid=crider--juliet), University of Washington.
 
-Dr Juliet Crider, University of Washington.
-
-Dr Robert Simpson, Glasgow University.
+[Dr Robert Simpson](https://www.gla.ac.uk/schools/engineering/staff/robertsimpson/), Glasgow University.
 
 And others who have replied to emails regarding code, solutions etc.  
 

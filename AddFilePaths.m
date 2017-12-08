@@ -4,7 +4,7 @@
 %the variable 'FolderName' to match. 
 
 %Change this is you change the top level directory name
-FolderName='CutAndDisplace_PRIV';
+FolderName='CutAndDisplace';
 
 %Get the address of the current working directory
 pathstring = pwd;      

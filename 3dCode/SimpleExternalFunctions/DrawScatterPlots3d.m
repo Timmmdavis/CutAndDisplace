@@ -44,5 +44,6 @@ for i=1:nargin-4
     xlabel('x'); ylabel('y'); axis('equal'); 
     title(VarName);
     DivergingCentre( Data )
+    WhiteFigure;
 end
 
