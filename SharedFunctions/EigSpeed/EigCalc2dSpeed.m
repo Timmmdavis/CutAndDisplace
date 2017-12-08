@@ -1,21 +1,57 @@
 function [S1,S2,S1dir,S2dir]=EigCalc2dSpeed(Sxx,Syy,Sxy)
-% Calculates the 2-D principal stress/strain magnitudes and directions from input tensors
-% Input parameters
-% Sxx = sigma xx
-% Syy = sigma yy
-% Sxy = sigma xy
-% Output parameter (tension positive convention for inputs)
-% S1 = most tensile principal stress
-% S2 = most comp principal stress
-% S1dir = XY components of the direction of the principal stress S1
-% S2dir = see above
-% Example 
-%Calclating 2d stress eigenValues
-%[S1,S2,S1dir,S2dir]=EigCalc2d(Sxx,Syy,Sxy);
-%Calclating 2d strain eigenValues
-%[E1,E2,E1dir,E2dir]=EigCalc2d(Exx,Eyy,Exy);
-
-%   Copyright 2017, Tim Davis, The University of Potsdam
+% EigCalc2dSpeed: Calculates the 2D principal stress/strain magnitudes and 
+%                   directions from input tensors. Like the function 
+%                   EigCalc2d but around twice as fast. Can be used for any
+%                   symmetrical 2*2 tensor Matrix and will return results
+%                   of directions and magnitudes faster than just calling
+%                   Eig. 
+%   
+% usage #1: For stress:
+% [S1,S2,S1dir,S2dir]=EigCalc2d(Sxx,Syy,Sxy)
+%
+% usage #2: For strain:
+% [E1,E2,E1dir,E2dir]=EigCalc2d(Exx,Eyy,Exy);
+%
+% Arguments: (input)
+% Sxx,Syy,Sxy 		- The stress tensor components at a point, each can be a
+%                    column vector.
+%
+% Arguments: (output)
+% S1,S2       		- Principal stress component magnitudes Sigma 1 and
+%                    Sigma 2.
+%
+% S1dir,S2dir       - Principal stress directions (direction cosines). Each
+%                    will be a n*2 column vector [CosAx,CosAy] of this
+%                    direction. 
+%
+% Example usage 1:
+%
+% %Calculating directions for a 2D stress tensor
+% Sxx=0.2; Syy=-1.5; Sxy=1; 
+% [S1,S2,S1dir,S2dir]=EigCalc2d(Sxx,Syy,Sxy)
+% %Drawing
+% DrawS1S2Directions( 0,0,S1dir,S2dir )
+%
+% Example usage 2: Timing its speed compared to default calc
+%
+% n=1000000; %1000000;
+% Sxx=rand(n,1);
+% Syy=randn(n,1)*2;
+% Sxy=ones(n,1);
+% tic
+% %Old eig func
+% [S1,S2,S1dir,S2dir] = EigCalc2d(Sxx,Syy,Sxy);
+% disp('Done part 1')
+% toc
+% tic
+% %New fast func
+% [E1,E2,E1dir,E2dir] = EigCalc2dSpeed(Sxx,Syy,Sxy);
+% disp('Done part 2')
+% toc
+%
+%
+%  Author: Tim Davis
+%  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
 %Preallocating array
 n = numel(Sxx);
@@ -52,6 +88,7 @@ S1dir=zeros(2,n);
 Ident = repmat(eye(2),1,1,n);
 
 for i=1:n
+    
     %Equation we want to solve
     %[A-(Lambda * Identity)]v=0
     
@@ -79,11 +116,6 @@ S1dir=S1dir';
 %We know S2 is perpendicular to S1. 
 S2dir=[S1dir(2,:),-S1dir(1,:)];
 
-%The other way of doing this would be:
-% S1 = (Sxx+Syy)/2 + sqrt( ((Sxx-Syy)/2).^2 + Sxy.^2);
-% y1=(1/2)*atan2(2*Sxy, Sxx-Syy); % pg2 222 pollard eq6.73
-% S2 = (Sxx+Syy)/2 - sqrt( ((Sxx-Syy)/2).^2 + Sxy.^2); (just add 1/4 pi r
-% to y1 to get y2). 
 
 function D = eig2(A)
 % function D = eig2(A)
@@ -122,3 +154,5 @@ P1 = A(:,1).*A(:,4) - A(:,2).*A(:,3);
 D = ParabolaRoots(P3, P2, P1).';
 
 end % eig2
+
+end

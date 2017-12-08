@@ -1,64 +1,130 @@
-function [DsTnE1FB,DsTsE1FB,DnTnE1FB,DnTsE1FB,DsTnE1IF,DsTsE1IF,DnTnE1IF,DnTsE1IF,...
-Ds_UxE1FB,Ds_UyE1FB,Dn_UxE1FB,Dn_UyE1FB,Ds_UxE1IF,Ds_UyE1IF,Dn_UxE1IF,Dn_UyE1IF,...
-DsTnE2FB,DsTsE2FB,DnTnE2FB,DnTsE2FB,DsTnE2IF,DsTsE2IF,DnTnE2IF,DnTsE2IF,...
-Ds_UxE2FB,Ds_UyE2FB,Dn_UxE2FB,Dn_UyE2FB,Ds_UxE2IF,Ds_UyE2IF,Dn_UxE2IF,Dn_UyE2IF,...
-NUME1,NUME2,nuE1,EE1,nuE2,EE2,...
-FreeBoundary1,FreeBoundary2,FdispE1,FdispE2,FreeBoundaries,FixedDisps]...
+function [StressInfE1FB,StressInfE1IF,DispInfE1FB,DispInfE1IF,StressInfE2FB,StressInfE2IF,DispInfE2FB,DispInfE2IF,...
+NUME1,NUME2,FreeBoundary1,FreeBoundary2,FdispE1,FdispE2,FreeBoundaries,FixedDisps]...
 = InhomogeneousInfluenceBuilder2d...
-(x,y,xe,ye,a,Beta,nu,E,halfspace,NormAng,Fdisp)
-%Creates and extracts Inhomogeneous influence matrices
+(MidPoint,HalfLength,nu,E,halfspace,LineNormalVector,BoundaryFlag)
+% InhomogeneousInfluenceBuilder2d: Calculates the influence matricies for the
+%               BEM calulation. This does this for both elastic parts and
+%               bulds the correct flags so the later calculations know
+%               which parts are free boundries, interfaces etc. 
+%
+% usage #1:
+% See initial function call above
+%
+% Arguments: (input)
+%  halfspace  - Defines if we work out the coefficientsin a half or whole
+%              space
+%
+%    MidPoint - The element midpoints in X and Y.
+%
+% HalfLength  - An array of each each elements half length.
+%
+%       nu    - The Poisson's ratio.
+%
+%       E     - The Young's modulus.
+%
+% LineNormalVector - The direction cosines, CosAx (Nx) and CosAy in a list
+%                   for each element. 
+%
+%   BoundaryFlag   - Flag for which part of the elastic we are dealing with,
+%                   different numbers in this flag represent different bits: 
+%                   0=free boundary E1
+%                   1=fixed bits of the free boundary of E1
+%                   2=E1-E2 interface, E1 elastic properties, normals point towards E2
+%                   3=E2-E1 interface, E2 elastic properties, normals point towards E1
+%                   4=If existed would be free boundary E2 
+%                   5=fixed bits of the free boundary of E2
+%
+%
+% Arguments: (output)
+% %You have to understand the notation here:
+%
+% FB,FreeBoundaries   - Free boundary elements, elements with no additional
+%                      boundary conditions
+%
+% IB                  - Interface boundary elements, elements with additional
+%                      boundary conditions. Interface elements of Elastic 1 and 2 should have the
+%                      same traction and displacement. 
+%
+% StressInf          -Structure containing:
+% 					DsTn,DsTs,DnTn,DnTs
+%					Square influence matricies of much a displacement
+%                   of one element (first part of name) effects the traction
+%                   on another element (last part of name).
+%
+% DispInf            -Structure containing:
+% 					DsUx,DsUy,DnUx,DnUy
+%					Square influence matricies of much a displacement
+%                   of one element (first part of name) effects the
+%                   displacement at the midpoint of another
+%                   element (not the element displacement itself). 
+%
+%    Fdisp            - Elements with fixed displacements. 
+%
+%    NUM             - Size of influence matricies edge for one elastic
+%                     part.
+%
+% Example usage:
+%
+% [ DsTn,DsTs,DnTn,DnTs,DsUx,DsUy,DnUx,DnUy]...
+% = CalculateInfluenceMatrices2d(halfspace,MidPoint,HalfLength,nu,E,LineNormalVector,Fdisp )
+%
+%
+%  Author: Tim Davis
+%  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
-%   Copyright 2017, Tim Davis, The University of Aberdeen
+%%%%%%%
+%E1 Elastic 1
+%%%%%%%
+Part=1; %Which elastic we want to extract    
+[MidPointE1,HalfLengthE1,nuE1,EE1,LineNormalVectorE1,NUME1,FdispE1,FB_E1,IF_E1]...
+ = ExtractElasticParts2d( Part,BoundaryFlag,MidPoint,HalfLength,nu,E,LineNormalVector );
+
+%E1 Elastic 1 creating big influence matrices
+[ StressInfE1,DispInfE1 ] = CalculateInfluenceMatrices2d...
+(halfspace,MidPointE1,HalfLengthE1,nuE1,EE1,LineNormalVectorE1,1 );
+clear MidPointE1 HalfLengthE1 LineNormalVectorE1 nuE1 EE1   
+
+%Getting the traction inf matrices for elements on the free boundary and then interface of E1
+[StressInfE1FB] = ExtractData(FB_E1,1,StressInfE1);
+[StressInfE1IF] = ExtractData(IF_E1,1,StressInfE1);
+clear StressInfE1
+
+%Getting the displacement inf matrices for elements on the free boundary and then interface of E1    
+[DispInfE1FB] = ExtractData(FB_E1,1,DispInfE1);    
+[DispInfE1IF] = ExtractData(IF_E1,1,DispInfE1);     
+clear DispInfE1
+
+%%%%%%%
+%E2 Elastic 2
+%%%%%%%
+Part=2; %Which elastic we want to extract
+[MidPointE2,HalfLengthE2,nuE2,EE2,LineNormalVectorE2,NUME2,FdispE2,FB_E2,IF_E2]...
+ = ExtractElasticParts2d( Part,BoundaryFlag,MidPoint,HalfLength,nu,E,LineNormalVector );
+
+%E2 Elastic 1 creating big influence matrices
+[StressInfE2,DispInfE2] = CalculateInfluenceMatrices2d...
+(halfspace,MidPointE2,HalfLengthE2,nuE2,EE2,LineNormalVectorE2,1 );
+clear MidPointE2 HalfLengthE2 LineNormalVectorE2 nuE2 EE2 
+
+%Getting the traction inf matrices for elements on the free boundary and then interface of E2
+[StressInfE2FB] = ExtractData(FB_E2,1,StressInfE2);
+[StressInfE2IF] = ExtractData(IF_E2,1,StressInfE2 );
+clear StressInfE2
+
+%Getting the displacement inf matrices for elements on the free boundary and then interface of E2    
+[DispInfE2FB] = ExtractData(FB_E2,1,DispInfE2);    
+[DispInfE2IF] = ExtractData(IF_E2,1,DispInfE2);     
+clear DispInfE2     
 
 
+%Creating some flags for fixing disps
+FreeBoundaries=(BoundaryFlag == 0 | BoundaryFlag == 1 | BoundaryFlag == 4 | BoundaryFlag == 5);%Any free boundaries in either elastic   
+FixedDisps=(BoundaryFlag == 1 | BoundaryFlag == 5);%Any free boundaries in either elastic 
+FixedDisps=FixedDisps(FreeBoundaries); %Fixed displacements on the freeboundary elements
+FreeBoundary2=(BoundaryFlag == 4 | BoundaryFlag == 5);%2nd free boundary
+FreeBoundary2=FreeBoundary2(FreeBoundaries);
+FreeBoundary1=~FreeBoundary2;
 
-    BoundaryFlag=Fdisp; 
-    
-    %%%%%%%
-    %E1 Elastic 1
-    %%%%%%%
-    Part=1; %Which elastic we want to extract
-    [xE1,yE1,xeE1,yeE1,aE1,BetaE1,nuE1,EE1,NormAngE1,NUME1,FdispE1,FB_E1,IF_E1] = ExtractElasticParts2d( Part,BoundaryFlag,x,y,xe,ye,a,Beta,nu,E,NormAng );
-    %E1 Elastic 1 creating big influence matrices
-    [DsTnE1,DsTsE1,DnTnE1,DnTsE1,Ds_UxE1,Ds_UyE1,Dn_UxE1,Dn_UyE1]...
-        = CalculateInfluenceMatrices2d(NUME1,halfspace,xE1,yE1,xeE1,yeE1,aE1,BetaE1,nuE1,EE1,NormAngE1,1 ); %we want disp so passing Fdisp as 1 whatever happens
-    clear xE1 yE1 xeE1 yeE1 aE1 BetaE1 NormAngE1   
-    %Getting the traction inf matrices for elements on the free boundary and then interface of E1
-    [DsTnE1FB,DsTsE1FB,DnTnE1FB,DnTsE1FB] = ExtractData(FB_E1,1,DsTnE1,DsTsE1,DnTnE1,DnTsE1);
-    [DsTnE1IF,DsTsE1IF,DnTnE1IF,DnTsE1IF] = ExtractData(IF_E1,1,DsTnE1,DsTsE1,DnTnE1,DnTsE1 );
-    clear DsTnE1 DsTsE1 DnTnE1 DnTsE1
-    %Getting the displacement inf matrices for elements on the free boundary and then interface of E1    
-    [Ds_UxE1FB,Ds_UyE1FB,Dn_UxE1FB,Dn_UyE1FB] = ExtractData(FB_E1,1,Ds_UxE1,Ds_UyE1,Dn_UxE1,Dn_UyE1);    
-    [Ds_UxE1IF,Ds_UyE1IF,Dn_UxE1IF,Dn_UyE1IF] = ExtractData(IF_E1,1,Ds_UxE1,Ds_UyE1,Dn_UxE1,Dn_UyE1);     
-    clear Ds_UxE1 Ds_UyE1 Dn_UxE1 Dn_UyE1
-    
-    %%%%%%%
-    %E2 Elastic 2
-    %%%%%%%
-    Part=2; %Which elastic we want to extract
-    [xE2,yE2,xeE2,yeE2,aE2,BetaE2,nuE2,EE2,NormAngE2,NUME2,FdispE2,FB_E2,IF_E2]= ExtractElasticParts2d( Part,BoundaryFlag,x,y,xe,ye,a,Beta,nu,E,NormAng );
-    %E2 Elastic 2 creating big influence matrices    
-    [DsTnE2,DsTsE2,DnTnE2,DnTsE2,Ds_UxE2,Ds_UyE2,Dn_UxE2,Dn_UyE2]...
-        = CalculateInfluenceMatrices2d(NUME2,halfspace,xE2,yE2,xeE2,yeE2,aE2,BetaE2,nuE2,EE2,NormAngE2,1); %we want disp so passing Fdisp as 1 whatever happens
-    clear halfspace xE2 yE2 xeE2 yeE2 aE2 BetaE2 NormAngE2 
-    %Getting the traction inf matrices for elements on the free boundary and then interface of E2    
-    [DsTnE2FB,DsTsE2FB,DnTnE2FB,DnTsE2FB] = ExtractData(FB_E2,1,DsTnE2,DsTsE2,DnTnE2,DnTsE2 );
-    [DsTnE2IF,DsTsE2IF,DnTnE2IF,DnTsE2IF] = ExtractData(IF_E2,1,DsTnE2,DsTsE2,DnTnE2,DnTsE2 );
-    clear DsTnE2 DsTsE2 DnTnE2 DnTsE2
-    %Getting the displacement inf matrices for elements on the free boundary and then interface of E2    
-    [Ds_UxE2FB,Ds_UyE2FB,Dn_UxE2FB,Dn_UyE2FB] = ExtractData(FB_E2,1,Ds_UxE2,Ds_UyE2,Dn_UxE2,Dn_UyE2 ); 
-    [Ds_UxE2IF,Ds_UyE2IF,Dn_UxE2IF,Dn_UyE2IF] = ExtractData(IF_E2,1,Ds_UxE2,Ds_UyE2,Dn_UxE2,Dn_UyE2 ); 
-    clear Ds_UxE2 Ds_UyE2 Dn_UxE2 Dn_UyE2        
-    
-
-    %Creating some flags for fixing disps
-    FreeBoundaries=(BoundaryFlag == 0 | BoundaryFlag == 1 | BoundaryFlag == 4 | BoundaryFlag == 5);%Any free boundaries in either elastic   
-    FixedDisps=(BoundaryFlag == 1 | BoundaryFlag == 5);%Any free boundaries in either elastic 
-    FixedDisps=FixedDisps(FreeBoundaries); %Fixed displacements on the freeboundary elements
-    FreeBoundary2=(BoundaryFlag == 4 | BoundaryFlag == 5);%2nd free boundary
-    FreeBoundary2=FreeBoundary2(FreeBoundaries);
-    FreeBoundary1=~FreeBoundary2;
-    
 
 end
 

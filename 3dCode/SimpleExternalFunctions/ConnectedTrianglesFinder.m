@@ -1,29 +1,70 @@
 function [TotalConnectionDistance,SortedTriangles,Noconnections] = ConnectedTrianglesFinder(TR,MidPoint)
-
-%   Copyright 2017, Tim Davis, The University of Aberdeen
-%THIS SCRIPT IS NOT OPTIMISED IN ANY SENSE OF THE WORD
-
-%SortedTriangles First Third and 5th col - the tri number, other cols, the
-%connected tris. 
-%Noconnections 1st col the tri number, other col the number of connected
-%tris
-%TotalConnectionDistance distance between this and the other tris midpoints
-
-
-%if you need inputs as structured in the BEM script use: 
+% ConnectedTrianglesFinder: Finds a list of index's of connected
+%                   triangles for each triangle on the surface, the
+%                   distance between these and the total number of edges.
+%
+%                   It would be nice to optimise this as currently its a
+%                   little slow. 
+%               
+% usage #1:
+%[TotalConnectionDistance,SortedTriangles,Noconnections]...
+% = ConnectedTrianglesFinder(TR,MidPoint)
+%
+% Arguments: (input)
+%   Tr              - Output of MATLAB's triangulation function. 
+%
+% MidPoint          - Midpoints of the triangles of your mesh. 
+%
+%
+% Arguments: (output)
+% TotalConnectionDistance  - Each row is the distance between the triangle
+%                           on this row and the other tris midpoints
+%
+%  SortedTriangles         - First Third and 5th column - the triangles index,
+%                           other cols, the are the connected triangle
+%                           index's.
+%
+%  Noconnections           - 1st column is the the triangles indexr, the
+%                           other col the number of connected triangles
+%
+% Example usage (1):
+%
+% %If you need inputs as structured as in this BEM script use: 
 %TR = triangulation(Triangles,Points(:,2:4)); 
 %MidPoint= incenter(TR);
-
-%Say you wanted to average variable StrikeSlipDisp at every tri face:
-% % for i=1:numel(StrikeSlipDisp)
-% % Mid=StrikeSlipDisp(i); %value at tri 1
-% % one=StrikeSlipDisp(SortedTriangles(i,2)); %value at 1st connected tri
-% % two=StrikeSlipDisp(SortedTriangles(i,4)); %value at 2nd connected tri
-% % three=StrikeSlipDisp(SortedTriangles(i,6)); %etc
-% % avg(i)=mean([Mid,one,two,three]);
-% % end
-% % StrikeSlipDisp=avg;
-% %[ StrikeSlipDisp] = RowVecToCol( StrikeSlipDisp);
+% %Call func:
+%[TotalConnectionDistance,SortedTriangles,Noconnections]...
+% = ConnectedTrianglesFinder(TR,MidPoint)
+% % Then say you wanted to average variable StrikeSlipDisp (Dss) at every
+% % tri face:
+% for i=1:numel(Dss)
+% Mid=Dss(i); %value at tri 1
+% one=Dss(SortedTriangles(i,2)); %value at 1st connected tri
+% two=Dss(SortedTriangles(i,4)); %value at 2nd connected tri
+% three=Dss(SortedTriangles(i,6)); %etc
+% avg(i)=mean([Mid,one,two,three]);
+% end
+% Dss=avg;
+%[ Dss] = RowVecToCol( Dss);
+%
+%
+% Example usage (2):
+% %Meshing surface to plotting the average distance
+% %between tris:
+%
+% [x,y] = meshgrid(-2:.2:2);                                
+% z = x .* exp(-x.^2 - y.^2);
+% Triangles = delaunay(x(:),y(:));
+% Points=[[1:numel(x)]',x(:),y(:),z(:)];
+% TR = triangulation(Triangles,Points(:,2:4)); 
+% MidPoint= incenter(TR);
+% [TotalConnectionDistance,SortedTriangles,Noconnections]...
+% = ConnectedTrianglesFinder(TR,MidPoint);
+% AvgConnectionDist=(sum(TotalConnectionDistance,2))./Noconnections(:,2);
+% PlotSlipDistribution3d(Triangles,Points,[],AvgConnectionDist);
+% 
+%  Author: Tim Davis
+%  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
 
 
@@ -33,15 +74,14 @@ NoEdges=numel(E)/2;
 AllTriangleNos=zeros(2,NoEdges);
 %Will need loop
 %Going to create a list the size of E that says which two triangles are connected to each other. 
-for i=1:NoEdges;
+for i=1:NoEdges
     Lia = (sum((ismember(TR,E(i,:)))'))'; 
     Lia=Lia==2 ; %Creating indentity matrix where triangles have two adjacent edges at E1
     TriangleNos = find(Lia);%Finding the two connected triangles. 
     AllTriangleNos(1,i)=TriangleNos(1); 
     if numel(TriangleNos) == 2
     AllTriangleNos(2,i)=TriangleNos(2);   %Gives a matrix where each column is an edge connection with a triangle or TWO. 
-    end
-        
+    end  
 end
 
 length=size(TR(:,1));length=length(1,1);
@@ -50,7 +90,7 @@ SortedTriangles=zeros(length,6);
 SortTri=zeros(3,length); %Just associated vertex's
 
 %To find number of connections for each triangle
-for i=1:length;
+for i=1:length
     indices = find(any(AllTriangleNos==i));     
     
     Flag=AllTriangleNos(:,indices(1))==i;

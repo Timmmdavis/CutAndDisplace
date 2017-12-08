@@ -71,12 +71,6 @@ start = 1;
     else
       c = z;
     end
-%     if ( any (strcmpi (varargin, 'FaceColor')))
-%       nfc = numel (varargin) + 1;
-%       varargin(nfc+(0:1)) = {'FaceColor', 'flat'};
-%     else
-%       nfc = find (any (strcmpi (varargin, 'FaceColor')), 1);
-%     end
     if ( any (strcmpi (varargin, 'EdgeColor'))...
         && strcmpi (varargin{nfc+1}, 'interp'))
       varargin(end+(1:2)) = {'EdgeColor', 'none'};

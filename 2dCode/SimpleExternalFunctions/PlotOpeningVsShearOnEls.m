@@ -1,32 +1,64 @@
-function PlotOpeningVsShearOnEls( NormAng,TensileDisp,ShearDisp,Points,x,y,HalfLength )
-%PlotOpeningVsShearOnEls draws the directions elements slip in (world
-%coords)
+function PlotOpeningVsShearOnEls( LineNormalVector,Dn,Ds,P1,P2,MidPoint,HalfLength )
+% PlotOpeningVsShearOnEls: Function that draws the opening and shearing at 
+%                         each element on the fracture surface as a quiver
+%                         direction. (real coordiantes)
+%
+%                          If the blue vector is directed opposite to the
+%                          normal direction then the element is closing.
+%
+%               
+% usage #1: Prints results to cmd window
+% PlotOpeningVsShearOnEls( LineNormalVector,Dn,Ds,P1,P2,MidPoint,HalfLength )
+%
+%
+% Arguments: (input)
+% LineNormalVector - The direction cosines, CosAx (Nx) and CosAy in a list
+%                   for each element.  
+%
+%     Dn,Ds        - Two vectors representing the normal (Dn) and shear
+%                   (Ds) displacement on each element.
+%
+%  P1,P2           - The start (P1) and end (P2) points of each separate 
+%                   element in [x,y] coordiantes. First col is x. 
+%
+%    MidPoint      - The x and y locations of each elements midpoint. 
+%
+%  HalfLength      - The half length of each element
+%
+%
+%
+%  Author: Tim Davis
+%  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
-%   Copyright 2017, Tim Davis, The University of Aberdeen
-axDeg=(NormAng*180)/pi;
-BDeg=axDeg+90;
-u_Ds=cosd(BDeg).*ShearDisp;         %Tangent (X)
-v_Ds=sind(BDeg).*ShearDisp;         %opp (y)
-u_Dn=cosd(axDeg).*TensileDisp;      %Tangent (X)
-v_Dn=sind(axDeg).*TensileDisp;      %opp (y)
-u=u_Ds-u_Dn;
-v=v_Ds-v_Dn; 
-ax=NormAng;
-nx=cos(ax);
-ny=cos((pi/2)-ax);
+%Grab direction cosines of each element
+CosAx=LineNormalVector(:,1);
+CosAy=LineNormalVector(:,2);
+
+%Compute the directions of the slip components.
+DnCosine=LineNormalVector;
+DsCosine=[-CosAy,CosAx];
+
+%Cartesian directions and magnitudes of slip
+Dn_xy=(bsxfun(@times,Dn,DnCosine));
+Ds_xy=(bsxfun(@times,Ds,DsCosine));
+
+%Summed to get total Cartesian displacement.
+Dispxy=Dn_xy+Ds_xy;
 
 % Plot slip vectors on the elements as a quiver plot. This plots each
 % fracture as a line and the direction of slip for each element on the
 % fracture
-% Note this is only the slip one direction. 
 figure,hold on
-line([Points(:,1)';Points(:,2)'],[Points(:,3)';Points(:,4)'],'color','r')
+PlotFracture( P1,P2,'r' )
+xe=MidPoint(:,1);ye=MidPoint(:,2);
 axis equal,
-quiver(x+(nx.*HalfLength),y+(ny.*HalfLength),u,v,'color','b'); %normal side blue
-quiver(x-(nx.*HalfLength),y-(ny.*HalfLength),-u,-v,'color','g'); %other side green
+quiver(xe+(CosAx.*HalfLength),ye+(CosAy.*HalfLength),Dispxy(:,1),Dispxy(:,2),'color','b'); %normal side blue
+quiver(xe-(CosAx.*HalfLength),ye-(CosAy.*HalfLength),-Dispxy(:,1),-Dispxy(:,2),'color','g'); %other side green
 hold off
 title('Elemental displacement directions, Element Normal Side=Blue, vectors not to scale'), xlabel('x'), ylabel('y')
 
+%Make figure white
+WhiteFigure
 
 end
 

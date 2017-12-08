@@ -1,41 +1,101 @@
-function [StrikeSlipDisp,DipSlipDisp,TensileSlipDisp,Pxx,Pyy,Pzz,...
-Pxy,Pxz,Pyz]=SlipCalculator3d(MidPoint,Pxx,Pyy,Pzz,Pxy,Pxz,Pyz,...
-Tnn_i,Tss_i,Tds_i,mu,lambda,nu,P1,P2,P3,halfspace,FaceNormalVector,Fdisp,strain,Mu,Sf,Option,Triangles,Points,cmap)
-%SlipCalculator3d Calculates the 3 slip components on the imported fault
-%surface from boundary condition defined by the user.
+function [Dss,Dds,Dn,Pxx,Pyy,Pzz,Pxy,Pxz,Pyz]=SlipCalculator3d(MidPoint,...
+Pxx,Pyy,Pzz,Pxy,Pxz,Pyz,Tn_i,Tss_i,Tds_i,mu,lambda,nu,P1,P2,P3,halfspace...
+,FaceNormalVector,Fdisp,strain,Mu,Sf,Option,Triangles,Points,cmap)
+% SlipCalculator2d: Calculates the 3 slip components on the
+%               imported fault surface from  boundary condition defined by the
+%               user.
 %
-%   Influence Coefficient functions from:
-%   Nikkhoo, M. and Walter, T.R., 2015. Triangular dislocation: an analytical
-%   , artefact-free solution. Geophysical Journal International, 201(2), 
-%   pp.1117-1139.
+% usage #1:
 %
-%   INPUTS
-%   nu is the Poisson's ratio
-%   Lambda is the Lamé's parameter
-%   mu is the shear modulus
-%   halfspace defines if we work out the coefficientsin a half or whole
-%   space
-%   FaceNormalVector is cosines of each tris normal
-%   Pxx,Pyy,Pxy,Tnn,Tss,Tds are the defined stresses or tractions at the
-%   elements, either defined for each element or just a single value that
-%   will then be added to all elements.
-%   strain is a flag that means remote stress are actually strains, these
-%   are converted to stresses before this continues. 
-%   Fdisp, flag of elements that have fixed displacements. Displacement
-%   coefficients are created if this exists and the system of linear
-%   equations changes. 
-%   Mu, Coefficient of friction
-%   Sf, Sliding friction
-%   Option - which option the user is using. 
-    %B=under remote stress, fault can interpenetrate
-    %C=friction solver as in ritz 2012
-    %D=remote stress, opening components not calculated. Fault satisfys
-    %boundary conditions by shearing only.
-    %E=tractions defined on body, 
-    %F=Inhomogeneous
-    
-%   Copyright 2017, Tim Davis, The University of Aberdeen
-    
+% [Dss,Dds,Dn,Sxx,Syy,Szz,Sxy,Sxz,Syz]=SlipCalculator3d(MidPoint,Sxx,Syy,Szz,Sxy,Sxz,Syz,...
+% Tn,Tss,Tds,mu,lambda,nu,P1,P2,P3,halfspace,FaceNormalVector,Fdisp,strain,Mu,Sf,Option);
+%
+% Arguments: (input)
+%    MidPoint - The element midpoints (triangle). Incentre.  
+%
+% Pxx,Pyy,Pzz
+% Pxy,Pxz,Pyz - Remote stress defined by user.
+%
+% Tn,Tss,Tds  - Tractions on the surface defined by the user 
+%              (Normal,Strikeslip and Dipslip) .
+%
+%       mu    - Shear modulus.
+%
+%     lambda  - Lame's constant.
+%
+%       nu    - The Poisson's ratio.
+%
+% P1,P2,P3    - n*3 Column vectors where each 'P' represents the
+%               different corner points of one of the triangles (XYZ).
+%
+%  halfspace  - Defines if we work out the coefficientsin a half or whole
+%              space
+%
+% FaceNormalVector - The direction cosines, CosAx (Nx), CosAy and CosAz in 
+%                   a list for each element. 
+%
+%    Strain   - Flag to say if the input stresses are actually a strain
+%              tensor. If so we convert these to stresses before
+%              continuing.
+%
+% Fdisp       - Flag telling the user if any elements are going to be fixed
+%              (if this is the case displacement influence matricies are
+%              required). In the case of inhomogeneous materials this is
+%              more complex, see function
+%              'InhomogeneousInfluenceBuilder3d.m'.
+%
+%   Mu        - Coefficient of friction at each element.
+%
+%   Sf        - Sliding friction (Cohesion) at each element.
+%
+%   Option    - which option the user is using:
+%           'B'=under remote stress, fault can interpenetrate.
+%           'C'=friction solver as in Ritz 2012.
+%           'D'=remote stress, opening components not calculated. Fault satisfies
+%             boundary conditions by shearing only.
+%           'E'=tractions defined on body, I.e. pressure in a magma
+%           chamber.
+%           'F'=Inhomogeneous.
+%
+% Arguments: (output)
+%  Dss,Dds,Dn - Vectors that describe how much the elements displace in the
+%               normal (Dn) and strike slip (Dss) and dipslip (Dds)
+%               directions on the elements.
+%
+% Pxx,Pyy,Pzz
+% Pxy,Pxz,Pyz- Remote stress if it existed on import (useful if the
+%              user defined strain boundary conditions. 
+%
+% Example usage:
+% %Assuming the elastic constants and surface are defined:
+%  halfspace=0;
+%  [Sxx,Syy,Szz,Sxy,Sxz,Syz,Tn,Tss,Tds,Mu,Sf,strain,SecondSurface ]...
+%  = CreateBlankVars;
+%  strain=0; 
+%  Sxx = 0; 				
+%  Syy = 0; 
+%  Szz = 0; 
+%  Sxy = 1; 					
+%  Sxz = 0; 					
+%  Syz = 0;                
+%  Option='B'; 
+%  [Dss,Dds,Dn,Sxx,Syy,Szz,Sxy,Sxz,Syz]=SlipCalculator3d(MidPoint,Sxx,Syy,Szz,Sxy,Sxz,Syz,...
+%   Tn,Tss,Tds,mu,lambda,nu,P1,P2,P3,halfspace,FaceNormalVector,Fdisp,strain,Mu,Sf,Option);
+%
+%
+%  Author: Tim Davis
+%  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
+
+%Number of points:
+NUM=numel(MidPoint(:,1));
+
+%Check input constants match:
+ElasticConstantsCheck( mu(1),lambda(1),nu(1) );
+if numel(nu)>1 %Inhomo, 2 elastics
+    ElasticConstantsCheck( mu(2),lambda(2),nu(2) );
+end
+
+
 % If Defined slip is as a uniform remote strain, checking options that have
 % a uniform 'stress' defined
 if Option=='B' || Option=='C' || Option=='D' || Option=='F'
@@ -54,12 +114,11 @@ end
 %Function to check the boundary stress tensors related to Z(y in 2d) components are 0 at the
 %halfspace surface
 if halfspace==1
-    HalfSpaceBoundaryConditionsCheck3d(MidPoint(:,3),Pzz,Pyz,Pxz)
-else
+    HalfSpaceBoundaryConditionsCheck(MidPoint(:,3),Pzz,Pyz,Pxz)
 end
-    
-    %Checking we can overcome the frictional resistance on the fault. No
-    %point waiting for this otherwise
+
+%Checking we can overcome the frictional resistance on the fault. No
+%point waiting for this otherwise
 if Option=='C'     
     
     [ Tnn,Tds,Tss ] = CalculateNormalAndShearTractions3d( FaceNormalVector,Pxx,Pyy,Pzz,Pxy,Pxz,Pyz );
@@ -67,53 +126,44 @@ if Option=='C'
     if all(-abs(Tss)>FricRes) && all(-abs(Tds)>FricRes)
         PlotSlipDistribution3d(Triangles,Points,cmap,FricRes,Tss,Tds)
         disp('Your frictional fault will not slip, quit (ctrl+c)')
-		disp('TurnedOfPauseForLoopsThoughPUTBACKON!')
-        %pause        
+        pause        
     end
     
 end
     
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %Creating influence matrices using a function. Big square matrices of
-    %how much every element slipping by 1 effects traction on every other element
-    %If displacement if fixed on any elements we also disp influence matrices 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Creating influence matrices using a function. Big square matrices of
+%how much every element slipping by 1 effects traction on every other element
+%If displacement if fixed on any elements we also disp influence matrices. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
 if Option~='F'  %any option but inhomo   
     
-    [ DnTn,DnTss,DnTds,DssTn,DssTss,DssTds,DdsTn,DdsTss,DdsTds,Dn_dx,Dn_dy,Dn_dz,Dss_dx,Dss_dy,Dss_dz,Dds_dx,Dds_dy,Dds_dz,NUM,...
-    StrikeSlipCosine,DipSlipCosine] = CalculateInfluenceMatrices3d(MidPoint,P1,P2,P3,mu,lambda,FaceNormalVector,halfspace,nu,Fdisp);
+    [StressInf,DispInf] = CalculateInfluenceMatrices3d(MidPoint,P1,P2,P3,mu,lambda,FaceNormalVector,halfspace,nu,Fdisp);
     
 else %Inhomo calc
     
-    [DnTnE1FB,DnTssE1FB,DnTdsE1FB,DssTnE1FB,DssTssE1FB,DssTdsE1FB,DdsTnE1FB,DdsTssE1FB,DdsTdsE1FB,...
-     DnTnE1IF,DnTssE1IF,DnTdsE1IF,DssTnE1IF,DssTssE1IF,DssTdsE1IF,DdsTnE1IF,DdsTssE1IF,DdsTdsE1IF,...
-     Dn_dxE1FB,Dn_dyE1FB,Dn_dzE1FB,Dss_dxE1FB,Dss_dyE1FB,Dss_dzE1FB,Dds_dxE1FB,Dds_dyE1FB,Dds_dzE1FB,...
-     Dn_dxE1IF,Dn_dyE1IF,Dn_dzE1IF,Dss_dxE1IF,Dss_dyE1IF,Dss_dzE1IF,Dds_dxE1IF,Dds_dyE1IF,Dds_dzE1IF,...
-     DnTnE2FB,DnTssE2FB,DnTdsE2FB,DssTnE2FB,DssTssE2FB,DssTdsE2FB,DdsTnE2FB,DdsTssE2FB,DdsTdsE2FB,...
-     DnTnE2IF,DnTssE2IF,DnTdsE2IF,DssTnE2IF,DssTssE2IF,DssTdsE2IF,DdsTnE2IF,DdsTssE2IF,DdsTdsE2IF,...
-     Dn_dxE2FB,Dn_dyE2FB,Dn_dzE2FB,Dss_dxE2FB,Dss_dyE2FB,Dss_dzE2FB,Dds_dxE2FB,Dds_dyE2FB,Dds_dzE2FB,...
-     Dn_dxE2IF,Dn_dyE2IF,Dn_dzE2IF,Dss_dxE2IF,Dss_dyE2IF,Dss_dzE2IF,Dds_dxE2IF,Dds_dyE2IF,Dds_dzE2IF,...
-     NUME1,NUME2,nuE1,muE1,nuE2,muE2,...
-     FreeBoundary1,FreeBoundary2,FdispE1,FdispE2,FreeBoundaries,FixedDisps]...
+    [StressInfE1FB,StressInfE1IF,DispInfE1FB,DispInfE1IF,StressInfE2FB,StressInfE2IF,DispInfE2FB,DispInfE2IF,...
+     NUME1,NUME2,FreeBoundary1,FreeBoundary2,FdispE1,FdispE2,FreeBoundaries,FixedDisps]...
      = InhomogeneousInfluenceBuilder3d...
      (MidPoint,P1,P2,P3,mu,lambda,FaceNormalVector,halfspace,nu,Fdisp);
     
 end
 
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %Traction influence matrices should now exist. 
-    %Now the defined pressures, Dss,Dds and Dn are reshaped. 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Traction influence matrices should now exist. 
+%Now the defined pressures, Dss,Dds and Dn are reshaped. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if Option=='B' || Option=='C' || Option=='D' || Option=='F' 
     
     if Option=='F'   
 
         FaceNormalVector=FaceNormalVector([FreeBoundaries,FreeBoundaries,FreeBoundaries]); 
-        FaceNormalVector=reshape(FaceNormalVector,[],3);  %after grabbing with flag turns to Cv, need to reshape  
+        FaceNormalVector=reshape(FaceNormalVector,[],3); 
+        
     end     
     
     [ Tnn,Tds,Tss ] = CalculateNormalAndShearTractions3d( FaceNormalVector,Pxx,Pyy,Pzz,Pxy,Pxz,Pyz );
@@ -131,63 +181,49 @@ if Option=='E'
     
     %creates a column of the stress on every triangles centre point with 
     %the pressure direction defined by the slip type in the name. 
-    Tnn     = Tnn+Tnn_i;    
+    Tnn     = Tnn+Tn_i;    
     Tss     = Tss+Tss_i;
     Tds     = Tds+Tds_i;
 
 end
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %Creating large arrays from the influence matrices and the traction matrices.
-    %performing the system of linear equations to find the slip due to the boundary conditions. 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Creating large arrays from the influence matrices and the traction matrices.
+%performing the system of linear equations to find the slip due to the boundary conditions. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    %Quick loop to force any fixed triangles to stick
+%Quick loop to force any fixed triangles to stick
 if Option~='F'  
     
     if any(Fdisp)==1
-
-    %Now exchanging stress coeff rows for displacement ones
-    [ DnTn,DnTss,DnTds,DssTn,DssTss,DssTds,DdsTn,DdsTss,DdsTds,NUM,Tnn,Tss,Tds ]...
-    = FixingDisp_InfRowSwap3d( DnTn,DnTss,DnTds,DssTn,DssTss,DssTds,DdsTn,...
-    DdsTss,DdsTds,Dn_dx,Dn_dy,Dn_dz,Dss_dx,Dss_dy,Dss_dz,Dds_dx,Dds_dy,Dds_dz,NUM,Tnn,Tss,Tds,Fdisp);
-    clear Dn_dx Dn_dy Dn_dz Dss_dx Dss_dy Dss_dz Dds_dx Dds_dy Dds_dz
+        %Now exchanging stress coeff rows for displacement ones
+        [StressInf,NUM,Tnn,Tss,Tds]=FixingDisp_InfRowSwap3d(StressInf,DispInf,NUM,Tnn,Tss,Tds,Fdisp);
+        clear DispInf
     end
     
 else %We need to do this for both elastics  
     
     if any(FdispE1)==1    
-    [DnTnE1FB,DnTssE1FB,DnTdsE1FB,DssTnE1FB,DssTssE1FB,DssTdsE1FB,DdsTnE1FB,DdsTssE1FB,DdsTdsE1FB,NUME1,null,null,null ]...
-    = FixingDisp_InfRowSwap3d(DnTnE1FB,DnTssE1FB,DnTdsE1FB,DssTnE1FB,DssTssE1FB,DssTdsE1FB,DdsTnE1FB,DdsTssE1FB,DdsTdsE1FB,...
-    Dn_dxE1FB,Dn_dyE1FB,Dn_dzE1FB,Dss_dxE1FB,Dss_dyE1FB,Dss_dzE1FB,Dds_dxE1FB,Dds_dyE1FB,Dds_dzE1FB,NUME1,[],[],[],FdispE1);
-    % % %Now removing any fixed disp element cols from the interface elements  
-    [DnTnE1IF,DnTssE1IF,DnTdsE1IF,DssTnE1IF,DssTssE1IF,DssTdsE1IF,DdsTnE1IF,DdsTssE1IF,DdsTdsE1IF]...
-    = ExtractData(FdispE1,4,DnTnE1IF,DnTssE1IF,DnTdsE1IF,DssTnE1IF,DssTssE1IF,DssTdsE1IF,DdsTnE1IF,DdsTssE1IF,DdsTdsE1IF );
-    [Dn_dxE1IF,Dn_dyE1IF,Dn_dzE1IF,Dss_dxE1IF,Dss_dyE1IF,Dss_dzE1IF,Dds_dxE1IF,Dds_dyE1IF,Dds_dzE1IF]...
-    = ExtractData(FdispE1,4,Dn_dxE1IF,Dn_dyE1IF,Dn_dzE1IF,Dss_dxE1IF,Dss_dyE1IF,Dss_dzE1IF,Dds_dxE1IF,Dds_dyE1IF,Dds_dzE1IF);
+        [ StressInfE1FB,NUME1,~,~,~]= FixingDisp_InfRowSwap3d( StressInfE1FB,DispInfE1FB,NUME1,[],[],[],FdispE1);       
+        %Now removing any fixed disp element cols from the interface elements  
+        [StressInfE1IF] = ExtractData(FdispE1,2,StressInfE1IF,'Columns',1 );
+        [DispInfE1IF]  = ExtractData(FdispE1,2,DispInfE1IF,'Columns',1 );
     end
+    
     %E2    
     if any(FdispE2)==1
+        %Need to Flip So the fixed disps are the top part    
+        [StressInfE2FB,DispInfE2FB,FdispE2]=FlipColVecs(StressInfE2FB,DispInfE2FB,FdispE2);
         
-    %Need to Flip So the fixed disps are the top part    
-    [DnTnE2FB,DnTssE2FB,DnTdsE2FB,DssTnE2FB,DssTssE2FB,DssTdsE2FB,DdsTnE2FB,DdsTssE2FB,DdsTdsE2FB,FdispE2]...
-        =FlipColVecs(DnTnE2FB,DnTssE2FB,DnTdsE2FB,DssTnE2FB,DssTssE2FB,DssTdsE2FB,DdsTnE2FB,DdsTssE2FB,DdsTdsE2FB,FdispE2);
-            
-    [DnTnE2FB,DnTssE2FB,DnTdsE2FB,DssTnE2FB,DssTssE2FB,DssTdsE2FB,DdsTnE2FB,DdsTssE2FB,DdsTdsE2FB,NUME2,null,null,null ]...
-    = FixingDisp_InfRowSwap3d(DnTnE2FB,DnTssE2FB,DnTdsE2FB,DssTnE2FB,DssTssE2FB,DssTdsE2FB,DdsTnE2FB,DdsTssE2FB,DdsTdsE2FB,...
-    Dn_dxE2FB,Dn_dyE2FB,Dn_dzE2FB,Dss_dxE2FB,Dss_dyE2FB,Dss_dzE2FB,Dds_dxE2FB,Dds_dyE2FB,Dds_dzE2FB,NUME2,[],[],[],FdispE2);
-    
-    %Need to Flip back
-    [DnTnE2FB,DnTssE2FB,DnTdsE2FB,DssTnE2FB,DssTssE2FB,DssTdsE2FB,DdsTnE2FB,DdsTssE2FB,DdsTdsE2FB,FdispE2]...
-        =FlipColVecs(DnTnE2FB,DnTssE2FB,DnTdsE2FB,DssTnE2FB,DssTssE2FB,DssTdsE2FB,DdsTnE2FB,DdsTssE2FB,DdsTdsE2FB,FdispE2);
-            
-    % % %Now removing any fixed disp element cols from the interface elements  
-    [DnTnE2IF,DnTssE2IF,DnTdsE2IF,DssTnE2IF,DssTssE2IF,DssTdsE2IF,DdsTnE2IF,DdsTssE2IF,DdsTdsE2IF]...
-    = ExtractData(FdispE2,4,DnTnE2IF,DnTssE2IF,DnTdsE2IF,DssTnE2IF,DssTssE2IF,DssTdsE2IF,DdsTnE2IF,DdsTssE2IF,DdsTdsE2IF );
-    [Dn_dxE2IF,Dn_dyE2IF,Dn_dzE2IF,Dss_dxE2IF,Dss_dyE2IF,Dss_dzE2IF,Dds_dxE2IF,Dds_dyE2IF,Dds_dzE2IF]...
-    = ExtractData(FdispE2,4,Dn_dxE2IF,Dn_dyE2IF,Dn_dzE2IF,Dss_dxE2IF,Dss_dyE2IF,Dss_dzE2IF,Dds_dxE2IF,Dds_dyE2IF,Dds_dzE2IF);       
+        [ StressInfE2FB,NUME1,~,~,~ ]= FixingDisp_InfRowSwap3d( StressInfE2FB,DispInfE2FB,NUME2,[],[],[],FdispE2);  
+        
+        %Flipping back right way up
+        [StressInfE2FB,DispInfE2FB,FdispE2]=FlipColVecs(StressInfE2FB,DispInfE2FB,FdispE2);
+        %Now removing any fixed disp element cols from the interface elements  
+        [StressInfE2IF] = ExtractData(FdispE2,2,StressInfE2IF,'Columns',1 );
+        [DispInfE2IF]  = ExtractData(FdispE2,2,DispInfE2IF,'Columns',1 );      
     end
-    %Need to do this for Tn and Ts 
+    
     FD=logical(FixedDisps);    
     Tnn(FD) = 0;    
     Tss(FD) = 0;
@@ -196,55 +232,53 @@ else %We need to do this for both elastics
 end       
     
 if Option=='B' || Option=='E' || Option=='C'
-
-    Atn  = [-DnTn,  -DssTn, -DdsTn ]; 
-    Atss = [-DnTss, -DssTss,-DdsTss];
-    Atds = [-DnTds, -DssTds,-DdsTds];
-    clear DnTn DssTn DdsTn DnTssDssTss DdsTss DnTds DssTds DdsTds
+        
+    Atn  = [-StressInf.DnTn,  -StressInf.DssTn, -StressInf.DdsTn ];     StressInf = rmfield(StressInf,{'DnTn','DssTn','DdsTn'});
+    Atss = [-StressInf.DnTss, -StressInf.DssTss,-StressInf.DdsTss];     StressInf = rmfield(StressInf,{'DnTss','DssTss','DdsTss'});
+    Atds = [-StressInf.DnTds, -StressInf.DssTds,-StressInf.DdsTds];     
+    clear StressInf
     A= [Atn;Atss;Atds];  %Concatenate ready for equation 
     clear Atn Atss Atds
 
 elseif Option=='D'             
                                    
-    Atn =  [-DssTn, -DdsTn ]; 
-    Atss = [-DssTss,-DdsTss];
-    Atds = [-DssTds,-DdsTds];
-    clear DnTn DssTn DdsTn DnTssDssTss DdsTss DnTds DssTds DdsTds
+    Atn =  [-StressInf.DssTn, -StressInf.DdsTn ];                       StressInf = rmfield(StressInf,{'DssTn','DdsTn'});
+    Atss = [-StressInf.DssTss,-StressInf.DdsTss];                       StressInf = rmfield(StressInf,{'DssTss','DdsTss'});
+    Atds = [-StressInf.DssTds,-StressInf.DdsTds];
+    clear StressInf
     A= [Atn;Atss;Atds];  %Concatenate ready for equation 
     clear Atn Atss Atds
     
 elseif Option=='F'         
+    %Note this is not currently very efficient way of doing the memory allocation. Better to build each row of 'A' separately.  
+    zerinfA=zeros(size(StressInfE1FB.DnTn,1),size(DispInfE2IF.DnUz,2)); %Sz=1=(Rows down),2=(Cols across)
+    zerinfB=zeros(size(StressInfE2FB.DnTn,1),size(DispInfE1IF.DnUz,2)); 
+    
+    
+    A=[[StressInfE1IF.DnTn,   StressInfE1IF.DssTn,  StressInfE1IF.DdsTn,  -StressInfE2IF.DnTn,  -StressInfE2IF.DssTn,  -StressInfE2IF.DdsTn ];
+       [StressInfE1IF.DnTss,  StressInfE1IF.DssTss, StressInfE1IF.DdsTss, -StressInfE2IF.DnTss, -StressInfE2IF.DssTss, -StressInfE2IF.DdsTss];
+       [StressInfE1IF.DnTds,  StressInfE1IF.DssTds, StressInfE1IF.DdsTds, -StressInfE2IF.DnTds, -StressInfE2IF.DssTds, -StressInfE2IF.DdsTds];
+       [DispInfE1IF.DnUx,     DispInfE1IF.DssUx,    DispInfE1IF.DdsUx,    -DispInfE2IF.DnUx,    -DispInfE2IF.DssUx,    -DispInfE2IF.DdsUx   ];
+       [DispInfE1IF.DnUy,     DispInfE1IF.DssUy,    DispInfE1IF.DdsUy,    -DispInfE2IF.DnUy,    -DispInfE2IF.DssUy,    -DispInfE2IF.DdsUy   ];
+       [DispInfE1IF.DnUz,     DispInfE1IF.DssUz,    DispInfE1IF.DdsUz,    -DispInfE2IF.DnUz,    -DispInfE2IF.DssUz,    -DispInfE2IF.DdsUz   ];
+       [-StressInfE1FB.DnTn, -StressInfE1FB.DssTn, -StressInfE1FB.DdsTn,   zerinfA,              zerinfA,               zerinfA             ];
+       [-StressInfE1FB.DnTss,-StressInfE1FB.DssTss,-StressInfE1FB.DdsTss,  zerinfA,              zerinfA,               zerinfA             ];
+       [-StressInfE1FB.DnTds,-StressInfE1FB.DssTds,-StressInfE1FB.DdsTds,  zerinfA,              zerinfA,               zerinfA             ];    
+       [zerinfB,              zerinfB,              zerinfB,              -StressInfE2FB.DnTn,  -StressInfE2FB.DssTn,  -StressInfE2FB.DdsTn ]; %stress infs, only the influence on freeboundary
+       [zerinfB,              zerinfB,              zerinfB,              -StressInfE2FB.DnTss, -StressInfE2FB.DssTss, -StressInfE2FB.DdsTss];
+       [zerinfB,              zerinfB,              zerinfB,              -StressInfE2FB.DnTds, -StressInfE2FB.DssTds, -StressInfE2FB.DdsTds]];
+    
+    clear StressInfE1IF DispInfE1IF StressInfE1FB StressInfE2IF StressInfE2FB zerinfA zerinfB
 
-    zerinfA=zeros(size(DnTnE1FB,1),size(Dn_dzE2IF,2)); %Sz=1=(Rows down),2=(Cols across)
-    zerinfB=zeros(size(DnTnE2FB,1),size(Dn_dzE1IF,2)); 
-    
-    A=[[DnTnE1IF,  DssTnE1IF,  DdsTnE1IF,   -DnTnE2IF,     -DssTnE2IF,    -DdsTnE2IF ];
-       [DnTssE1IF, DssTssE1IF, DdsTssE1IF,  -DnTssE2IF,    -DssTssE2IF,   -DdsTssE2IF];
-       [DnTdsE1IF, DssTdsE1IF, DdsTdsE1IF,  -DnTdsE2IF,    -DssTdsE2IF,   -DdsTdsE2IF];
-       [Dn_dxE1IF, Dss_dxE1IF, Dds_dxE1IF,  -Dn_dxE2IF,    -Dss_dxE2IF,   -Dds_dxE2IF];
-       [Dn_dyE1IF, Dss_dyE1IF, Dds_dyE1IF,  -Dn_dyE2IF,    -Dss_dyE2IF,   -Dds_dyE2IF];
-       [Dn_dzE1IF, Dss_dzE1IF, Dds_dzE1IF,  -Dn_dzE2IF,    -Dss_dzE2IF,   -Dds_dzE2IF];
-       [DnTnE1FB,  DssTnE1FB,  DdsTnE1FB,   zerinfA,        zerinfA,       zerinfA   ];
-       [DnTssE1FB, DssTssE1FB, DdsTssE1FB,  zerinfA,        zerinfA,       zerinfA   ];
-       [DnTdsE1FB, DssTdsE1FB, DdsTdsE1FB,  zerinfA,        zerinfA,       zerinfA   ];    
-       [zerinfB,    zerinfB,   zerinfB,     DnTnE2FB,       DssTnE2FB,     DdsTnE2FB ]; %stress infs, only the influence on freeboundary
-       [zerinfB,    zerinfB,   zerinfB,     DnTssE2FB,      DssTssE2FB,    DdsTssE2FB];
-       [zerinfB,    zerinfB,   zerinfB,     DnTdsE2FB,      DssTdsE2FB,    DdsTdsE2FB]];
-    
-    clear DnTnE1IF DnTssE1IF DnTdsE1IF DssTnE1IF DssTssE1IF DssTdsE1IF DdsTnE1IF DdsTssE1IF DdsTdsE1IF zerinfSm
-    clear Dn_dxE2IF Dn_dyE2IF Dss_dxE2IF Dss_dyE2IF Dss_dzE2IF Dds_dxE2IF Dds_dyE2IF Dds_dzE2IF
-    clear DnTnE1FB DnTssE1FB DnTdsE1FB DssTnE1FB DssTssE1FB DssTdsE1FB DdsTnE1FB DdsTssE1FB DdsTdsE1FB
-    clear DnTnE2FB DnTssE2FB DnTdsE2FB DssTnE2FB DssTssE2FB DssTdsE2FB DdsTnE2FB DdsTssE2FB DdsTdsE2FB
-   
 end
 
-    [ A ] = InfMatrixCheck( A );  
-     %disp('inf check off, line 243 in *slipcalculator3d*, put back on'); 
+ InfMatrixCheck( A );  
+ %disp('inf check off in *SlipCalculator3d*, put back on'); 
     
 if Option=='F'
-    zer=zeros(size(Dn_dzE2IF,1),1);     clear Dn_dzE2IF
+    zer=zeros(size(DispInfE2IF.DnUz,1),1);     clear DispInfE2IF
     contvec=[zer;zer;zer;zer;zer;zer];
-    B=-[contvec;...
+    B= [contvec;...
         Tnn(FreeBoundary1);Tss(FreeBoundary1);Tds(FreeBoundary1);...
         Tnn(FreeBoundary2);Tss(FreeBoundary2);Tds(FreeBoundary2)];
 else 
@@ -252,58 +286,72 @@ else
     B= [Tnn;Tss;Tds];    
 end
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %The linear equations: 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%The linear equations: 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if Option=='C' 
+    %Adding some scaling parameters (Improves Friction Solver performance). 
+    %We scale by the average triangle size and the shear mod. 
+    [~,Perim ] = AreaOfTriangle3d( P1(:,1),P1(:,2),P1(:,3),P2(:,1),P2(:,2),P2(:,3),P3(:,1),P3(:,2),P3(:,3) );
+    Perim=mean(Perim);
+    Scl=(Perim/mean(mu)); 
+    A=A.*Scl; 
+end
 
 
-    %  Solve the matrix system [A][D]=[B] to get the displacement discontinuity vector D
-    %If we have fixed displacements the matrix is no longer square, in this
-    %case \ division is faster on sparse matrices 
-    if any(Fdisp)==1 && isa(A,'double') %sparse doesn't work for singles
+%  Solve the matrix system [A][D]=[B] to get the displacement discontinuity vector D
+%If we have fixed displacements the matrix is no longer square, in this
+%case \ division is faster on sparse matrices 
+if any(Fdisp)==1 && isa(A,'double') %sparse doesn't work for singles
     %D = A\B; disp('sparse off, line 266 SlipCalc3d')
     D = sparse(A)\B;
     %If not we are using a dense square matrix, this is faster if square as we
     %do not need to spend time allocating this as sparse. 
-    else
+else
     D = A\B;
-    end
+end
 
-        
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %Grabbing the data back
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Grabbing the data back
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-    %  Extract displacements from D vector into subvectors
+%  Extract displacements from D vector into subvectors
 if Option=='B' || Option=='E'     
 
-    [ TensileSlipDisp,StrikeSlipDisp,DipSlipDisp ] = ExtractArraysFromVector( D );
+    [ Dn,Dss,Dds ] = ExtractArraysFromVector( D );
     
 elseif Option=='D'      
     
-    [ StrikeSlipDisp,DipSlipDisp ] = ExtractArraysFromVector( D );
-    TensileSlipDisp=zeros(size(StrikeSlipDisp));
+    [ Dss,Dds ] = ExtractArraysFromVector( D );
+    Dn=zeros(size(Dss));
     
 elseif Option=='F'  
     
     DE1=D(1:(3*NUME1),:);
     DE2=D((3*NUME1)+1:end,:);
-    [ TensileSlipDispE1,StrikeSlipDispE1,DipSlipDispE1 ] = ExtractArraysFromVector( DE1 );
-    [ TensileSlipDispE2,StrikeSlipDispE2,DipSlipDispE2 ] = ExtractArraysFromVector( DE2 );
-    TensileSlipDisp     =[TensileSlipDispE1;TensileSlipDispE2];
-    StrikeSlipDisp      =[StrikeSlipDispE1;StrikeSlipDispE2];     
-    DipSlipDisp         =[DipSlipDispE1;DipSlipDispE2];
+    [ DnE1,DssE1,DdsE1 ] = ExtractArraysFromVector( DE1 );
+    [ DnE2,DssE2,DdsE2 ] = ExtractArraysFromVector( DE2 );
+    Dn  =[DnE1;DnE2];
+    Dss =[DssE1;DssE2];     
+    Dds =[DdsE1;DdsE2];
     
 elseif Option=='C' 
     %friction solver
-     [TensileSlipDisp,StrikeSlipDisp,DipSlipDisp] = LinearCompFrictionSolver3d(D,A,Sf,Mu,NUM,Tnn,Tss,Tds);
+    [Dn,Dss,Dds] = LinearCompFrictionSolver3d(D,A,Sf,Mu,NUM,Tnn,Tss,Tds);
+    %Scaling back the data. 
+    Dn=Dn*Scl;
+    Dss=Dss*Scl;
+    Dds=Dds*Scl;
 
 end
-    clear A B
-                                               
+
+clear A B
+
 if Option=='E'
-	    Pxx=0;
+        Pxx=0;
         Pyy=0;
         Pzz=0;
         Pxy=0;

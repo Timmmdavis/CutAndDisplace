@@ -1,0 +1,19 @@
+# Ignore the images and MATLAB's autosave files:
+*.asv
+*.png
+#
+# When using git gui I was seeing the .png test files as changed after each regression run.
+# This is even with the above statements in git ignore. My solution was:
+#
+# 1. In git cmd cd to dir.
+# 			cd <path>
+#
+# 2. Check the remote is correct: 
+#			git remote -v
+#
+# 3. Add statement such as: 
+#			git update-index --skip-worktree "3dCode/AnalyticalTests/Test1.png"
+#
+# Solution from: 
+#			https://stackoverflow.com/questions/4308610/how-to-ignore-certain-files-in-git
+#

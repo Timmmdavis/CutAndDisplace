@@ -1,21 +1,35 @@
 function [S1,S2,S1dir,S2dir]=EigCalc2d(Sxx,Syy,Sxy)
-% Calculates the 2-D principal stress/strain magnitudes and directions from input tensors
-% Input parameters
-% Sxx = sigma xx
-% Syy = sigma yy
-% Sxy = sigma xy
-% Output parameter (tension positive convention for inputs)
-% S1 = most tensile principal stress
-% S2 = most comp principal stress
-% S1dir = XY components of the direction of the principal stress S1
-% S2dir = see above
-% Example 
-%Calclating 2d stress eigenValues
-%[S1,S2,S1dir,S2dir]=EigCalc2d(Sxx,Syy,Sxy);
-%Calclating 2d strain eigenValues
-%[E1,E2,E1dir,E2dir]=EigCalc2d(Exx,Eyy,Exy);
-
-%   Copyright 2017, Tim Davis, The University of Aberdeen
+% EigCalc2d: Calculates the 2D principal stress/strain magnitudes and 
+%                   directions from input tensors.
+%   
+% usage #1: For stress:
+% [S1,S2,S1dir,S2dir]=EigCalc2d(Sxx,Syy,Sxy)
+%
+% usage #2: For strain:
+% [E1,E2,E1dir,E2dir]=EigCalc2d(Exx,Eyy,Exy);
+%
+% Arguments: (input)
+% Sxx,Syy,Sxy 		- The stress tensor components at a point, each can be a
+%                    column vector.
+%
+% Arguments: (output)
+% S1,S2       		- Principal stress component magnitudes Sigma 1 and
+%                    Sigma 2.
+%
+% S1dir,S2dir       - Principal stress directions (direction cosines). Each
+%                    will be a n*2 column vector [CosAx,CosAy] of this
+%                    direction. 
+%
+% Example usage 1:
+%
+% %Calculating directions for a 2D stress tensor
+% Sxx=0.2; Syy=-1.5; Sxy=1; 
+% [S1,S2,S1dir,S2dir]=EigCalc2d(Sxx,Syy,Sxy)
+% %Drawing
+% DrawS1S2Directions( 0,0,S1dir,S2dir )
+%
+%  Author: Tim Davis
+%  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
 %Preallocating array
 n = numel(Sxx);
@@ -39,7 +53,7 @@ tensor(NanFlag)=0;
 %Preallocating array
 V=zeros (n*2,2); %Eigen vectors - http://eqseis.geosc.psu.edu/~cammon/HTML/UsingMATLAB/PDF/ML2%20Eigenvalues.pdf
 D=zeros (n*2,2); %Eigen values -  also see Pollard 2005 addition resources MATLAB introduction WordDoc
-for J=(1:2:n*2); 
+for J=(1:2:n*2)
     [V(J:J+1,:),D(J:J+1,:)] = eig(tensor(J:J+1,:));
     V(J:J+1,:)=V(J:J+1,:)'; %Flipping the direction cosines as its easier to extract these like this. 
 end

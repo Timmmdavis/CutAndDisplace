@@ -1,27 +1,54 @@
-%Two horizontal components of stress
-%Calculate cartesian stress tensor components from given computed/observed
-%principal stresses
-%This tensor can then be input as your driving stress without any 'dodgy'
-%coordinate transforms/rotations having to be performed on the fault surface. 
-%The way this is setup we presume we have the three principal stresses and
-%two are horizontal, the other is vertical. We define the az and magnitude
-%and the tensors are given that we input into the script
-
-%   Copyright 2017, Tim Davis, The University of Aberdeen
-
-clear
-close all
+function [ CartSxx,CartSyy,CartSzz,CartSxy,CartSxz,CartSyz]...
+    =TensorsFromPrincipal3d( S1,S2,S3,DirS1 )
+% TensorsFromPrincipal3d: Function that computes the Cartesian stress
+%                   tensor from the magnitude and directions of defined
+%                   principal stresses. Use to compute tensors for the BEM
+%                   boundary conditions. This prints these to your console.
+%
+%                   The 3rd stress direction (most compressive is presumed
+%                   to be vertical). 
+%
+%               
+% usage #1: Prints results to cmd window
+% TensorsFromPrincipal3d( S1,S2,S3,DirS1 )
+%
+% usage #2: Outputs these for futher use
+% [ CartSxx,CartSyy,CartSzz,CartSxy,CartSxz,CartSyz]...
+%    =TensorsFromPrincipal3d( S1,S2,S3,DirS1 )
+%
+% Arguments: (input)
+%     S1,S2,S3       - The magnitudes of the principal stresses. 
+%
+%     DirS1       - The azimuth of the S1 component (degrees). 
+%                  (angle away from N clockwise)
+%
+% Arguments: (output)
+% CartSxx,CartSyy,CartSzz
+% CartSxy,CartSxz,CartSyz- The magnitudes of the calculated Cartesian
+%                          stress tensor.
+%
+% Example usage:
+%
+%  S1=0;
+%  S2=-2;
+%  S3=0;
+%  DirS1=45;
+%  TensorFromPrincipal2d( S1,S2,S3,DirS1 );
+%
+%
+%  Author: Tim Davis
+%  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
 
 %% DefineMagnitude
-%Horizontal stresses mag
-S11= -50;     %Magnitude of component 1
-S22= -233.8000;	%Magnitude of component 2
+%Horizontal stresses mags
+Sz1= S1;    %Magnitude of component 1
+Sz2= S2;	%Magnitude of component 2
 %Vertical stress mag
-S33=-233.8000; 	%Magnitude of component 3
+Sz3= S3; 	%Magnitude of component 3
 
 %% DefineDirection
-Dir1=90-24.8; 	%direction (az) of component 1 (degrees)
+Dir1=90-DirS1; 	%direction (az) of component 1 (degrees)
 Dir2=90+Dir1; 	%direction (az) of component 2 (degrees)
 %Dir 3 we presume is vertical so do not define this
 
@@ -60,22 +87,26 @@ Ay3=0;
 Az3=1;
 
 %accumulating new axes to direction cosines
-xAXIS=[Ax1,Ax2,Ax3];
-yAXIS=[Ay1,Ay2,Ay3];
-zAXIS=[Az1,Az2,Az3];
+Xaxis=[Ax1,Ax2,Ax3];
+Yaxis=[Ay1,Ay2,Ay3];
+Zaxis=[Az1,Az2,Az3];
 
-[ CartSxx,CartSyy,CartSzz,CartSxy,CartSxz,CartSyz ] = StressTensorTransformation3d(S11,S22,S33,0,0,0,xAXIS,yAXIS,zAXIS);
+[ CartSxx,CartSyy,CartSzz,CartSxy,CartSxz,CartSyz ]...
+    = StressTensorTransformation3d(Sz1,Sz2,Sz3,0,0,0,Xaxis,Yaxis,Zaxis);
 
 
-%Printing to command window, you can just cut and paste this into the
-%script to use as the driving stress
-disp('Calculated cartesian tensors:')
-fprintf('Sxx= %i;\n',CartSxx)
-fprintf('Syy= %i;\n',CartSyy) 
-fprintf('Szz= %i;\n',CartSzz) 
-fprintf('Sxy= %i;\n',CartSxy) 
-fprintf('Sxz= %i;\n',CartSxz) 
-fprintf('Syz= %i;\n',CartSyz) 
-
-  
-
+if nargout==0
+    %Printing to command window, you can just cut and paste this into the
+    %script to use as the driving stress
+    disp('Calculated cartesian tensors:')
+    fprintf('Sxx= %i;\n',CartSxx)
+    fprintf('Syy= %i;\n',CartSyy) 
+    fprintf('Szz= %i;\n',CartSzz) 
+    fprintf('Sxy= %i;\n',CartSxy) 
+    fprintf('Sxz= %i;\n',CartSxz) 
+    fprintf('Syz= %i;\n',CartSyz) 
+else
+    %do nothing, you get these out the script and probably dont need these
+    %displaying
+end
+end

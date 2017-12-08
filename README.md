@@ -1,7 +1,7 @@
-# BEM_DDM_MATLAB
+# CutAndDisplace
 
-<!-- MarkdownTOC -->
 
+## Index
 - [Introduction](#introduction)
 - [1. How to run](#1-how-to-run)
 - [2. Analytical tests](#2-analytical-tests)
@@ -11,13 +11,21 @@
     - [3.1. 2D files and data](#31-2d-files-and-data)
     - [3.2. 3D files and data](#32-3d-files-and-data)
     - [3.3. Code structure](#33-code-structure)	
-- [4. Elements used in 2D and 3D](#4-elements-used-in-2d-and-3d)    
-- [5. Code highlights and applications](#5-code-highlights-and-applications)  
-- [6. Acknowledgements](#6-acknowledgements)  
+- [4. Notation in Code](#4-notation-in-code)
+    - [4.1. Basics](#41-basics)
+    - [4.2. Tensors](#42-tensors)
+    - [4.3. Vectors](#43-vectors)
+    - [4.4. Matrices](#44-matrices)     
+    - [4.5. Element Geometry](#45-element-geometry)    
+    - [4.6. Flags](#46-flags)  
+    - [4.7. Tables](#47-tables)    
+- [5. Elements used in 2D and 3D](#5-elements-used-in-2d-and-3d)    
+- [6. Code highlights and applications](#6-code-highlights-and-applications)  
+- [7. Acknowledgements](#7-acknowledgements)  
 
-<!-- /MarkdownTOC -->
 
-![FaultsDisplacingUnderShearStress](Images/NashPointArray.gif)
+
+![FaultsDisplacingUnderShearStress](Images/NashPointArray.gif)  
 Gif of a fault array shearing due to a remote stress. Computed using the 3D code
 ## Citation
 
@@ -28,7 +36,7 @@ Davis, T., 2017. A new open source boundary element code and its application to 
 ### Boundary Element MATLAB code. Modelling faults and deformation
 
 This software is for academic use. Do not use this in a commercial environment. There are plenty of commercial Boundary Element codes in circulation. 
-It does not require compiling, simply load the file 'Mainframe.m' in MATLAB (either from the 3D or 2D directory) then start the code by pressing the &#9654; (run) symbol in the editor tab of MATLAB, alternatively call "run MainFrame.m" in the cmd window. Once the code starts it should run spitting out diagrams, showing progressbars and supplying results. 
+It does not require compiling, simply run the script 'AddFilePaths.m' then load the file 'Mainframe.m' in MATLAB (either from the 3D or 2D directory) then start the code by pressing the &#9654; (run) symbol in the editor tab of MATLAB, alternatively call "run MainFrame.m" in the cmd window. Once the code starts it should run spitting out diagrams, showing progressbars and supplying results. 
 
 This code uses the Boundary Element Method (BEM), specifically the Displacement Discontinuity Method (DDM).
 Only fault surfaces or closed contours of bodies need to be digitised with boundary conditions placed on these elements. 
@@ -39,15 +47,15 @@ When calculating an unknown such as slip due a prescribed stress the method is d
 
 This code was created in windows MATLAB versions:
 
-2015a:2016b 
+2015a:2016b:2017a
  
 It’s also been tested in Octave GUI windows versions:
 
 4.0.0:4.0.3
 
-although there are sometimes 'bugs' in the Octave Windows version it tends to run fine. It tends to fail for me when dealing with strings. 
+although there are sometimes 'bugs' in the Octave Windows version it tends to run fine. It tends to fail in certain places, such as dealing with strings and drawing transparent objects so slight modifications may be required. 
 
-It has also been tested very briefly using MATLAB 2016b on Linux and Mac as well but errors may exist when loading the file paths i.e \ /
+It has also been run on both on Linux and Mac versions of MATLAB (2016b) and works fine. For these versions errors may exist when loading the file paths in newer scripts not tested on these platforms i.e \ /. 
 
 I have tried to comment lines as much as possible. References to 'Pollard' are :'Pollard, D.D. and Fletcher, R.C., 2005. Fundamentals of structural geology. Cambridge University Press.'
 
@@ -57,17 +65,20 @@ I have attempted to keep copy-write tags on files from other places. If you spot
 ---
 
 ## 1. How to run
+[Index ^](#cutanddisplace)
 
 Codes for 2D and 3D are laid out in the same manner. 
 Both are run using and editing 'MainFrame.m' in the respective 2D or 3D directory. The paths are added when this is run. 
 
 ## 2. Analytical tests
-The code has analytical regression tests built in to test changes have not introduced bugs before a commit:
+
+The code has analytical regression tests built in to test changes have not introduced bugs before a commit.
+Note that all images below have been created directly using the software and are drawn like this when the regression tests run. 
 These are: 
 
 ### 2.1. 2D Analytical tests
 
- (use run all regressions in 2D/AnalyticalTests folder or the individual scripts further inside this dir) 
+Test by running the file runallregressions.m in 2D/AnalyticalTests folder or the individual scripts further inside this directory.
 
 * Half space formulation from:
 
@@ -127,7 +138,7 @@ These are:
 	
 ### 2.2. 3D Analytical tests
 
-(use run all regressions in 3D/AnalyticalTests folder or the individual scripts further inside this dir) 
+Test by running the file runallregressions.m in 3D/AnalyticalTests folder or the individual scripts further inside this directory.
 
 *   Comparing the superposition of two of the triangular dislocations of *Nikkhoo, M. and Walter, T.R., 2015.* to:
 
@@ -168,16 +179,16 @@ These are:
     *Meng, C., Heltsley, W. and Pollard, D.D., 2012. Evaluation of the Eshelby solution for the ellipsoidal inclusion and heterogeneity. Computers & Geosciences, 40, pp.40-48.*
 
 ## 3. Files and data format
+[Index ^](#cutanddisplace)
 
-Formats the code uses
+Formats that the code uses:
 
 ### 3.1. 2D files and data
 
 The 2D code uses line data, each straight segment of a line is used as an element. 
 These can be imported as:
 Shape files(.shp) with multiple lines
-alternatively  
-you can define lines your self. See the how the analytical tests run to see how this structure works but the basic premise is to create a matrix called 'Pointsxy' where the first column is the X values of line segment end points and the second the Y values. 
+or alternatively you can define lines your self. 
 
 ### 3.2. 3D files and data
 
@@ -185,11 +196,12 @@ The 3D code uses triangulated surfaces, each triangle then acts as an element (s
 These can be imported using these file types:
 Stl (.stl) : only the non binary format, option available as export from the OS Meshlab software. http://meshlab.sourceforge.net/
 gocad ascii (.ts) : a common format in geological software. Easy to read the text files. 
-You could attempt to make 3D surfaces yourself if you have lots of time. The basic structure required is a matrix called Points, column one containing row numbers. Columns 2,3&4 being the X,Y&Z positions of the corner points of the triangles that make the mesh. A second array called 'triangles' is 3 columns wide. Each row is a triangle. The data in this matrix is row numbers of 'Points' that represent the corner points of each triangle.   
+You could attempt to make 3D surfaces yourself if you have lots of time. 
 
 Once these are defined in Step 1 then the user can continue. 
 
 ### 3.3. Code structure
+[Index ^](#cutanddisplace)
 
 The code is run using the files 'Mainframe'. This is a list of steps that call functions as they go, these give an indication of how to use the software. If you put a breakpoint at the beginning of each step you should be able to slowly work your way through the code and work out how it works. The steps are summarised below:
 
@@ -209,7 +221,250 @@ The code is run using the files 'Mainframe'. This is a list of steps that call f
 
 Its recommended that you look in the analytical test directories for more information on setting up complex problems.
 
-## 4. Elements used in 2D and 3D
+## 4. Notation
+[Index ^](#cutanddisplace)
+
+This part of the document goes through the notation used in the code so you can look up variables you see while reading the code. 
+
+### 4.1. Basics
+
+#### Stress:
+
+> **S** = *&sigma;*      
+
+#### Strain:
+        
+> **E** = *&epsilon;*
+        
+#### Displacement:
+
+> **U** = *&upsilon;*
+        
+#### Traction:
+
+> **T** = *t*   
+
+#### Pressure:
+
+> **P** = *&#929;*   
+
+#### Cartesian coordinates:
+        
+> **x** & **X**   = *x* direction
+> 
+> **y** & **Y**   = *y* direction
+> 
+> **z** & **Z**   = *z* direction 
+
+
+#### Radial, cylindrical or spherical coordinates:
+
+> **r** & **R** = radial distance/radial direction when a tensor component subscript
+>
+> **t** * **T** = angle *&theta;* from *y*-axis, circumferential direction when a tensor component subscript
+>
+> **p** * **P** = angle *&phi;* from *z*-axis, circumferential direction when a tensor component subscript
+
+#### Elastic constants:
+
+> Shear modulus (*G* in some texts):  
+> **mu**      = *&mu;*        
+> 
+> Lamés constant:  
+> **lambda**  = *&lambda;*   
+> 
+> Poisson's ratio:  
+> **nu**      = *&nu;*        
+> 
+> Youngs modulus:  
+> **E**      = &#917; 
+
+### 4.2. Tensors
+
+#### 2*2 2D stress tensor
+<a href="https://pangea.stanford.edu/projects/structural_geology/chapters/chapter06/browser/06_13abc.html" target="_blank">Diagram of 2D stress tensor</a>
+[Diagram of 2D stress tensor](https://pangea.stanford.edu/projects/structural_geology/chapters/chapter06/browser/06_13abc.html) 
+
+        [ Sxx Sxy ]    
+        [ Sxy Syy ]    
+
+#### 3*3 3D stress tensor
+[Diagram of 3D stress tensor](https://pangea.stanford.edu/projects/structural_geology/chapters/chapter06/browser/06_14_15.html) 
+
+        [ Sxx Sxy Sxz ]    
+        [ Sxy Syy Syz ]    
+        [ Sxz Syz Szz ]    
+
+#### 2*2 2D strain tensor
+
+        [ Exx Exy ]    
+        [ Exy Eyy ]    
+
+#### 3*3 3D strain tensor
+
+        [ Exx Exy Exz ]    
+        [ Exy Eyy Eyz ]    
+        [ Exz Eyz Ezz ]       
+        
+### 4.3. Vectors 
+(for 2D scripts ignore the *z* components and shear components will be a single s)
+
+#### Direction cosines of surfaces normal, often known as: *nx* *ny* *nz*.  
+[Diagram of angles *ax ay az* and lengths *Nx Ny Nz*](https://pangea.stanford.edu/projects/structural_geology/chapters/chapter06/browser/06_08ab.html)  
+
+        [ CosAx ]   
+        [ CosAy ]     
+        [ CosAz ]         
+
+
+#### Traction magnitude in the surface normal, strike-slip and dip-slip directions. Tn and Ts for 2D
+[Diagram of tractions Tx Ty Tz](https://pangea.stanford.edu/projects/structural_geology/chapters/chapter06/browser/06_09.html). These components are converted to normal and shear traction components in relation to the element orientation.
+
+          3D                      2D
+        [ Tnn ]                 [ Tn ] 
+        [ Tss ]                 [ Ts ]     
+        [ Tds ]          
+        
+#### Discontinity or burgers vector movement in the surface normal, strike-slip and dip-slip directions 
+[Diagram of displacement Dn (a and b) and Ds (d and c) of an element](https://pangea.stanford.edu/projects/structural_geology/chapters/chapter08/browser/08_12ad.html).
+
+          3D                       2D
+        [ Dn ]                   [ Dn ]   
+        [ Dss ]                  [ Ds ]       
+        [ Dds ]  
+        
+#### Principal stresses magnitudes (convention is that S1 is the most tensile stress)
+[Diagram of principal stresses around a magma chamber in 2D](https://pangea.stanford.edu/projects/structural_geology/chapters/chapter06/browser/06_21a.html).
+
+          3D                       2D
+        [ S1 ]                   [ S1 ]      
+        [ S2 ]                   [ S2 ]    
+        [ S3 ]             
+        
+#### Principal strain
+
+          3D                       2D
+        [ E1 ]                   [ E1 ]       
+        [ E2 ]                   [ E2 ]      
+        [ E3 ]              
+        
+#### Principal directions (stress)
+
+          3D                       2D
+        [ S1Dir ]                [ S1Dir ]      
+        [ S2Dir ]                [ S2Dir ]    
+        [ S3Dir ]   
+
+### 4.4. Matrices     
+
+#### Matrix A: Table containing stress values of how much a discontinuity of magnitude 1 from the *j*th element (table’s column number) effects the stress at the midpoint of every other element (*i*) (table’s row number).  
+        [ A ]    
+        
+In 2d will be composed as:
+
+        [ DnTn DsTn ]    
+        [ DnTs DsTs ]    
+        
+Where DnTs represents element *j* opening by a magnitude of 1 and its effect on the shear traction at element *i*. 
+        
+#### Matrix B: Table containing displacement values of how much a displacement of 1 from the *j*th element causes the midpoint of every other element (*i*) to displace.  
+        [ B ]        
+        
+#### Matrix C: Inverse of matrix A, the summed influence of all elements displacing the amount described in each column of matrix [C] will cause a traction of one stress unit, *t* on element (*i*) in the direction defined by the subscript.  
+        [ C ]   
+        
+#### Matrix I: Square matrix with ones on the main diagonal  
+        [ I ]                
+ 
+#### Influence matrix: Matrix of zeros to be filled with influence coefficients.  
+        infmatrix       - Stress  
+        Dinfmatrix      - Displacement  
+	
+#### Structure array containing influence matricies
+        StressInf       - Stress  
+        DispInf         - Displacement  
+
+### 4.5. Element geometry
+        
+#### Sizes:
+
+> **NUM**     =  Number of elements
+>
+> **sz**      =  Dimension of a vector
+>
+> **dimx**    =  Number of cols of matrix;
+>
+> **dimy**    =  Number of rows of matrix;
+>
+> **dimz**    =  Size of matrix in 3rd dimension;
+        
+#### Triangulation (3D):
+
+> **Triangles**   = Triangles is a list where each row contains 3 row index locations in array 'Points' which contains the XYZ location of each corner of the triangle
+>
+> **Points**      = Cols 2 3 and 4 are the *xyz* locations of one the corner points of a triangle. 
+>
+> **MidPoint**    = Each row is the *xyz* location of the midpoint of each triangle 
+>
+> **P1 P2 P3**    = Each row is the corner point of one triangle (*xyz*). Each correponding row in P1 P2 P3 are the 3 corner points of a triangle. 
+>
+> **FaceNormalVector** = Direction cosines of each tris normal. CosAx is simply "CosAx=FaceNormalVector(:,1);"
+        
+#### Line parts (2D):
+
+> **Lines**       = Lines is a list where each row contains 2 row index locations in array 'Points' which contains the *xy* location of each lines end points.
+>
+> **Points**      = Cols 2 3 and 4 are the *xyz* locations of one the corner points of a triangle. 
+>
+> **MidPoint**    = Each row is the *xy* location of the midpoint of each triangle 
+>
+> **P1 P2**       = Each row is the end point of one line in (*xy*). Each correponding row in P1 P2 is the end points of a line. 
+>
+> **LineNormalVector** = Direction cosines of each lines normal. CosAx is simply "CosAx=LineNormalVector(:,1);"  
+>
+> **Halflength**  = The half length of each 2D element 
+
+#### Mechanics terms:
+
+> **Cohesion**    = Cohesive strength of material
+>
+> **CSC**         = Coulomb stress change
+>
+> **Mu**          = Coefficient of friction (not to be confused with shear modulus mu)
+        
+        
+#### Multiple elastic bodies (inhomogenous material interfaces):
+
+> **E1**          = Elastic in body 1 (&#937;1)
+>
+> **FB**          = Free boundary, no continity conditions apply at these elements
+>
+> **IF**          = Interface, traction and displacement must be equal at the two coincident elements at the interface between two bodies. 
+
+### 4.6. Flags
+
+> **halfspace** = Compute coefficients and stress/disps in a half-space. 
+>
+> **Fdisp**     = Elements midpoints that have a displacement set to 0. I.e this point in the body is locked.
+>
+> **bad**       = Typically used to remove elements or nan elements. I.e. "X(bad)=[];"
+>       
+> **Uniform**   = Flag to say if the points are on a uniformly spaced grid.
+>
+> **SecondSurface** = Flag that says there is a second surface we compute CSC on. 
+
+
+### 4.7. Tables
+
+#### Tensor component tables (strain tensors are the same but with the word straina the front).
+> **StressTTotal** =  3(2d) or 6(3D) vectors for tensors due to remote stresses and movement of the dislocations.
+>
+> **StressTChg**   =  3(2d) or 6(3D) tensor at each point due to the movement of dislocations.
+>
+> **StressTReg**   =  3(2d) or 6(3D) tensor at each point that is the remote stress in the body (stress at infinity).
+
+## 5. Elements used in 2D and 3D
+[Index ^](#cutanddisplace)
 
 The basic boundary elements are from:
 
@@ -219,7 +474,8 @@ The basic boundary elements are from:
 3D:
 *Nikkhoo, M. and Walter, T.R., 2015. Triangular dislocation: an analytical, artefact-free solution. Geophysical Journal International, 201(2), pp.1117-1139.*
 
-## 5. Code highlights and applications
+## 6. Code highlights and applications
+[Index ^](#cutanddisplace)
 
 *   Frictional effects across fault surfaces, both coefficient of friction and cohesion. Using the formulations described in:
 
@@ -242,15 +498,15 @@ The basic boundary elements are from:
 *   The Finite strain error:
     Equations are given in: 
 
-    *Pollard, D.D. and Fletcher, R.C., 2005. Fundamentals of structural geology. Cambridge University Press.*
+    *Pollard, D.D. and Fletcher, R.C., 2005. Fundamentals of structural geology. Cambridge University Press.*  
     This uses two calculations. For evenly gridded data finite strain is calculated using a modified version of: 
     Dirk-Jan Kroon's MATLAB script 'finite strain' 
     and 
     the finite strain calculation of: 
-    
     *Cardozo, N. and Allmendinger, R.W., 2009. SSPX: A program to compute strain from displacement/velocity data. Computers & Geosciences, 35(6), pp.1343-1357.*
 
-## 6. Acknowledgements
+## 7. Acknowledgements
+[Index ^](#cutanddisplace)
 
 Thanks to: 
 

@@ -1,23 +1,38 @@
 function [ Tx,Ty ] = TractionVectorCartesianComponents2d( Pxx,Pyy,Pxy,CosAx,CosAy )
-%TractionVectorCartesianComponents2d Calculates the cartesian components of the
-%traction vector
-    %Turning these stress col vecs to traction (vecs)
-    %Stresses are col vectors
-    %CosAx CosAy are the direction cosines of the planes NORMAL
-    %Equation 6.40 and 6.41 in David Pollards Book. 
-    %T1 [sxx sxy] * [n]
-    %T2 [sxy syy] * [n]
-    %Stresses are col vectors
-    %CosAx CosAy are the direction cosines of the planes NORMAL
-	%Tx and Ty are cartesian components of the 2D traction vec
+% TractionVectorCartesianComponents2d: Calculates the Cartesian components
+%                   of the traction vector for 2D data from the tensors and
+%                   direction cosines.
+%                   Equation 6.40 and 6.41 in Pollard and Fletcher, 2005. 
+%   
+% usage #1:
+% [ Tx,Ty ] = TractionVectorCartesianComponents2d( Pxx,Pyy,Pxy,CosAx,CosAy )
+%
+% Arguments: (input)
+% Pxx,Pyy,Pxy       - The stress tensors (col vects).
+%
+% CosAx,CosAy       - Direction cosines of the plane at the tensor
+%                     locations (planes normal vector). 
+%
+% Arguments: (output)
+% Tx,Ty             - Cartesian components of the 2D traction vector
+%
+% Example usage:
+%
+% %Cartesian components on a dipping plane (45 deg) subject to a
+% %extensional stress.
+% Pxx=1; Pyy=0; Pxy=0;
+% CosAx=deg2rad(45);
+% CosAy=deg2rad(45);
+% [ Tx,Ty ] = TractionVectorCartesianComponents2d( Pxx,Pyy,Pxy,CosAx,CosAy )
+%
+%  Author: Tim Davis
+%  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
-%   Copyright 2017, Tim Davis, The University of Aberdeen
 
-    %Converts the input stress to a traction XY.
-    %Equation 6.55 in Pollard, D.D. and Fletcher, R.C., 2005. Fundamentals of
-    %structural geology. Cambridge University Press.
-    Tx = (bsxfun(@times,Pxx,CosAx))+(bsxfun(@times,Pxy,CosAy));
-    Ty = (bsxfun(@times,Pxy,CosAx))+(bsxfun(@times,Pyy,CosAy));
+%Tx(n) = [sxx sxy] * [nx]
+%Ty(n) = [sxy syy] * [ny]
+Tx = (bsxfun(@times,Pxx,CosAx))+(bsxfun(@times,Pxy,CosAy));
+Ty = (bsxfun(@times,Pxy,CosAx))+(bsxfun(@times,Pyy,CosAy));
 
 end
 

@@ -1,16 +1,87 @@
 function [ P11,P22,P33,P12,P13,P23 ] = StressTensorTransformation3d(Pxx,Pyy,Pzz,Pxy,Pxz,Pyz,C1,C2,C3)
-%StressTensorTransformation3d Converts 3d stress tensors into a new
-%coordinate system. 
+% StressTensorTransformation3d: Converts 3d stress/strain tensors into a new
+%                   coordinate system. Can also be used to convert tensors
+%                   between spherical and Cartesian coordinates.
+%                   Equations 6.88 - 6.93 of Pollard and Fletcher.
+%                   This could be sped up with vector multiplication, see:
+%                   StressTensorTransformation2d.m as an example. This
+%                   would also allow it to work on vector that isnt col
+%                   vects. 
+%               
+% usage #1: Just changing the coordinate axis orientation. 
+% [ P11,P22,P33,P12,P13,P23 ] = StressTensorTransformation3d(Pxx,Pyy,Pzz,Pxy,Pxz,Pyz,C1,C2,C3)
+%
+% usage #2: Convert spherical to Cart tensors:
+% %If "th" is azimuth and "phi" elevation as in 
+% %Davis et al 2017. Stress concentrations around voids. 
+% [th,phi,r] = cart2sph(x,y,z);
+% C1=[sin(phi).*cos(th),cos(phi).*cos(th),-sin(th) ];
+% C2=[sin(phi).*sin(th),cos(phi).*sin(th),cos(th)  ];
+% C3=[cos(phi)         ,-sin(phi)         ,zer     ];
+% [ Sxx,Syy,Szz,Sxy,Sxz,Syz ] = StressTensorTransformation3d(Srr,Spp,Stt,Srp,Srt,Spt,C1,C2,C3)
+%
+% usage #3: Convert Cart to spherical tensors:
+% %If "th" is azimuth and "phi" elevation as in 
+% %Davis et al 2017. Stress concentrations around voids. 
+% [th,phi,r] = cart2sph(x,y,z);
+% C1=[sin(phi).*cos(th),sin(phi).*sin(th),cos(phi) ];
+% C2=[cos(phi).*cos(th),cos(phi).*sin(th),-sin(phi)];
+% C3=[-sin(th)         ,cos(th)          ,zer    ];
+%[ Srr,Spp,Stt,Srp,Srt,Spt ] = StressTensorTransformation3d(Pxx,Pyy,Pzz,Pxy,Pxz,Pyz,C1,C2,C3)
+%
+% Arguments: (input)
+% Pxx,Pyy,Pzz
+% Pxy,Pxz,Pyz       - 3D stress tensors (or strain).
+%
+% C1                - New Coordinate axis X (n*3) or (1*3)
+%
+% C2                - New Coordinate axis Y (n*3) or (1*3)
+%
+% C3                - New Coordinate axis Z (n*3) or (1*3)
+%
+% Arguments: (output)
+% P11,P22,P33
+% P12,P13,P23       - The new tensors. 
+% 
+%
+% Example usage:
+%
+% %Creating points randomly scattered on a sphere
+% n=500;
+% theta=pi*rand(n,1);
+% phi=2*pi*rand(n,1);
+% [x,y,z]=sph2cart(theta,phi,ones(n,1));
+% Dat=[x,y,z];
+% %Create some arrays
+% one=ones(size(x));
+% zer=zeros(size(x));
+% %Create new coords
+% [th,phi,r] = cart2sph(x,y,z);
+% C1=[sin(phi).*cos(th),sin(phi).*sin(th),cos(phi) ];
+% C2=[cos(phi).*cos(th),cos(phi).*sin(th),-sin(phi)];
+% C3=[-sin(th)         ,cos(th)          ,zer    ];
+% %No shear tensors
+% Pxx=one;
+% Pyy=one*1.5;
+% Pzz=one*2;
+% Pxy=zer;
+% Pxz=zer;
+% Pyz=zer;
+% %Transforming to polar tensors
+% [ P11,P22,P33,P12,P13,P23 ] = StressTensorTransformation3d(Pxx,Pyy,Pzz,Pxy,Pxz,Pyz,C1,C2,C3);
+% %Transforming back to cart tensors
+% C1=[sin(phi).*cos(th),cos(phi).*cos(th),-sin(th) ];
+% C2=[sin(phi).*sin(th),cos(phi).*sin(th),cos(th)  ];
+% C3=[cos(phi)         ,-sin(phi)         ,zer     ];
+% [ P11,P22,P33,P12,P13,P23 ] = StressTensorTransformation3d(P11,P22,P33,P12,P13,P23,C1,C2,C3);
+% %Drawing: 
+% DrawS1S2S3Directions([zer,zer,zer,zer,zer,zer,P11,P22,P33,P12,P13,P23],x,y,z,'Scale',0.1)
+% 
+% 
+%  Author: Tim Davis
+%  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
-%Pxx,Pyy,Pxy etc are the tensors in the current coordinate system
-%C1 C2 C3 are 3*n vector the direction cosines of the new
-%coordinate system
-%P11,P22,P33,P12,P13,P23 = output tensors that are in the new coords
 
-%   Copyright 2017, Tim Davis, The University of Aberdeen
-
-%Does Equations 6.88 - 6.93 of Pollard and Fletcher in one step, 
-%Function works perfectly fine on col vectors of stress. 
 
 %A quick low down:
 %Quat is a matrix containing directions (quaternary). The first row is the first
@@ -29,6 +100,7 @@ if isscalar(C1(:,1)) || isscalar(C2(:,1)) || isscalar(C3(:,1)) %checks if its ju
     C3=repmat(C3,size(Pxx(:,1)));
 end  
 
+%Extracting parts of the new coordinates. 
 A11=C1(:,1);A12=C1(:,2);A13=C1(:,3);
 A21=C2(:,1);A22=C2(:,2);A23=C2(:,3);
 A31=C3(:,1);A32=C3(:,2);A33=C3(:,3);
@@ -58,29 +130,30 @@ P23=P11;                %in cart yx
 
 for i=1:numel(Pxx)
 
-% Performing calculation for cartesian stresses
-%Eq 2.23, Pollard, arranging cosines in table
-Quat=[A11(i,:),A12(i,:),A13(i,:); %in cart dir cosines of the x axis
-      A21(i,:),A22(i,:),A23(i,:); %in cart y axis
-      A31(i,:),A32(i,:),A33(i,:)];%in cart z axis
+    % Performing calculation for cartesian stresses
+    %Eq 2.23, Pollard, arranging cosines in table
+    Quat=[A11(i,:),A12(i,:),A13(i,:); %in cart dir cosines of the x axis
+          A21(i,:),A22(i,:),A23(i,:); %in cart y axis
+          A31(i,:),A32(i,:),A33(i,:)];%in cart z axis
 
-%Chucking the tensor together, if you have somehow managed to interpret/compute shear components of
-%stress from field observations you could put them in here too
-Tensor=[Pxx(i,:),Pxy(i,:),Pxz(i,:);
-        Pxy(i,:),Pyy(i,:),Pyz(i,:);
-        Pxz(i,:),Pyz(i,:),Pzz(i,:)];
+    %Chucking the tensor together, if you have somehow managed to interpret/compute shear components of
+    %stress from field observations you could put them in here too
+    Tensor=[Pxx(i,:),Pxy(i,:),Pxz(i,:);
+            Pxy(i,:),Pyy(i,:),Pyz(i,:);
+            Pxz(i,:),Pyz(i,:),Pzz(i,:)];
 
-%http://continuummechanics.org/stressxforms.html
-%Computing rotation
-CartStress=Quat*Tensor*Quat';
+    %http://continuummechanics.org/stressxforms.html
+    %Computing rotation
+    CartStress=Quat*Tensor*Quat';
 
-% Extracting variables
-P11(i,:)=CartStress(1,1);
-P22(i,:)=CartStress(2,2);
-P33(i,:)=CartStress(3,3);
-P12(i,:)=CartStress(1,2);
-P13(i,:)=CartStress(1,3);
-P23(i,:)=CartStress(2,3);
+    % Extracting variables
+    P11(i,:)=CartStress(1,1);
+    P22(i,:)=CartStress(2,2);
+    P33(i,:)=CartStress(3,3);
+    P12(i,:)=CartStress(1,2);
+    P13(i,:)=CartStress(1,3);
+    P23(i,:)=CartStress(2,3);
+    
 end
 
 end

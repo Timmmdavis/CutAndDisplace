@@ -1,3 +1,0 @@
-%Notes
-
-Savage function in 2D files

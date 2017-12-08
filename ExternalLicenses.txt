@@ -1,0 +1,62 @@
+ExternalLicenses. 
+This file lists files that are from other sources within the software or that are 
+associated in some way. 
+
+------------------------------
+Below is a list of files used in the software from other sources (unmodified): 
+
+File:				Name:				Date:	Link:
+
+cross2.m			Paolo de Leva		2009	https://de.mathworks.com/matlabcentral/fileexchange/8782-vector-algebra-for-arrays-of-any-size--with-array-expansion-enabled/content/cross2.m			
+colormap_cpt.m		Thijs Damsma		2009	N/A
+CardanRoots.m		Bruno Luong			2010	https://de.mathworks.com/matlabcentral/fileexchange/27680-multiple-eigen-values-for-2x2-and-3x3-matrices
+ParabolaRoots.m		Bruno Luong			2010	See above
+
+------------------------------
+Below is a list of files used in the software from other sources that have been modified 
+in some form. 
+
+File:				Name:				Date:	Link:
+
+Okada1985.m 		François Beauducel 	1997	https://de.mathworks.com/matlabcentral/fileexchange/25982-okada--surface-deformation-due-to-a-finite-rectangular-source
+InsideEllipsoid.m 	David Healy	 		2008	https://www.iamg.org/documents/oldftp/VOL35/v35-10-25.zip
+eig3(in EigSpeed.m)	Bruno Luong			2010	https://de.mathworks.com/matlabcentral/fileexchange/27680-multiple-eigen-values-for-2x2-and-3x3-matrices
+fisher_newton.m 	Kenny Erleben		2011	https://github.com/erleben/num4lcp
+					Michael Andersen	2012	See above
+m_shaperead.m 		Rich Pawlowicz		2011	http://www.eos.ubc.ca/~rich/m_map1.4.zip
+TDdispFS 			Mehdi Nikkhoo		2012	http://volcanodeformation.com/onewebmedia/Triangular%20dislocations-MATLAB%20functions-2016.zip
+TDdispHS 			Mehdi Nikkhoo		2012	See above
+TDstrainFS 			Mehdi Nikkhoo		2012	See above
+TDstrainHS 			Mehdi Nikkhoo		2012	See above
+
+------------------------------
+Below are functions that some parts of the code are based on. 
+
+File:				Name:				Date:	Link:
+
+-- Finite strain calculations:
+calcstrain.m		Philip Resor		2013	N/A
+strain.m			Dirk-Jan Kroon		2009 	https://de.mathworks.com/matlabcentral/fileexchange/20057-b-spline-grid--image-and-point-based-registration
+
+-- Line discontinity functions (LD):
+twodd_func.m 		Steve Martel 		2003 	http://www.soest.hawaii.edu/martel/Martel.BEM_dir/
+twoddHS_func.m 		Steve Martel 		2003	See above
+comp2DDM.m			Ovunc Mutlu 		2006	https://github.com/lritz/BEM-with-complementarity	
+					David Pollard		2010	See above
+					Elizabeth Ritz		2011	See above	
+					
+
+
+------------------------------
+Below are a list of additional files you may consider using. These files are not 
+included in the software and are not required for this to run. Certain functions 
+within the code mention these:
+
+Code:				Name:				Date:	Link:
+
+Path Solver			Michael Ferris 		1999	http://pages.cs.wisc.edu/~ferris/path.html
+Eshelby Solution 	Chunfang Meng		2012	http://ars.els-cdn.com/content/image/1-s2.0-S0098300411002378-mmc1.zip
+
+
+
+

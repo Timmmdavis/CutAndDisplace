@@ -1,12 +1,35 @@
 function [ varargout ] = ExtractArraysFromVector( Data )
-%ExtractArraysFromVector put in input array and the amount of arrays you
-%want at the end, the function does the rest. If you know a vector has 3
-%specific parts just put these as the output args. 
+% ExtractArraysFromVector: Put in input vector and the amount of arrays you
+%                   want as the outputs, the function does the rest. If you
+%                   know a vector has 3 specific parts just put 3 output args.
+%   
+% usage #1:
+% [ varargout ] = ExtractArraysFromVector( Data )
+%
+% Arguments: (input)
+% Data              - Large vector that will be diced up into the output
+%                     arrays.
+%
+% Arguments: (output)
+% varargout       	- The input vector seperated into the number of output
+%                     arguments 
+%
+% Example usage 1:
+%
+% %Grabbing bits of a col vector:
+% n=1000; 
+% a=[rand(n,1);zeros(n,1);ones(n,1)];
+% %Splits 'a' into 3 bits
+% [ top,mid,base ] = ExtractArraysFromVector( a )
+% %If you just wanted the middle part of 'a'
+% [ ~,mid,~ ] = ExtractArraysFromVector( a )
+%
+%  Author: Tim Davis
+%  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
-%   Copyright 2017, Tim Davis, The University of Aberdeen
 
 if ~isvector(Data)
-    error('This needs to be a vector for this func')
+    error('This function requires vector data as the input argument')
 end
 
 a=numel(Data);
@@ -15,7 +38,7 @@ b=nargout;
 %Divisibility Check
 Div=~mod(a,b); %1 if divisible
 if ~Div
-    error('Vector is not divisible by number of outputs')
+    error('The input vector is not divisible by the number of output arguments')
 end
 
 %Size of the vectors

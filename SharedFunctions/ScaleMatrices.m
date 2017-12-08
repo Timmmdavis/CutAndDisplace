@@ -1,26 +1,42 @@
 function [ varargout ] = ScaleMatrices( scl,varargin )
-%Call to multiply multiple input matrices by the values in scl
+% ScaleMatrices: Call to multiply multiple input matrices by a scalar
+%               
+% usage #1:
+% [ varargout ] = ScaleMatrices( scl,varargin )
+%
+% Arguments: (input)
+% scl            - Scale factor 
+%
+% varargin       - chuck in as many arrays as you would like. 
+%
+% Arguments: (output)
+% varargout      - get the arrays back but scaled
+% 
+% Example usage (1):
+%
+% A=ones(1,50);
+% B=ones(50,1);
+% Scale=700;
+% [ A,B ] = ScaleMatrices( Scale,A,B );
+% 
+%  Author: Tim Davis
+%  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
-%scl = your scale factor
-%varargin = your arrays you want to scale, as many as you want
-
-%example:
-%[ A,B,C,D,E ] = ScaleMatrices( 5,A,B,C,D,E )
-
-%   Copyright 2017, Tim Davis, The University of Aberdeen
-
+%Get size of the input arguments. 
 InputsSize=nargin-1;
 
-varargout= cell(1,nargout); %Preallocate cell array
-
 for i=1:InputsSize
-
+    %extract from inputs
     data=varargin{i};
+    %Scale data
     data=data*scl;
-    varargout{i}=data;
+    %Assign back to its input argument
+    varargin{i}=data;
 
 end
 
+%add results to the outputs
+varargout=varargin;  
 
 end
 

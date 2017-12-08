@@ -1,20 +1,37 @@
 function [S1,S2,S3,S1dir,S2dir,S3dir] = EigCalc3d(Sxx,Syy,Szz,Sxy,Sxz,Syz)
-% Calculates the 3-D principal stress/strain magnitudes and directions from input tensors
-% Input parameters
-% Stress or strain tensors 9x9 but Sxy=Syx so we only bring in 6. 
-% Output parameter (tension positive convention for inputs)
-% S1 = most tensile principal stress
-% S3 = most comp principal stress
-% S2 = intermediate
-% S1dir = XYZ components of the direction of the principal stress S1
-% S2dir & S3dir = see above
-% Examples:
-%Calclating 3d stress eigenValues
-%[S1,S2,S3,S1dir,S2dir,S3dir] = EigCalc3d(Sxx(:),Syy(:),Szz(:),Sxy(:),Sxz(:),Syz(:));
-%Calclating 2d strain eigenValues
-%[E1,E2,E3,E1dir,E2dir,E3dir] = EigCalc3d(Exx(:),Eyy(:),Ezz(:),Exy(:),Exz(:),Eyz(:));
+% EigCalc3d: Calculates the 3D principal stress/strain magnitudes and 
+%                   directions from input tensors.
+%   
+% usage #1: For stress:
+% [S1,S2,S3,S1dir,S2dir,S3dir] = EigCalc3d(Sxx,Syy,Szz,Sxy,Sxz,Syz)
+%
+% usage #2: For strain:
+% [E1,E2,E3,E1dir,E2dir,E3dir] = EigCalc3d(Exx,Eyy,Ezz,Exy,Exz,Eyz)
+%
+% Arguments: (input)
+% Sxx,Syy,Szz
+% Sxy,Sxz,Syz       - The stress tensor components at a point, each can be a
+%                    column vector.
+%
+% Arguments: (output)
+% S1,S2,S3       	- Principal stress component magnitudes Sigma 1,2 and
+%                    Sigma 3.
+%
+% S1dir,S2dir,S3dir - Principal stress directions (direction cosines). Each
+%                    will be a n*3 column vector [CosAx,CosAy,CosAz] of this
+%                    direction. 
+%
+% Example usage 1:
+%
+% %Calculating directions for a 3D stress tensor
+% Sxx=0.2; Syy=-1.5; Szz=0;
+% Sxy=1;   Sxz=0;    Syz=0;
+% [S1,S2,S3,S1dir,S2dir,S3dir] = EigCalc3d(Sxx,Syy,Szz,Sxy,Sxz,Syz)
+%
+%  Author: Tim Davis
+%  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
-%   Copyright 2017, Tim Davis, The University of Aberdeen
+
 %Preallocating array
 n = numel(Sxx);
 tensor=zeros (n*3,3);
