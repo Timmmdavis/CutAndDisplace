@@ -1,5 +1,5 @@
 function [Sxx,Syy,Sxy,X,Y] = Savage1984_GravityValleyStress(tectxx,rg,nu,a,b,u,v)
-% Barber1992_GlideDislocation: Returns Cartesian stresses
+% Savage1984_GravityValleyStress: Returns Cartesian stresses
 %              at grid points under a incised valley surface. Stress are
 %              due to unloading due to erosion and take into account
 %              gravitational loading. The valley surface is free of the

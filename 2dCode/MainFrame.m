@@ -138,11 +138,11 @@ quiver(MidPoint(:,1),MidPoint(:,2),LineNormalVector(:,1),LineNormalVector(:,2))
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
 % Option='A';     
-% cc=zeros(NUM,1); 
+% cc=zeros(numel(MidPoint(:,1)),1); 
 % % Positive = left lateral displacement
-% ShearDisp  = 0;       ShearDisp	  = cc+(ShearDisp); 
+% ShearDisp  = 1;       ShearDisp	  = cc+(ShearDisp); 
 % % Positive = opening displacement
-% TensileDisp =1;       TensileDisp = cc+(TensileDisp); 
+% TensileDisp =0;       TensileDisp = cc+(TensileDisp); 
 % Sxx = 0;  Syy = 0;  Sxy = 0;   	
  
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -167,7 +167,7 @@ strain=0;
 
 Sxx = 0; 					
 Syy = 0;
-Sxy = 1;                   
+Sxy = 0;                   
 Option='B'; 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -183,19 +183,19 @@ Option='B';
 
 % %Put to 1 to define the stresses defined in 'stress input' as strain values    
 % strain=0;    
-    
-	%%%%%%%%%%%%%% 
-    %StressInput
-	%%%%%%%%%%%%%%
-	
-%  Sxx = 0; 				
-%  Syy = 0;
-%  Sxy = 1;                  
+%     
+% 	%%%%%%%%%%%%% 
+%     %StressInput
+% 	%%%%%%%%%%%%%
+% 	
+%  Sxx = -0.5; 				
+%  Syy = -0.5;
+%  Sxy = 0;                  
 % 
 % % Frictional parameters, define as single value for all elements or vary
 % % based on element number
-%  Mu  = 0.6;       Mu=repmat(Mu,numel(xe),1);  %Coefficient of friction
-%  Sf  = 0;         Sf=repmat(Sf,numel(xe),1);  %Frictional strength
+%  Mu  = 0;       Mu=repmat(Mu,numel(MidPoint(:,1)),1);  %Coefficient of friction
+%  Sf  = 0;         Sf=repmat(Sf,numel(MidPoint(:,1)),1);  %Frictional strength
 %  
 % Option='C'; 
 
@@ -212,11 +212,11 @@ Option='B';
 
 % %Put to 1 to define the stresses defined in 'stress input' as strain values    
 % strain=0;    
-
-	%%%%%%%%%%%%%%
-    %StressInput
-	%%%%%%%%%%%%%%
-    
+% 
+% 	%%%%%%%%%%%%%
+%     %StressInput
+% 	%%%%%%%%%%%%%
+%     
 % Sxx = 0;         		
 % Syy = 0; 
 % Sxy = 1;                   
@@ -228,11 +228,11 @@ Option='B';
     %centres. 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-%  cc=zeros(NUM,1); 
-%     
-%  Tn = 0;    Tn=cc+Tn;	    
-%  Ts = 0.5;  Ts=cc+Ts;       
-%  Option='E'; 
+ cc=zeros(numel(MidPoint(:,1)),1); 
+    
+ Tn = 0;    Tn=cc+Tn;	    
+ Ts = 1;  Ts=cc+Ts;       
+  Option='E'; 
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
