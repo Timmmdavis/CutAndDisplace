@@ -91,7 +91,7 @@ end
 %Function to check the boundary stress tensors related to Z(y in 2d) components are 0 at the
 %halfspace surface
 if halfspace==1
-    HalfSpaceBoundaryConditionsCheck(ye,Pyy,Pxy)
+    HalfSpaceBoundaryConditionsCheck(MidPoint(:,2),Pyy,Pxy)
 end
 
 %Checking we can overcome the frictional resistance on the fault. No

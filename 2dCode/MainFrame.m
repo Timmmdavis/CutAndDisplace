@@ -44,13 +44,13 @@ cmap2 = colormap_cpt('Ccool-warm2');
 % Fnms=fieldnames(mystruct);
 % nf=numel(Fnms);clear Fnms
 
-% % %Circle
+% % % %Circle
 % rad=1;
 % [ xe,ye ] = CreateCircleXY( 600,rad );
 % sz=numel(xe);
 % Pointsxy=[ye,xe];
 % mystruct.line1=(1:sz);
-% %Square of points inside circle
+% % %Square of points inside circle
 % rr=0.8;
 % x=[-rr,0,rr,0,-rr];y=[0,-rr,0,rr,0];
 % PointsxyF=[x;y]';
@@ -167,7 +167,8 @@ strain=0;
 
 Sxx = 0; 					
 Syy = 0;
-Sxy = 0;                   
+Sxy = 1;
+                
 Option='B'; 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -190,7 +191,7 @@ Option='B';
 % 	
 %  Sxx = -0.5; 				
 %  Syy = -0.5;
-%  Sxy = 0;                  
+%  Sxy = 1;                  
 % 
 % % Frictional parameters, define as single value for all elements or vary
 % % based on element number
@@ -228,11 +229,11 @@ Option='B';
     %centres. 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
- cc=zeros(numel(MidPoint(:,1)),1); 
-    
- Tn = 0;    Tn=cc+Tn;	    
- Ts = 1;  Ts=cc+Ts;       
-  Option='E'; 
+%  cc=zeros(MidPoint(:,1),1); 
+%     
+%  Tn = 0;    Tn=cc+Tn;	    
+%  Ts = 0.5;  Ts=cc+Ts;       
+%  Option='E'; 
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -289,6 +290,7 @@ PointsXY=[[P1(:,1);P2(:,1)],[P1(:,2);P2(:,2)]];
 [X,Y] = meshgrid(mingriX:sz:maxgriX,mingriY:sz:maxgriY);
 [dimx,dimy] = size(X);  
 
+
 % %%Random points within the calculated bounds
 % NumPnts=15000; %number of points, do not have cells 
 % lengthx=maxgriX-mingriX;
@@ -323,8 +325,8 @@ PointsXY=[[P1(:,1);P2(:,1)],[P1(:,2);P2(:,2)]];
 % Y=y-n+ymv;
 
 % %Observation points at midpoints
-% X=x;
-% Y=y;
+% X=MidPoint(:,1);
+% Y=MidPoint(:,2);
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Option C = Import XY from a .text file that is on the loaded paths. 
@@ -406,10 +408,10 @@ Pxy=Sxy(1,1);
 [E1,E2,E1dir,E2dir]=EigCalc2d(Exx,Eyy,Exy);
 Dilatation2d=E1+E2;
 
-%If the stresses don't draw well use this function
-FilterValue=2.5;
-Bad=abs(Sxx)>FilterValue;
-[S1,S2,Sxx,Syy,Sxy] = NanOrRemovePoints( Bad,S1,S2,Sxx,Syy,Sxy );
+% %If the stresses don't draw well use this function
+% FilterValue=2.5;
+% Bad=abs(Sxx)>FilterValue;
+% [S1,S2,Sxx,Syy,Sxy] = NanOrRemovePoints( Bad,S1,S2,Sxx,Syy,Sxy );
 
 
 %Draw data with quiver, doesn't matter if its gridded or not

@@ -17,7 +17,11 @@ else
 end
 
 %Finding the scripts root directory and its location (n)
-[~,n] = find(contains(parts,FolderName)); 
+if verLessThan('matlab', '9.1') %(2016b)
+    [~,n] = find(~cellfun(@isempty,strfind(parts,FolderName)));
+else %Cleaner version:
+    [~,n] = find(contains(parts,FolderName));     
+end
 
 %Adding all folders to the path that are in this dir 
 if ispc
