@@ -36,13 +36,15 @@ cmap2 = colormap_cpt('Ccool-warm2');
     %Option A = Loading XY ascii data or manually creating fractures.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
-% % % %Single flat user defined fracture
+% % %Single flat user defined fracture
 % x=linspace(-0.5,0.5,15);    
 % y=zeros(1,numel(x)); 
 % Pointsxy=[x;y]';
 % mystruct.line1=(1:(length(Pointsxy(:,1))));
 % Fnms=fieldnames(mystruct);
 % nf=numel(Fnms);clear Fnms
+
+
 
 % % % %Circle
 % rad=1;

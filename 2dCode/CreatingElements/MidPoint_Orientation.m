@@ -58,7 +58,7 @@ function [ MidPoint,HalfLength,P1,P2,LineNormalVector ] = MidPoint_Orientation( 
     %if so. By duplicate points the midpoints of the segments are in the
     %same place. 
     for i=1:numel(xe)
-        if (sum((MidPoint-MidPoint(i,:)),2)==0)>1
+        if (sum(sum((MidPoint-MidPoint(i,:)),2)==0))>1
             disp(i)
             error('Duplicate points exist on your line, linear equations will fail, please recreate the line')
         end
