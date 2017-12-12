@@ -35,33 +35,23 @@ function [ MidPoint,HalfLength,P1,P2,LineNormalVector ] = MidPoint_Orientation( 
 %  Author: Tim Davis
 %  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
-%   Copyright 2017, Tim Davis, The University of Aberdeen
+%Creating midpoints and creating element orientations from start and
+%end points of each element
+xe = (XBEG + XEND)/2;				% element midpoints
+ye = (YBEG + YEND)/2;				% element midpoints
+MidPoint=[xe,ye];
+%Collating
+P1=[XBEG,YBEG];  
+P2=[XEND,YEND]; 
 
-    %Creating midpoints and creating element orientations from start and
-    %end points of each element
-	xe = (XBEG + XEND)/2;				% element midpoints
-	ye = (YBEG + YEND)/2;				% element midpoints
-    MidPoint=[xe,ye];
-    %Collating
-    P1=[XBEG,YBEG];  
-    P2=[XEND,YEND]; 
-    
-    xd = XEND-XBEG;
-	yd = YEND-YBEG;
-	HalfLength = sqrt(xd.*xd +yd.*yd)/2;			% half-length of each element
-    %In the lines below, B = beta = orientation of element relative to global x-axis
-	Beta = atan2(yd,xd);                        % This is the Beta Angle used in the Crouch and Starfield functions
-    LineNormalVector=[sin(Beta),-cos(Beta)];  
+xd = XEND-XBEG;
+yd = YEND-YBEG;
+HalfLength = sqrt(xd.*xd +yd.*yd)/2;			% half-length of each element
+%In the lines below, B = beta = orientation of element relative to global x-axis
+Beta = atan2(yd,xd);                        % This is the Beta Angle used in the Crouch and Starfield functions
+LineNormalVector=[sin(Beta),-cos(Beta)];  
 
-    
-    %Check to see if there are duplicate points on the line and calls error
-    %if so. By duplicate points the midpoints of the segments are in the
-    %same place. 
-    for i=1:numel(xe)
-        if (sum(sum((MidPoint-MidPoint(i,:)),2)==0))>1
-            disp(i)
-            error('Duplicate points exist on your line, linear equations will fail, please recreate the line')
-        end
-    end
+
+  
 end
 

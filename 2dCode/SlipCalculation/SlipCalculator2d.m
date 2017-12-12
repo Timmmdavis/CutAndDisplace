@@ -1,5 +1,5 @@
 function [Ds,Dn,Pxx,Pyy,Pxy]=SlipCalculator2d...
-    (MidPoint,HalfLength,Pxx,Pyy,Pxy,Tn,Ts,nu,E,halfspace,LineNormalVector,strain,Fdisp,Mu,Sf,Option)
+    (MidPoint,HalfLength,Pxx,Pyy,Pxy,TnIn,TsIn,nu,E,halfspace,LineNormalVector,strain,Fdisp,Mu,Sf,Option)
 % SlipCalculator2d: Calculates the 2 slip components on the
 %               imported fault line from  boundary condition defined by the
 %               user.
@@ -15,7 +15,7 @@ function [Ds,Dn,Pxx,Pyy,Pxy]=SlipCalculator2d...
 %
 % Pxx,Pyy,Pxy - Remote stresses defined by user.
 %
-%     Tn,Ts   - Tractions on the surface defined by the user. 
+%  TnIn,TsIn  - Tractions on the surface defined by the user. 
 %
 %       nu    - The Poisson's ratio.
 %
@@ -75,6 +75,9 @@ function [Ds,Dn,Pxx,Pyy,Pxy]=SlipCalculator2d...
 
 NUM=numel(MidPoint(:,1));
 
+%Check there are no duplicate els. 
+DuplicateElementCheck(MidPoint,Fdisp)
+
 % If Defined slip is as a uniform remote strain, checking options that have
 % a uniform 'stress' defined
 if Option=='B' || Option=='C' || Option=='D' || Option=='F'
@@ -103,7 +106,11 @@ if Option=='C'
     %Calculates the normal and shear tractions on the elements 
     [ Tx,Ty ] = TractionVectorCartesianComponents2d( Pxx,Pyy,Pxy,CosAx,CosAy );
     [ Tn,Ts ] = CalculateNormalShearTraction2d( Tx,Ty,CosAx,CosAy);
-    
+	%Adding tractions imported into function if these also exist. 
+    if ~isempty(TnIn) && ~isempty(TsIn)    
+        Tn=Tn+TnIn;
+        Ts=Ts+TsIn;
+    end
     FricRes=Tn.*Mu; %Negative is compression
     if all(-abs(Ts)>FricRes) 
         disp('Your frictional fault will not slip, quit? (ctrl+c)')
@@ -160,12 +167,20 @@ if Option=='B' || Option=='C' || Option=='D' || Option=='F'
     
     %Calculates the normal and shear tractions on the elements      
     [ Tn,Ts ] = CalculateNormalShearTraction2d( Tx,Ty,CosAx,CosAy);
-
+	
+	%Adding tractions imported into function if these also exist. 
+	if ~isempty(TnIn) && ~isempty(TsIn)
+		disp('Boundarys have both tractions and remote stresses defined.')
+		Tn=Tn+TnIn;
+		Ts=Ts+TsIn;
+	end
+	
 end
 
     %for option E traction has been already defined
 if Option=='E'
-    %do nothing
+    Tn=TnIn;
+    Ts=TsIn;
 end
 
 

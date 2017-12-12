@@ -120,6 +120,12 @@ Points=reshape(Pointsxy,[],2);
 [ MidPoint,HalfLength,P1,P2,LineNormalVector ]...
     = MidPoint_Orientation( XBEG,XEND,YBEG,YEND );
 
+%Check to see if any line segments are invalid. 
+if any(HalfLength==0)
+    error('Some line segments have 0 length')
+end  
+
+
 if isempty(Fdisp)
     Fdisp=zeros(numel(P1(:,1)),1);
 end

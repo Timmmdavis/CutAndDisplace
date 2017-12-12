@@ -1,5 +1,5 @@
 function [Dss,Dds,Dn,Pxx,Pyy,Pzz,Pxy,Pxz,Pyz]=SlipCalculator3d(MidPoint,...
-Pxx,Pyy,Pzz,Pxy,Pxz,Pyz,Tn_i,Tss_i,Tds_i,mu,lambda,nu,P1,P2,P3,halfspace...
+Pxx,Pyy,Pzz,Pxy,Pxz,Pyz,TnIn,TssIn,TdsIn,mu,lambda,nu,P1,P2,P3,halfspace...
 ,FaceNormalVector,Fdisp,strain,Mu,Sf,Option,Triangles,Points,cmap)
 % SlipCalculator2d: Calculates the 3 slip components on the
 %               imported fault surface from  boundary condition defined by the
@@ -16,7 +16,8 @@ Pxx,Pyy,Pzz,Pxy,Pxz,Pyz,Tn_i,Tss_i,Tds_i,mu,lambda,nu,P1,P2,P3,halfspace...
 % Pxx,Pyy,Pzz
 % Pxy,Pxz,Pyz - Remote stress defined by user.
 %
-% Tn,Tss,Tds  - Tractions on the surface defined by the user 
+% TnIn,TssIn
+% TdsIn       - Tractions on the surface defined by the user 
 %              (Normal,Strikeslip and Dipslip) .
 %
 %       mu    - Shear modulus.
@@ -89,6 +90,9 @@ Pxx,Pyy,Pzz,Pxy,Pxz,Pyz,Tn_i,Tss_i,Tds_i,mu,lambda,nu,P1,P2,P3,halfspace...
 %Number of points:
 NUM=numel(MidPoint(:,1));
 
+%Check there are no duplicate els. 
+DuplicateElementCheck(MidPoint,Fdisp)
+
 %Check input constants match:
 ElasticConstantsCheck( mu(1),lambda(1),nu(1) );
 if numel(nu)>1 %Inhomo, 2 elastics
@@ -121,8 +125,14 @@ end
 %point waiting for this otherwise
 if Option=='C'     
     
-    [ Tnn,Tds,Tss ] = CalculateNormalAndShearTractions3d( FaceNormalVector,Pxx,Pyy,Pzz,Pxy,Pxz,Pyz );
-    FricRes=Tnn.*Mu; %Negative is compression
+    [ Tn,Tds,Tss ] = CalculateNormalAndShearTractions3d( FaceNormalVector,Pxx,Pyy,Pzz,Pxy,Pxz,Pyz );
+    %Adding tractions imported into function if these also exist. 
+    if ~isempty(TnIn) && ~isempty(TdsIn) && ~isempty(TssIn)    
+        Tn=Tn+TnIn;
+        Tds=Tds+TdsIn;
+        Tss=Tss+TssIn;
+    end
+    FricRes=Tn.*Mu; %Negative is compression
     if all(-abs(Tss)>FricRes) && all(-abs(Tds)>FricRes)
         PlotSlipDistribution3d(Triangles,Points,cmap,FricRes,Tss,Tds)
         disp('Your frictional fault will not slip, quit (ctrl+c)')
@@ -166,7 +176,15 @@ if Option=='B' || Option=='C' || Option=='D' || Option=='F'
         
     end     
     
-    [ Tnn,Tds,Tss ] = CalculateNormalAndShearTractions3d( FaceNormalVector,Pxx,Pyy,Pzz,Pxy,Pxz,Pyz );
+    [ Tn,Tds,Tss ] = CalculateNormalAndShearTractions3d( FaceNormalVector,Pxx,Pyy,Pzz,Pxy,Pxz,Pyz );
+    
+    %Adding tractions imported into function if these also exist. 
+    if ~isempty(TnIn) && ~isempty(TdsIn) && ~isempty(TssIn)    
+		disp('Boundarys have both tractions and remote stresses defined.')
+        Tn=Tn+TnIn;
+        Tds=Tds+TdsIn;
+        Tss=Tss+TssIn;
+    end
     
 end
 
@@ -175,15 +193,15 @@ if Option=='E'
     
     %If Tractions do not exist yet (i.e. option E) then we create blank ones
     %to append the user defined ones too. 
-    Tnn=zeros(NUM,1);
+    Tn=zeros(NUM,1);
     Tss=zeros(NUM,1);
     Tds=zeros(NUM,1);
     
     %creates a column of the stress on every triangles centre point with 
     %the pressure direction defined by the slip type in the name. 
-    Tnn     = Tnn+Tn_i;    
-    Tss     = Tss+Tss_i;
-    Tds     = Tds+Tds_i;
+    Tn      = Tn+TnIn;    
+    Tss     = Tss+TssIn;
+    Tds     = Tds+TdsIn;
 
 end
 
@@ -197,7 +215,7 @@ if Option~='F'
     
     if any(Fdisp)==1
         %Now exchanging stress coeff rows for displacement ones
-        [StressInf,NUM,Tnn,Tss,Tds]=FixingDisp_InfRowSwap3d(StressInf,DispInf,NUM,Tnn,Tss,Tds,Fdisp);
+        [StressInf,NUM,Tn,Tss,Tds]=FixingDisp_InfRowSwap3d(StressInf,DispInf,NUM,Tn,Tss,Tds,Fdisp);
         clear DispInf
     end
     
@@ -225,7 +243,7 @@ else %We need to do this for both elastics
     end
     
     FD=logical(FixedDisps);    
-    Tnn(FD) = 0;    
+    Tn(FD) = 0;    
     Tss(FD) = 0;
     Tds(FD) = 0;
     
@@ -279,11 +297,11 @@ if Option=='F'
     zer=zeros(size(DispInfE2IF.DnUz,1),1);     clear DispInfE2IF
     contvec=[zer;zer;zer;zer;zer;zer];
     B= [contvec;...
-        Tnn(FreeBoundary1);Tss(FreeBoundary1);Tds(FreeBoundary1);...
-        Tnn(FreeBoundary2);Tss(FreeBoundary2);Tds(FreeBoundary2)];
+        Tn(FreeBoundary1);Tss(FreeBoundary1);Tds(FreeBoundary1);...
+        Tn(FreeBoundary2);Tss(FreeBoundary2);Tds(FreeBoundary2)];
 else 
     %Creating vector of tractions at every element
-    B= [Tnn;Tss;Tds];    
+    B= [Tn;Tss;Tds];    
 end
 
 
@@ -340,7 +358,7 @@ elseif Option=='F'
     
 elseif Option=='C' 
     %friction solver
-    [Dn,Dss,Dds] = LinearCompFrictionSolver3d(D,A,Sf,Mu,NUM,Tnn,Tss,Tds);
+    [Dn,Dss,Dds] = LinearCompFrictionSolver3d(D,A,Sf,Mu,NUM,Tn,Tss,Tds);
     %Scaling back the data. 
     Dn=Dn*Scl;
     Dss=Dss*Scl;

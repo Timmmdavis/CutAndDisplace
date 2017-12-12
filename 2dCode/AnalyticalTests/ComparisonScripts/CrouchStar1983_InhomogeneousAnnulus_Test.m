@@ -76,7 +76,7 @@ FlipNormalsFlag(end,1)=1; %Flag that tells the line builder to flip the normals 
 
 
 %Fixing disps for 2nd elastic (in hole too)
-[Pointsxy,mystruct,BoundaryFlag] = DataAppender2d( Pointsxy,PointsxyF,mystruct,BoundaryFlag,5 );
+[Pointsxy,mystruct,BoundaryFlag] = DataAppender2d( Pointsxy,PointsxyF+0.01,mystruct,BoundaryFlag,5 );
 %5 is the fixed els in elastic 2
 FlipNormalsFlag=[FlipNormalsFlag;0]; %not going to flip the normals on this one
 
