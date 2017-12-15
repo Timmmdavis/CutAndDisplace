@@ -20,8 +20,8 @@ function [Stress] = LDstressHS(x,y,xe,ye,a,Beta,Ds,Dn,nu,E)
 %               when the normal points east this is 90, west -90 and north
 %               180.
 %
-%     Dn,Ds   - The defined displacement of each element.(normal and
-%     shear).
+%     Dn,Ds   - The defined displacement of each element.(normal and shear).
+%               Dn+ is opening, Ds+ is left lateral shearing. 
 %
 %       nu    - The Poisson's ratio.
 %

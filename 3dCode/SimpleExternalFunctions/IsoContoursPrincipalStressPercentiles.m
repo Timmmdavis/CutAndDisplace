@@ -87,7 +87,8 @@ S3_Low  = Percentile(S3(:),P_Low);  %25th percentile
 %Drawing isosurfaces of the principal stresses. 
 figure_handle = figure;
 %Getting figure and inflating this to full screen size
-set(figure_handle, 'Position', get(0,'Screensize'));
+ScrnSz=get(0,'Screensize');
+set(figure_handle, 'Position', ScrnSz/2);
 
 %Drawing S1
 subplot(1,3,1), 

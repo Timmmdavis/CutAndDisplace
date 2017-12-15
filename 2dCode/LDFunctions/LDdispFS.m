@@ -20,6 +20,7 @@ function [Disp] = LDdispFS(x,y,xe,ye,a,Beta,Ds,Dn,nu)
 %               180.
 %
 %     Dn,Ds   - The defined displacement of each element.(normal and shear)
+%               Dn+ is opening, Ds+ is left lateral shearing. 
 %
 %       nu    - The Poisson's ratio
 %

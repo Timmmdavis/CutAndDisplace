@@ -180,7 +180,7 @@ k = (3-(4*nu));     %Kolosov's constant for plane strain
 U = mu;             %ShearMod
 [x,y] = meshgrid(minx:spacing:maxx); 
 a = 1;              %Unit half-length displacement discontinuity
-b=-Ds;              %Convention
+b=Ds;               %Convention
 
 
 [x,y,SxxBarb,SyyBarb,SxyBarb,uxBarb,uyBarb]=Barber1992_GlideDislocation(k,U,x,y,a,b,nu);

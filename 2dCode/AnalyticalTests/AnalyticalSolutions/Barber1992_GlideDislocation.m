@@ -2,11 +2,16 @@ function [X,Y,Sxx,Syy,Sxy,Ux,Uy]=Barber1992_GlideDislocation(k,mu,X,Y,a,b,nu)
 % Barber1992_GlideDislocation: Returns Cartesian displacements and stresses
 %              at grid points for a displacement discontinuity with a unit
 %              Burger's vector (B=1) and unit half length (a=1). The
-%              displacement discontintuity extends along the x-axis from x =
-%              -a to x = +a. 
+%              displacement discontintuity extends along the x-axis from 
+%              x = -a to x = +a. 
+%              Note a positive Burgers vector here drives a right lateral
+%              shearing. 
 %
 %              The solution is based on equations for a glide
-%              dislocation from Barber: Elasticity 1992
+%              dislocation from Barber: Elasticity (1992) and Pollard and
+%              Fletcher (2005). 
+%
+%
 %
 % usage #1: [X,Y,Sxx,Syy,Sxy,Ux,Uy] =
 % Barber1992_GlideDislocation(k,mu,X,Y,a,b,nu);
@@ -51,18 +56,19 @@ function [X,Y,Sxx,Syy,Sxy,Ux,Uy]=Barber1992_GlideDislocation(k,mu,X,Y,a,b,nu)
 %  
 %  [X,Y,Sxx,Syy,Sxy,Ux,Uy] =...
 %   Barber1992_GlideDislocation(k,mu,X,Y,a,b,nu);
-%
-%  DrawContourFPlots2d( X,Y,[], Sxx,Syy,Sxy,Ux,Uy )
+% 
+%  quiver(X(:),Y(:),Ux(:),Uy(:))
+%  DrawContourFPlots2d( X,Y,[], Sxx,Syy,Sxy )
 %
 %
 %  Author: Tim Davis
 %  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 %  Modified from Steve Martel's fracture mechanics homework
 
+
+
 %Define larger grid that covers where both dislocations will be, this is
 %used to calculate stress once. 
-
-
 [Sxxp,Syyp,Sxyp,Uxp,Uyp]=CompD(mu,b,k,nu,X-a,Y);
 [Sxxn,Syyn,Sxyn,Uxn,Uyn]=CompD(mu,b,k,nu,X+a,Y);
 
@@ -84,26 +90,30 @@ theta = atan2(Y,X);
     
 % Calculate polar rt stress components due to unit displacement discontinuity
 % Positive end Negative end
-% Barber page 201 equations 13.19-13.20, these are for a climb dislocation, not glide. 
-Srr = -((2*mu)*b*sint)./(pi*(k+1)*r);
+% Barber page 201 equations 13.24-13.25
+Srr = ((2*mu)*b*sint)./(pi*(k+1)*r);
 Stt = Srr; 
-Srt = ((2*mu)*b*cost)./(pi*(k+1)*r);
+Srt = -((2*mu)*b*cost)./(pi*(k+1)*r);
 
 %Converting the components into Cartesian tensor
 dimx = size(Srr,1);
 dimy = size(Srr,2);
 %Calling external function
-[Sxx,Syy,Sxy] = StressTensorTransformation2d(Srr(:),Stt(:),Srt(:),cos(theta(:)),cos((pi/2)-theta(:)));
+[Sxx,Syy,Sxy]=StressTensorTransformation2d(Srr(:),Stt(:),Srt(:),cos(theta(:)),cos((pi/2)-theta(:)));
 [Sxx,Syy,Sxy]=ReshapeData2d(dimx,dimy,Sxx,Syy,Sxy);
 
 %Displacement equations, see Pollard and Fletcher 2005 Eq 8.36-8.37. 
 %Equations from Fig 08_10
-b=-b;
-lm = (2*mu*nu)/(1-2*nu); %nu=nu % Elastic moduli
-c1 = (0.5*mu)/(lm+2*mu); c2 = (lm+mu)/(lm+2*mu);
+lambda = (2*mu*nu)/(1-2*nu); 
+%Constants
+c1 = (0.5*mu)/(lambda+2*mu); 
+c2 = (lambda+mu)/(lambda+2*mu);
+%Equations
+%Ux
 Ux1 = -(b/(2*pi))*atan2(Y,X);
 Ux2 = -(b/(2*pi))*c2*(X.*Y)./(X.^2+Y.^2);
 Ux=Ux1+Ux2; bbb=abs(Ux)==inf; Ux(bbb)=0 ;
+%Uy
 Uy1 = -(b/(2*pi))*(-c1).*log(X.^2+Y.^2);
 Uy2 = -(b/(2*pi))*c2*(Y.^2)./(X.^2+Y.^2);
 Uy=Uy1+Uy2; bbb=abs(Uy)==inf; Uy(bbb)=0 ;
