@@ -23,13 +23,13 @@ cmap2 = colormap_cpt('Ccool-warm2');
    
 % %      %MediumSampleSetup
   string='BurgmannFreeBndE1.ts'; %Loading inner annlus, free bnd elastic 1
- [ PointsFBE1,TrianglesFBE1 ] = GoCadAsciiReader( string,pwd );		
+ [ PointsFBE1,TrianglesFBE1 ] = GoCadAsciiReader( string );		
    string='BurgmannInterfaceE1E2.ts'; %Loading interface elastic 1
- [ PointsIFE1E2,TrianglesIFE1E2 ] = GoCadAsciiReader( string,pwd );		
+ [ PointsIFE1E2,TrianglesIFE1E2 ] = GoCadAsciiReader( string );		
    string='BurgmannInterfaceE2E1.ts'; %Loading interface elastic 2
- [ PointsIFE2E1,TrianglesIFE2E1 ] = GoCadAsciiReader( string,pwd );
+ [ PointsIFE2E1,TrianglesIFE2E1 ] = GoCadAsciiReader( string );
     string='BurgmannFreeBndE2.ts'; %Loading interface elastic 2
- [ PointsFBE2,TrianglesFBE2 ] = GoCadAsciiReader( string,pwd );
+ [ PointsFBE2,TrianglesFBE2 ] = GoCadAsciiReader( string );
 
 
 %Adding interface E1E2, Points towards E2 
@@ -128,7 +128,7 @@ Option='F';
 
 [Dss,Dds,Dn,Sxx,Syy,Szz,Sxy,Sxz,Syz]=SlipCalculator3d(MidPoint,Sxx,...
  Syy,Szz,Sxy,Sxz,Syz,Tn,Tss,Tds,mu,lambda,nu,P1,P2,P3,halfspace,...
- FaceNormalVector,Fdisp,strain,Mu,Sf,Option,Triangles,Points);
+ FaceNormalVector,BoundaryFlag,strain,Mu,Sf,Option,Triangles,Points);
 
 %Removing fixed disps from BoundaryFlag
 BoundaryFlag(Fdisp)=[]; %removing
@@ -167,7 +167,7 @@ ShearDispNointMidSort = ShearDispNointMid(SortIndex);
 
 figure;plot(Rsorted,abs(ShearDispNointMidSort))
 xlabel('x'); ylabel('y');  title('SlipDistribution'),
-pause
+
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -190,6 +190,9 @@ Z=zeros(size(X));
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Drawing and fixing Obs Point data just created
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Dist=5;
+[X,Y,Z]=NanTolDistTri2Pnt( X,Y,Z,P1,P2,P3,MidPoint,FaceNormalVector,Dist );
+
 
 E1Flag=X<0;
 XE1=X(E1Flag);
@@ -207,11 +210,11 @@ title('fractures and obs points'), xlabel('x'), ylabel('y');axis equal
 hold on
 isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0; %1 for octave, 0 for MATLAB
 if  isOctave==1
-scatter(XE1(:),XE1(:),'b');
-scatter(XE2(:),YE2(:),'r');
+    scatter(XE1(:),XE1(:),'b');
+    scatter(XE2(:),YE2(:),'r');
 elseif isOctave==0
-scatter(XE1(:),YE1(:),'b','filled','MarkerFaceAlpha',1/8);
-scatter(XE2(:),YE2(:),'r','filled','MarkerFaceAlpha',1/8);
+    scatter(XE1(:),YE1(:),'b','filled','MarkerFaceAlpha',1/8);
+    scatter(XE2(:),YE2(:),'r','filled','MarkerFaceAlpha',1/8);
 end
 title('Observation Points, Blue E1 Red E2 and displacement of E1 els'), xlabel('x'), ylabel('y')
 hold off         
@@ -265,16 +268,18 @@ Part=2; %Which elastic we want to extract
 
  [UxE2,UyE2,UzE2] = CalculateDisplacementOnSurroundingPoints3d( DssE2,DdsE2,DnE2, nuE2,XE2,YE2,ZE2, P1E2,P2E2,P3E2,halfspace);
  
- 
+ %Extract stresses
+SxxE2=StressTTotalE2(:,1)';SyyE2=StressTTotalE2(:,2)';SxyE2=StressTTotalE2(:,4)';
+
+
+X=[XE1;XE2];
+Y=[YE1;YE2];
 Ux=[UxE1;UxE2];
 Uy=[UyE1;UyE2];
-
 %Draw data with quiver, doesn't matter if its gridded or not
-figure,quiver(X(:),Y(:),Ux,Uy);
+figure,quiver(X(:),Y(:),Ux(:),Uy(:));
 xlabel('x'); ylabel('y'); axis('equal'); title('Disp'); 
 
-%Extract stresses
-SxxE2=StressTTotalE2(:,1)';SyyE2=StressTTotalE2(:,2)';SxyE2=StressTTotalE2(:,4)';
 
 Sxx=[StressTChgE1(:,1);StressTChgE2(:,1)];
 Syy=[StressTChgE1(:,2);StressTChgE2(:,2)];

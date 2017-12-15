@@ -53,10 +53,12 @@ if iscolumn(X) ||  isrow(X)
     
 else    
     
-    %Just checks gradient between points is 0. 
-    flagx = diff(X,[],1)==0;
-    flagy = diff(Y,[],2)==0;
-    flagz = diff(permute(Z,[3 2 1]),[],2)==0; %Have to rearrange for diff (only does rows and cols)
+    %Just checks gradient between points is 0. Gradients where NaNs exist
+    %are ignored.
+    flagx = diff(X,[],1)==0 | isnan(diff(X,[],1));
+    flagy = diff(Y,[],2)==0 | isnan(diff(Y,[],2));
+    %Have to rearrange for diff (only does rows and cols)
+    flagz = diff(permute(Z,[3 2 1]),[],2)==0 | isnan(diff(permute(Z,[3 2 1]),[],2)); 
     
 end
 

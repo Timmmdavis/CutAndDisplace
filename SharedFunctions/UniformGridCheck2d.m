@@ -50,9 +50,10 @@ if iscolumn(X)
     
 else    
     
-    %Just checks gradient between points is 0. 
-    flagx = diff(X,[],1)==0;
-    flagy = diff(Y,[],2)==0;
+    %Just checks gradient between points is 0.  Gradients where NaNs exist
+    %are ignored.
+    flagx = diff(X,[],1)==0 | isnan(diff(X,[],1));
+    flagy = diff(Y,[],2)==0 | isnan(diff(Y,[],2));
  
 end
 

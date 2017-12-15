@@ -343,8 +343,8 @@ PointsXY=[[P1(:,1);P2(:,1)],[P1(:,2);P2(:,2)]];
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Drawing and fixing Obs Point data just created.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
+Dist=500;
+[X,Y]=NanTolDistLine2Pnt( X,Y,P1,P2,LineNormalVector,Dist );
 %Drawing these and the location compared to the Obs Points
 figure;
 PlotFracture( P1,P2,'r' )

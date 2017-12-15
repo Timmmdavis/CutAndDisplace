@@ -38,15 +38,17 @@ cmap2 = colormap_cpt('Ccool-warm2');
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
 %First free boundary    
-sz=50;     
+sz=100;     
 Pointsxy=[linspace(-100,0,sz)',zeros(sz,1)];
 mystruct.('line1')=(1:sz);
 E1Fbnd=Pointsxy;
 
-%Interface
-PointsxyIFE1E2=[zeros(sz,1),linspace(-400,400,sz)'];
-
 BoundaryFlag=zeros((sz-1),1);
+
+%Interface
+PointsxyIFE1E2=[zeros(sz,1),linspace(-250,250,sz)'];
+
+
 %Adding the interface of E1-E2 in
 [Pointsxy,mystruct,BoundaryFlag] = DataAppender2d( Pointsxy,PointsxyIFE1E2,mystruct,BoundaryFlag,2 );
 
@@ -238,6 +240,9 @@ dimy = size(X,2);
     %Drawing and fixing Obs Point data just created
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+Dist=4;
+[X,Y]=NanTolDistLine2Pnt( X,Y,P1,P2,LineNormalVector,Dist );    
+    
 E1Flag=X<0;
 XE1=X(E1Flag);
 YE1=Y(E1Flag);
