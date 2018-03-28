@@ -1,4 +1,3 @@
-
 %   Copyright 2017, Tim Davis, The University of Aberdeen%
 
 %Test: 2d Planar fracture with increasing frictional profile: Comparison of

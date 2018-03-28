@@ -1,5 +1,5 @@
 function [Dn,Dss,Dds] = LinearCompFrictionSolver3d(D,A,Sf,Mu,ne,TnDr,TssDr,TdsDr)
-% LinearCompFrictionSolver2d: Formulates the results of the BEM calculation
+% LinearCompFrictionSolver3d: Formulates the results of the BEM calculation
 %                     as a complementarity problem. 
 %                     See:
 %                     Ritz, E., Mutlu, O. and Pollard, D.D., 2012.
@@ -17,7 +17,7 @@ function [Dn,Dss,Dds] = LinearCompFrictionSolver3d(D,A,Sf,Mu,ne,TnDr,TssDr,TdsDr
 %                   
 %               
 % usage #1:
-% [ Ds,Dn ] = LinearCompFrictionSolver2d(D,A,Sf,Mu,ne,TnDr,TsDr)
+% [ Ds,Dn ] = LinearCompFrictionSolver3d(D,A,Sf,Mu,ne,TnDr,TsDr)
 %
 % Arguments: (input)
 % D                 - Element displacements calculated normally, i.e. these

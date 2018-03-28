@@ -71,6 +71,13 @@ disp(' ') %line break
 
 TakeScreenShotOfFigure(7)
 
+disp('Starting stress intensity tests')
+run StressIntensity2dTest
+disp('End, compares well to analyical stress intensity for planar/curved crack')
+disp(' ') %line break
+
+TakeScreenShotOfFigure(8)
+
 %Sets the maxmimised figure size back to default
 set(gcf, 'Position', getfield(get(groot,'default'), 'defaultFigurePosition')); 
 

@@ -68,8 +68,11 @@ VarName3 = dataArray{:, 3};
 VarName4 = dataArray{:, 4};
 
 %Flag every row that is a vertex, in stls these come in groups of threes. 
-VRTXflag = contains(VarName1, 'vertex');
-
+if verLessThan('matlab', '9.1') %(below v2016b where 'contains' was introduced)
+    [VRTXflag,~] = find(~cellfun(@isempty,strfind(VarName1,'vertex')));
+else
+    VRTXflag = contains(VarName1, 'vertex');
+end
 %Extracting rows with points
 Points=[VarName2(VRTXflag),VarName3(VRTXflag),VarName4(VRTXflag)];
 Points = cellfun(@str2double, Points); %converting to double

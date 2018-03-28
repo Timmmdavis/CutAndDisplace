@@ -5,7 +5,7 @@ function [Xnw,Ynw,Znw] = RotateObject3dNewCoords(Ax1,Ax2,Ax3,X,Y,Z)
 %               points are already transformed correctly in space.
 %               
 % usage #1:
-% [Xrot,Yrot] = RotateObject2d(X,Y,Theta)
+% [Xnw,Ynw,Znw] = RotateObject3dNewCoords(Ax1,Ax2,Ax3,X,Y,Z)
 %
 % Arguments: (input)
 % X             - list of x points (mat or vect)

@@ -1,6 +1,6 @@
 function [RotatedCosine]=RotateCosine3d(InputCosine,Angle,RotationAxis)
 % RotateCosine3d: Rotate a direction cosine/s around a specified Cartesian
-%                   axis by a defined angle value (degrees). 
+%                   axis by a defined angle value (radians). 
 %               
 % usage #1:
 % [RotatedCosine]=RotateCosine3d(InputCosine,Angle,RotationAxis)
@@ -8,7 +8,7 @@ function [RotatedCosine]=RotateCosine3d(InputCosine,Angle,RotationAxis)
 % Arguments: (input)
 % InputCosine       - n*3 direction cosines, (col vec).
 %
-% Angle             - Angle in degress that cosines will be rotated around.
+% Angle             - Angle in radians that cosines will be rotated around.
 %
 % RotationAxis      - A string specifying the axis. 'x','y' or 'z'
 %
@@ -29,7 +29,7 @@ function [RotatedCosine]=RotateCosine3d(InputCosine,Angle,RotationAxis)
 % %handy!)
 % quiver3(x,y,z,x,y,z); title('pointing outwards')
 % %Going to rotate 90 deg around the x-axis.
-% Angle=90;
+% Angle=deg2rad(90);
 % RotationAxis='x';
 % [NrmVecXRot]=RotateCosine3d([x,y,z],Angle,RotationAxis);
 % %Getting data out of the array

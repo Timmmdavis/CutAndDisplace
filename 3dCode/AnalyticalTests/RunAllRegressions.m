@@ -57,6 +57,16 @@ disp('End, compares well to the Crouch analytical solution of a dual elastic ann
 disp(' ') %line break
 
 TakeScreenShotOfFigure(6)
+
+
+disp('Starting stress intensity tests')
+run StressIntensity3dTest
+disp('End, compares well to analyical stress intensity for inclined 3d/curved 2d crack')
+disp(' ') %line break
+
+TakeScreenShotOfFigure(7)
+
+
     
 isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0; %1 for octave, 0 for MATLAB
 if  isOctave==1
@@ -71,7 +81,7 @@ end
 % run NumericalAnalyticalComp_EshelbyVoid
 % disp('End, compares well to the Meng analytical code for the stress in the matrix surronging a void (Eshelby)')
 % disp(' ') %line break
-% TakeScreenShotOfFigure(7)
+% TakeScreenShotOfFigure(~)
 
 disp(' ') %line break	
 disp('Starting Traction free surface test')

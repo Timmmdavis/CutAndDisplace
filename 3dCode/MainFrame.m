@@ -35,9 +35,9 @@ cmap2 = colormap_cpt('Ccool-warm2');
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %  string='SphereUniformDistributionON2_500Faces.ts';
-%  [ Points,Triangles ] = GoCadAsciiReader( string,pwd );
+%  [ Points,Triangles ] = GoCadAsciiReader( string );
 %  string='SphereFix4.ts';
-%  [ PointsF,TrianglesF ] = GoCadAsciiReader( string,pwd );  
+%  [ PointsF,TrianglesF ] = GoCadAsciiReader( string );  
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Option B = Loading Stl data.
@@ -56,7 +56,7 @@ Y = linspace(-a,a,Density);
 [X,Y] = meshgrid(X,Y); 
 [ Triangles,Points ] = MeshSurfaceXYPnts( X,Y );
 %Rotate this
-[Points(:,2),Points(:,4)] = RotateObject2d(Points(:,2),Points(:,4),deg2rad(-20));
+[Points(:,2),Points(:,4)] = RotateObject2d(Points(:,2),Points(:,4),deg2rad(200));
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Appending and flagging the fixed data points.
@@ -138,10 +138,10 @@ Points=[Points(:,1),Points(:,2),Points(:,3),(Points(:,4)-freesurface_height)];
     %Choose to define in stress or strain.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-	%%%%%%%%%%%%%%
-  %StrainInput       
-	%%%%%%%%%%%%%%
-
+% 	%%%%%%%%%%%%%%
+%   %StrainInput       
+% 	%%%%%%%%%%%%%%
+% 
 % %Put to 1 to define the stresses defined in 'stress input' as strain values    
 % strain=0;                   
 %     
@@ -167,19 +167,19 @@ Points=[Points(:,1),Points(:,2),Points(:,3),(Points(:,4)-freesurface_height)];
     %slip is reduced by the frictional parameters. 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-% Sxx = -0.5;       			
-% Syy = -0.5; 
-% Szz = 0;
-% Sxy = 0;        		
-% Sxz = 1;
-% Syz = 0; 
-% % %Finding distance of points along X from 0,0. 
-% X=(MidPoint(:,1));
-% ne=size(MidPoint(:,1));
-% Mu  = ones((ne))*0.6;    %Coefficient of friction
-% Sf  = ones(size(Mu))*0;  %Sliding friction 
-% PlotSlipDistribution3d(Triangles,Points,cmap2,Sf)
-% Option='C'; 
+Sxx = 0;       			
+Syy = 0; 
+Szz = -1;
+Sxy = 0;        		
+Sxz = 0;
+Syz = 0; 
+% %Finding distance of points along X from 0,0. 
+X=(MidPoint(:,1));
+ne=size(MidPoint(:,1));
+Mu  = ones((ne))*0.1;    %Coefficient of friction
+Sf  = ones(size(Mu))*0;  %Sliding friction 
+PlotSlipDistribution3d(Triangles,Points,cmap2,Sf)
+Option='C'; 
 
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -209,16 +209,16 @@ Points=[Points(:,1),Points(:,2),Points(:,3),(Points(:,4)-freesurface_height)];
 % 
 % Option='D';
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %Option E = Defining boundary conditions as traction at the element
-    %centres. 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-Tss = 0;     %positive - right lateral
-Tds = 0.1;     %positive (normals point to sky) - drives slip down dip 
-Tn = 0;     %positive is pressure that loads the boundary in tension
-
-Option='E';
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %Option E = Defining boundary conditions as traction at the element
+%     %centres. 
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     
+% Tss = 0;     %positive - right lateral
+% Tds = 0.1;     %positive (normals point to sky) - drives slip down dip 
+% Tn = 0;     %positive is pressure that loads the boundary in tension
+% 
+% Option='E';
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

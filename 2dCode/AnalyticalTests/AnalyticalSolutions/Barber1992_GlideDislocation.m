@@ -2,7 +2,7 @@ function [X,Y,Sxx,Syy,Sxy,Ux,Uy]=Barber1992_GlideDislocation(k,mu,X,Y,a,b,nu)
 % Barber1992_GlideDislocation: Returns Cartesian displacements and stresses
 %              at grid points for a displacement discontinuity with a unit
 %              Burger's vector (B=1) and unit half length (a=1). The
-%              displacement discontintuity extends along the x-axis from 
+%              displacement discontinuity extends along the x-axis from 
 %              x = -a to x = +a. 
 %              Note a positive Burgers vector here drives a right lateral
 %              shearing. 

@@ -1,6 +1,5 @@
-function [StressTTotal,StressTChg,StressTReg]...
-    =ObsPointsStressCalculator2d(X,Y,MidPoint,a,Pxx,Pyy,Pxy,nu,E,halfspace...
-    ,Ds,Dn,LineNormalVector)
+function [StressTTotal,StressTChg,StressTReg]=ObsPointsStressCalculator2d...
+    (X,Y,MidPoint,a,Pxx,Pyy,Pxy,nu,E,halfspace,Ds,Dn,LineNormalVector)
 % CalculateStressOnSurroundingPoints: Calculates the stress & disp at observation
 %               points by creating a influence matrix of the elements to
 %               each obs point and using matrix multiplication to find the
@@ -61,7 +60,7 @@ function [StressTTotal,StressTChg,StressTReg]...
 
 
 %Getting size of observation point array
- n = numel(X);
+n = numel(X);
 
  %Creating the influence matricies
 [InfMats]= CalculateInfluenceMatrices2dObsPoints(halfspace,X,Y,MidPoint,a,nu,E,LineNormalVector );
@@ -90,7 +89,7 @@ StressTChg=[Sxx,Syy,Sxy];
  
 %Using the regional/driving stress and adding this on top of the stresses
 %induced by the elements. 
-StressTReg = [Pxx(1,:),Pyy(1,:),Pxy(1,:)];
+StressTReg = [zeros(n,1)+Pxx(1,:),zeros(n,1)+Pyy(1,:),zeros(n,1)+Pxy(1,:)];
 
 StressTTotal=StressTChg+StressTReg;
 

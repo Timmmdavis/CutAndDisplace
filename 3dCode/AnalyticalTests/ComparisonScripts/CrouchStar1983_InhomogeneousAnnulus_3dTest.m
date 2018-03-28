@@ -253,16 +253,10 @@ ZE2=zeros(size(YE2));
 
 %Drawing the observation points on one of the previous figures
 %Octave can't handle transparent objects
-isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0; %1 for octave, 0 for MATLAB
-if  isOctave==1
-scatter(XE1(:),YE1(:),'b');
+scatter(XE1(:),YE1(:),'b');hold on
 scatter(XE2(:),YE2(:),'r');
-elseif isOctave==0
-figure;scatter(XE1(:),YE1(:),'b','filled','MarkerFaceAlpha',1/8);hold on
-scatter(XE2(:),YE2(:),'r','filled','MarkerFaceAlpha',1/8);hold off
-end
 title('Observation Points, Blue E1 Red E2'), xlabel('x'), ylabel('y')
-        
+hold off
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

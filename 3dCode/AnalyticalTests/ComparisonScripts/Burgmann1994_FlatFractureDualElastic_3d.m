@@ -208,14 +208,8 @@ figure;trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),'FaceAlpha',(.2),'F
 hold on
 title('fractures and obs points'), xlabel('x'), ylabel('y');axis equal
 hold on
-isOctave = exist('OCTAVE_VERSION', 'builtin') ~= 0; %1 for octave, 0 for MATLAB
-if  isOctave==1
-    scatter(XE1(:),XE1(:),'b');
-    scatter(XE2(:),YE2(:),'r');
-elseif isOctave==0
-    scatter(XE1(:),YE1(:),'b','filled','MarkerFaceAlpha',1/8);
-    scatter(XE2(:),YE2(:),'r','filled','MarkerFaceAlpha',1/8);
-end
+scatter(XE1(:),XE1(:),'b');
+scatter(XE2(:),YE2(:),'r');
 title('Observation Points, Blue E1 Red E2 and displacement of E1 els'), xlabel('x'), ylabel('y')
 hold off         
         

@@ -72,6 +72,7 @@ for i = 1:numel(Triangles(:,1))
     a=sqrt((Pb(1)-Pc(1))^2+(Pb(2)-Pc(2))^2+(Pb(3)-Pc(3))^2);
     b=sqrt((Pa(1)-Pc(1))^2+(Pa(2)-Pc(2))^2+(Pa(3)-Pc(3))^2);
     if a==0 || b==0 || c==0
+        trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),'FaceAlpha',(.8),'facecolor', 'cyan');
         error('Slither triangles or triangles with no area exist on your surface')
     end
     %Calculating midpoint using
@@ -82,21 +83,9 @@ for i = 1:numel(Triangles(:,1))
     MidPointz=((Pa(3)*a)+(Pb(3)*b)+(Pc(3)*c))/(a+b+c);
     MidPoint(i,:)=[MidPointx,MidPointy,MidPointz];
 
-    %Now calculating the normal orientation
-    %New vectors (see calculating normals online
-    U=Pb-Pa;
-    V=Pc-Pa;
-    %Cross product of the vectors
-    Nx = (U(2)*V(3)) - (U(3)*V(2));
-    Ny = (U(3)*V(1)) - (U(1)*V(3));
-    Nz = (U(1)*V(2)) - (U(2)*V(1));
-    %Vector Magnitude
-    aMag=sqrt((Nx * Nx) + (Ny * Ny) + (Nz * Nz));
-    %Norm values
-    Ax=Nx/aMag;
-    Ay=Ny/aMag;
-    Az=Nz/aMag;
-    FaceNormalVector(i,:)=[Ax,Ay,Az];
+    %External function to calc normals:
+    FaceNormalVector(i,:) = CalculateTriangleNormal( Pa,Pb,Pc );
+
     
 end
 

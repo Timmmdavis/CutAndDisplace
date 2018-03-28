@@ -3,7 +3,7 @@
 % 
 % Solution: Used the script for this from the Pollard and Fletcher
 % fundamentals book. This solution is In most elasticity/continuum
-% textbooks as its simple to implement and relevant. Itâÿÿs the original
+% textbooks as its simple to implement and relevant. It's the original
 % solution from: Kirsch, G., 1898. Theory of Elasticity and Application in
 % Strength of Materials.Â Zeits chrift des Vereins Deutscher
 % Ingenieure,Â 42(29), pp.797-807. The solution is independent of elastic

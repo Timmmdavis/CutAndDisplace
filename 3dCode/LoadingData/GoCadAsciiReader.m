@@ -101,7 +101,12 @@ VarName4 = dataArray{:, 4};
 VarName5 = dataArray{:, 5};
 
 %%
-NAME = contains(VarName1,'PROJECTION');
+
+if verLessThan('matlab', '9.1') %(below v2016b where 'contains' was introduced)
+    [~,NAME] = find(~cellfun(@isempty,strfind(VarName1,'PROJECTION')));
+else
+    NAME = contains(VarName1,'PROJECTION');
+end
 Num = sum(NAME);
 if Num>1
     error('More than one Gocad ascii surface in the file, this function can only deal with 1')
@@ -110,9 +115,15 @@ end
 %Flag if row is triangle or vertex, converting to logical so this can be
 %used to extract rows
 %Finding strings
-VRTXflag = contains(VarName1,'VRTX');
-TRGLflag = contains(VarName1,'TRGL');  
-ATOMflag = contains(VarName1,'ATOM');  
+if verLessThan('matlab', '9.1') %(below v2016b where 'contains' was introduced)
+    [VRTXflag,~] = find(~cellfun(@isempty,strfind(VarName1,'VRTX')));
+    [TRGLflag,~] = find(~cellfun(@isempty,strfind(VarName1,'TRGL')));
+    [ATOMflag,~] = find(~cellfun(@isempty,strfind(VarName1,'ATOM')));
+else
+    VRTXflag = contains(VarName1,'VRTX');
+    TRGLflag = contains(VarName1,'TRGL');  
+    ATOMflag = contains(VarName1,'ATOM');  
+end
 
 %Converting to numeric before extracting data.
 % VarName1 = str2double(VarName1);
