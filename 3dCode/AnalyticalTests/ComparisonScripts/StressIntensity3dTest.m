@@ -287,10 +287,10 @@ Y=Y/(1+((2*h)*InnerDist));
 
 [ Triangles,Points ] = MeshSurfaceXYPnts( X,Y );
 
-%%
- string='CircleMesh_1a_500Faces.ts';
- [ Points,Triangles ] = GoCadAsciiReader( string );
-%%
+% %%
+%  string='CircleMesh_1a_500Faces.ts';
+%  [ Points,Triangles ] = GoCadAsciiReader( string );
+% %%
 
 %Pennys angle away from Z. 
 Beta=25; 
@@ -477,4 +477,4 @@ else
 end
 
 %Max Residual
-MxResidual=[MxResidual;[max(Residuala),max(Residualb),max(Residualc)]];
+%MxResidual=[MxResidual;[max(Residuala),max(Residualb),max(Residualc)]];
