@@ -146,23 +146,38 @@ Vect=(dot(FeEv(LocFlg,:)',DPlaneCart(LocFlg,:)'))<=0;
 DAlongEd(Vect==1)=-DAlongEd(Vect==1); 
 
 %Constants:
-h=FeLe(LocFlg);
+%h=FeLe(LocFlg);
+h=FeM2ELe(LocFlg)/2; %Currently whole tri length
+
 %Approximate stress intensities. 
 K1(LocFlg)=(mu*sqrt(pi)./(2*sqrt(h).*(1-nu))).*Dn(LocFlg);
 K2(LocFlg)=(mu*sqrt(pi)./(2*sqrt(h).*(1-nu))).*DMid2Ed;
 K3(LocFlg)=(mu*sqrt(pi)./(2*sqrt(h).*(1-nu))).*DAlongEd.*(1-nu);       
 
-%Correction factors for non-equilateral triangles:
-x=IntAng(LocFlg); %Internal angle! 
-p1 =      -0.435   ;
-p2 =       26.1;
-y = p1*x + p2;
+C_K1  =1.4845;
+C_K2K3=1.4245;
+K1=K1./C_K1;
+K2=K2./C_K2K3;
+K3=K3./C_K2K3;
+
+
+
+
+% %Correction factors for non-equilateral triangles:
+x=IntAng(LocFlg)./2; %Internal angle! 
+a =       24.45  ;
+b =     -0.2492  ;
+c =       1.137  ;
+d =   -0.006331  ;
+
 %y is distance above/below 100%
 
 %Fixing values with equation. 
-K1(LocFlg)=K1(LocFlg)./(100+y).*100;
-K2(LocFlg)=K2(LocFlg)./(100+y).*100;
-K3(LocFlg)=K3(LocFlg)./(100+y).*100;
+K1(LocFlg)=K1(LocFlg).*y;
+K2(LocFlg)=K2(LocFlg).*y;
+K3(LocFlg)=K3(LocFlg).*y;
+
+
 
 
 end

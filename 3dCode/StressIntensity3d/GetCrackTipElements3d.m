@@ -94,7 +94,7 @@ FeP1P2S.FeM2ELe=FeM2ELe;
 FeP1P2S.IntAng=IntAng;
 
 %Do for P1 P3: (Function at base of file)
-[Flg,FeLe,FeMd,FeEv,FeM2Ev,FeM2ELe,IntAng]=GetValues(P1P3FreeFlg,P1,P3,P2,MidPoint,FaceNormalVector);
+[Flg,FeLe,FeMd,FeEv,FeM2Ev,FeM2ELe,IntAng]=GetValues(P1P3FreeFlg,P3,P1,P2,MidPoint,FaceNormalVector);
 %Put in structure
 FeP1P3S.FeLe=FeLe;
 FeP1P3S.FeMd=FeMd;
@@ -141,9 +141,12 @@ FeLe(I)=sqrt(((Pa(I,1)-Pb(I,1)).^2)+((Pa(I,2)-Pb(I,2)).^2)+((Pa(I,3)-Pb(I,3)).^2
 %Midpoint of edge
 FeMd(I,:)=  [((Pa(I,1)+Pb(I,1))/2), ((Pa(I,2)+Pb(I,2))/2), ((Pa(I,3)+Pb(I,3))/2)];
 %Length of mid to edge dist
-FeM2ELe(I)=sqrt(((FeMd(I,1)-MidPoint(I,1)).^2)+((FeMd(I,2)-MidPoint(I,2)).^2)+((FeMd(I,3)-MidPoint(I,3)).^2));
+%FeM2ELe(I)=sqrt(((FeMd(I,1)-MidPoint(I,1)).^2)+((FeMd(I,2)-MidPoint(I,2)).^2)+((FeMd(I,3)-MidPoint(I,3)).^2));
+FeM2ELe(I)=sqrt(((FeMd(I,1)-Pc(I,1)).^2)+((FeMd(I,2)-Pc(I,2)).^2)+((FeMd(I,3)-Pc(I,3)).^2));
 %Vector from midpoint to edge midpoint. 
 FeM2Ev(I,:)=normr([FeMd(I,1)-MidPoint(I,1),FeMd(I,2)-MidPoint(I,2),FeMd(I,3)-MidPoint(I,3)]);
+
+
 %Vector pointing along edge
 FeEv(I,:)=normr([(Pa(I,1)-Pb(I,1)),  (Pa(I,2)-Pb(I,2)),     (Pa(I,3)-Pb(I,3))]);
 
@@ -204,7 +207,7 @@ FeM2ELe(I)=sin(Ang).*FeM2ELe(I)';
 
 %Then the direction of this vector: 
 %Vector from midpoint to edge midpoint (cross Pro)
-FeM2Ev2=cross(FaceNormalVector(I,:),FeEv(I,:));
+FeM2Ev2=cross(FaceNormalVector(I,:),FeEv(I,:),2);
 %Check if edge vector and slip vector match in sign
 Vect=(dot(FeM2Ev(I,:)',FeM2Ev2'))<=0;
 %Flip if not
