@@ -169,6 +169,7 @@ a =       24.45  ;
 b =     -0.2492  ;
 c =       1.137  ;
 d =   -0.006331  ;
+y = (a*exp(b*x) + c*exp(d*x))+0.0458;
 
 %y is distance above/below 100%
 
