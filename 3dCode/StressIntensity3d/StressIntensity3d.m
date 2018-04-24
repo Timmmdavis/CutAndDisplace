@@ -76,22 +76,12 @@ function [FeP1P2S,FeP1P3S,FeP2P3S] = StressIntensity3d...
 %  Author: Tim Davis
 %  Copyright 2017, Tim Davis, Potsdam University
 
-%Calculate direction cosines for the displacements
-[ StrikeSlipCosine,DipSlipCosine ] = CalculateDSandSSDirs( FaceNormalVector );
-%Cart vector components of the strike slip displacement
-DssCart=bsxfun(@times,StrikeSlipCosine,Dss);
-%Cart vector components of the dip slip displacement 
-DdsCart=bsxfun(@times,DipSlipCosine,Dds);
-%Total displacement vector lying on triangle plane
-DPlaneCart=DssCart+DdsCart; 
-
-
 %Call internal function (base of file)
-[K1_P1P2,K2_P1P2,K3_P1P2]=K1K2K3TriDislocation(FeP1P2S.FreeFlg,mu,nu,Dn,DPlaneCart,FeP1P2S.FeM2Ev,FeP1P2S.FeEv,FeP1P2S.FeLe,FeP1P2S.FeM2ELe,FeP1P2S.IntAng);
+[K1_P1P2,K2_P1P2,K3_P1P2]=K1K2K3TriDislocation(FeP1P2S.FreeFlg,mu,nu,Dn,FeP1P2S.FeM2Ev,FeP1P2S.FeEv,FeP1P2S.FeM2ELe,FeP1P2S.IntAng,FaceNormalVector,Dss,Dds);
 %Call internal function (base of file)
-[K1_P1P3,K2_P1P3,K3_P1P3]=K1K2K3TriDislocation(FeP1P3S.FreeFlg,mu,nu,Dn,DPlaneCart,FeP1P3S.FeM2Ev,FeP1P3S.FeEv,FeP1P3S.FeLe,FeP1P3S.FeM2ELe,FeP1P3S.IntAng);
+[K1_P1P3,K2_P1P3,K3_P1P3]=K1K2K3TriDislocation(FeP1P3S.FreeFlg,mu,nu,Dn,FeP1P3S.FeM2Ev,FeP1P3S.FeEv,FeP1P3S.FeM2ELe,FeP1P3S.IntAng,FaceNormalVector,Dss,Dds);
 %Call internal function (base of file)
-[K1_P2P3,K2_P2P3,K3_P2P3]=K1K2K3TriDislocation(FeP2P3S.FreeFlg,mu,nu,Dn,DPlaneCart,FeP2P3S.FeM2Ev,FeP2P3S.FeEv,FeP2P3S.FeLe,FeP2P3S.FeM2ELe,FeP2P3S.IntAng);
+[K1_P2P3,K2_P2P3,K3_P2P3]=K1K2K3TriDislocation(FeP2P3S.FreeFlg,mu,nu,Dn,FeP2P3S.FeM2Ev,FeP2P3S.FeEv,FeP2P3S.FeM2ELe,FeP2P3S.IntAng,FaceNormalVector,Dss,Dds);
 
 %Put results into the strucs:
 %P1P2
@@ -109,24 +99,72 @@ FeP2P3S.K3=K3_P2P3;
 
 
 
-function [K1,K2,K3]=K1K2K3TriDislocation(LocFlg,mu,nu,Dn,DPlaneCart,FeM2Ev,FeEv,FeLe,FeM2ELe,IntAng)
+function [K1,K2,K3]=K1K2K3TriDislocation(LocFlg,mu,nu,Dn,FeM2Ev,FeEv,FeM2ELe,IntAng,FaceNormalVector,Dss,Dds)
 %Calculates K1 K2 and K3 on connections that are free edges using simple
 %formulas based on the displacement discontinuity of the triangle the
 %connection borders. 
+
+%Calculate direction cosines for the displacements
+[ StrikeSlipCosine,DipSlipCosine ] = CalculateDSandSSDirs( FaceNormalVector(LocFlg,:) );
+%Cart vector components of the strike slip displacement
+DssCart=bsxfun(@times,StrikeSlipCosine,Dss(LocFlg));
+%Cart vector components of the dip slip displacement 
+DdsCart=bsxfun(@times,DipSlipCosine,Dds(LocFlg));
+%Total displacement vector lying on triangle plane
+DPlaneCart=DssCart+DdsCart; 
     
+%Here we rotate all the different cosines so they are 2D in the plane of
+%the triangle (using the normal vector). 
+
+%Init some vars:
+Num=sum(LocFlg);
+V1=zeros(Num,3); %Vector pointing up
+angle=zeros(Num,1);
+DssFlt=zeros(Num,2);
+DdsFlt=DssFlt;
+FeM2EvFlt=DssFlt;
+FeEvFlt=DssFlt;
+V1(:,3)=1;
+%Find the index for the loop
+Indx=find(LocFlg);
+
+%Loop to get the directions of the vectors in the coordiantes of the
+%triangle plane. 
+for i=1:Num
+    
+    Fnv=FaceNormalVector(Indx(i),:);
+    %Rotate the slip directions to flat
+    [DssFlt(i,1),DssFlt(i,2),~] = RotateObject3dAllignVectors(Fnv,V1(i,:),StrikeSlipCosine(i,1),StrikeSlipCosine(i,2),StrikeSlipCosine(i,3),0,0,0);
+    [DdsFlt(i,1),DdsFlt(i,2),~] = RotateObject3dAllignVectors(Fnv,V1(i,:),DipSlipCosine(i,1),DipSlipCosine(i,2),DipSlipCosine(i,3),0,0,0);
+    %Rotate the stress intensity directions to flat    
+    [FeM2EvFlt(i,1),FeM2EvFlt(i,2),~] = RotateObject3dAllignVectors(Fnv,V1(i,:),FeM2Ev(Indx(i),1),FeM2Ev(Indx(i),2),FeM2Ev(Indx(i),3),0,0,0);
+    [FeEvFlt(i,1),FeEvFlt(i,2),~] = RotateObject3dAllignVectors(Fnv,V1(i,:),FeEv(Indx(i),1),FeEv(Indx(i),2),FeEv(Indx(i),3),0,0,0);    
+    
+    %Angle between the strike slip vector and mid to edge vector in the
+    %plane of the triangle
+    angle(i) =abs(acos(DssFlt(i,1))-acos(FeM2EvFlt(i,1)));
+    
+end
+
+% DefineDirection
+Dir1=(pi/2)+angle; 	%direction (az) of component 1 (degrees)
+% Calculating direction cosines
+CosAx=sin(Dir1); %Angle away from X axis for Dir 1
+CosAy=cos(Dir1); %Angle away from Y axis for Dir 1
+%Calculating new vectors (using 'traction' function)
+[ DAlongEd,DMid2Ed ] = CalculateNormalShearTraction2d( Dds(Indx),Dss(Indx),CosAx,CosAy);
+%Ignoring sign for time being
+DAlongEd=abs(DAlongEd);
+DMid2Ed=abs(DMid2Ed);
+
+%Init some vars
 K1=nan(numel(Dn),1);
 K2=K1;
 K3=K2;
-       
-%Calculating displacement relative to crack front (perpendicular)
-DMid2Ed=sqrt((FeM2Ev(LocFlg,1).*DPlaneCart(LocFlg,1)).^2+...
-             (FeM2Ev(LocFlg,2).*DPlaneCart(LocFlg,2)).^2+...
-             (FeM2Ev(LocFlg,3).*DPlaneCart(LocFlg,3)).^2);
-%Transverse to crack front (parallel)
-DAlongEd=sqrt((FeEv(LocFlg,1).*DPlaneCart(LocFlg,1)).^2+...
-              (FeEv(LocFlg,2).*DPlaneCart(LocFlg,2)).^2+...
-              (FeEv(LocFlg,3).*DPlaneCart(LocFlg,3)).^2);
-          
+
+
+
+
 %% Correct sign of shear components
 % This means these match the drawings in Fig 9.30 of Pollard and Fletcher
 % assuming our end element normal corresponds to the y-axis in this figure.
@@ -137,16 +175,17 @@ DAlongEd=sqrt((FeEv(LocFlg,1).*DPlaneCart(LocFlg,1)).^2+...
 %We check if the slip vector also points in this direction
 %or not. We adjust sign accordingly. 
 %Check if mid2edge vector and slip vector match in sign
-Vect=(dot(FeM2Ev(LocFlg,:)',DPlaneCart(LocFlg,:)'))<=0;
+Vect=(dot(FeM2Ev(LocFlg,:)',DPlaneCart'))<=0;
 %Flip if not
 DMid2Ed(Vect==1)=-DMid2Ed(Vect==1);
 %Check if edge vector and slip vector match in sign
-Vect=(dot(FeEv(LocFlg,:)',DPlaneCart(LocFlg,:)'))<=0;
+Vect=(dot(FeEv(LocFlg,:)',DPlaneCart'))<=0;
 %Flip if not
 DAlongEd(Vect==1)=-DAlongEd(Vect==1); 
 
+%% Now calculating stress intensities
+
 %Constants:
-%h=FeLe(LocFlg);
 h=FeM2ELe(LocFlg)/2; %Currently whole tri length
 
 %Approximate stress intensities. 
@@ -154,26 +193,28 @@ K1(LocFlg)=(mu*sqrt(pi)./(2*sqrt(h).*(1-nu))).*Dn(LocFlg);
 K2(LocFlg)=(mu*sqrt(pi)./(2*sqrt(h).*(1-nu))).*DMid2Ed;
 K3(LocFlg)=(mu*sqrt(pi)./(2*sqrt(h).*(1-nu))).*DAlongEd.*(1-nu);       
 
+%% And correcting errors in formulas
+
+%Correction factors based on errors in formula above when we reduce 'h'
+%towards zero and compare to results of the analytical solution and the
+%overestimation from the constant movement of elements in 3D. 
 C_K1  =1.4845;
 C_K2K3=1.4245;
 K1=K1./C_K1;
 K2=K2./C_K2K3;
 K3=K3./C_K2K3;
 
-
-
-
 % %Correction factors for non-equilateral triangles:
-x=IntAng(LocFlg)./2; %Internal angle! 
+x=IntAng(LocFlg)./2; %Internal angle 
 a =       24.45  ;
 b =     -0.2492  ;
 c =       1.137  ;
 d =   -0.006331  ;
 y = (a*exp(b*x) + c*exp(d*x))+0.0458;
+%Constant '0.0458' makes sure equilateral triangles are not corrected but
+%the results are better without this. 
 
-%y is distance above/below 100%
-
-%Fixing values with equation. 
+%Correcting the values with equation. 
 K1(LocFlg)=K1(LocFlg).*y;
 K2(LocFlg)=K2(LocFlg).*y;
 K3(LocFlg)=K3(LocFlg).*y;

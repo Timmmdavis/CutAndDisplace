@@ -246,11 +246,15 @@ disp('Starting Part 2')
 %  [ Points,Triangles ] = GoCadAsciiReader( string );
 % Radius=1;
 
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %Option C = User defined surface
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     %Option C = User defined surface
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
 %Density=10; (defined above)
+
+
+
+% Density=10; %(defined above)
 InnerDist=(1/(Density));
 OuterEdgeSmpl=((2*pi)/InnerDist);
 
@@ -261,42 +265,41 @@ X = linspace(-Radius,Radius,Density);
 Y = linspace(-Radius,Radius,Density); 
 [X,Y] = meshgrid(X,Y); 
 %Inner circle of points
-%[Th,R]=cart2pol(X,Y); X(R>0.8)=[];Y(R>0.8)=[]; %Circle
-%EdgeSkew
-Rx=1;%0.8;
-Ry=1;%1.05;
-X=X(:);Y=Y(:);
-[ External ] = InsideEllipse(X, Y, Rx, Ry, 0.01);
-X(find(External))=[];Y(find(External))=[];
-%Outer Edge isosceles length h, compared to one for a eq tri. 
-h=1; 
+[Th,R]=cart2pol(X,Y); X(R>0.98)=[];Y(R>0.98)=[]; %Circle
 
-[ xe,ye ] = CreateCircleXY( OuterEdgeSmpl,1,0 );
-xe=xe.*Rx;
-ye=ye.*Ry;
-X=[X;xe]; Y=[Y;ye];
+[ xe,ye ] = CreateCircleXY( OuterEdgeSmpl,1,0 ); 
+X=[X';xe]; Y=[Y';ye];
 %Outer circle of points
-[ xe,ye ] = CreateCircleXY( OuterEdgeSmpl/2,1+((2*h)*InnerDist),0 ); 
+[ xe,ye ] = CreateCircleXY( OuterEdgeSmpl/2,1+(2*InnerDist),0 ); 
 %Rotating so we get equilateral tris. 
 Theta=deg2rad(360/OuterEdgeSmpl)/4;
 [Xrot,Yrot] = RotateObject2d(X,Y,Theta);
 X=[X;xe]; Y=[Y;ye];
 %Scaling so radius is one
-X=X/(1+((2*h)*InnerDist));
-Y=Y/(1+((2*h)*InnerDist));
+X=X/(1+(2*InnerDist));
+Y=Y/(1+(2*InnerDist));
 
 [ Triangles,Points ] = MeshSurfaceXYPnts( X,Y );
 
 % %%
-%  string='CircleMesh_1a_500Faces.ts';
-%  [ Points,Triangles ] = GoCadAsciiReader( string );
-% %%
+% %New way
+% x=[];y=[];
+% loopr=linspace(0,1,Density);
+% for i=1:Density
+%     [ X,Y ] = CreateCircleXY( Density*5,loopr(i),0 );
+%     x=[x,X];
+%     y=[y,Y];
+%     
+% end
+% [ Triangles,Points ] = MeshSurfaceXYPnts( x,y );
 
 %Pennys angle away from Z. 
-Beta=25; 
+Beta=15; 
 %Rotate this (XZ)
 [Points(:,2),Points(:,4)] = RotateObject2d(Points(:,2),Points(:,4),deg2rad(90-Beta));
 
+% % Radius=5;
+% % Points(:,2:4)=Points(:,2:4)*Radius;
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -374,9 +377,7 @@ Sxy = 0;
 Sxz = 0;
 Syz = 0; 
 
-Option='B'; 
-
-
+Option='B';
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -402,6 +403,7 @@ end
 %Draws 3 figures of the slip distribution on the surfaces
 PlotSlipDistribution3d(Triangles,Points,cmap2,Dss,Dds,Dn)
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %Animate Fault movement
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -409,8 +411,6 @@ PlotSlipDistribution3d(Triangles,Points,cmap2,Dss,Dds,Dn)
 
 
 %% The analytical test: 
-
-
 [FeP1P2S,FeP1P3S,FeP2P3S]=GetCrackTipElements3d(MidPoint,P1,P2,P3,FaceNormalVector);
 [FeP1P2S,FeP1P3S,FeP2P3S]=StressIntensity3d(Dn,Dss,Dds,mu,nu,FaceNormalVector,FeP1P2S,FeP1P3S,FeP2P3S);
 
@@ -427,6 +427,8 @@ K1=[FeP1P2S.K1(FeP1P2S.FreeFlg);FeP1P3S.K1(FeP1P3S.FreeFlg);FeP2P3S.K1(FeP2P3S.F
 K2=[FeP1P2S.K2(FeP1P2S.FreeFlg);FeP1P3S.K2(FeP1P3S.FreeFlg);FeP2P3S.K2(FeP2P3S.FreeFlg)];
 K3=[FeP1P2S.K3(FeP1P2S.FreeFlg);FeP1P3S.K3(FeP1P3S.FreeFlg);FeP2P3S.K3(FeP2P3S.FreeFlg)];
 
+figure;scatter3(FreeEdMdX,FreeEdMdY,FreeEdMdZ,15,Theta); axis('equal'); 
+
 %%
 FreeEdIndx=[find(FeP1P2S.FreeFlg);find(FeP1P3S.FreeFlg);find(FeP2P3S.FreeFlg)];
 FreeEdMdX=[FeP1P2S.FeMd(FeP1P2S.FreeFlg,1);FeP1P3S.FeMd(FeP1P3S.FreeFlg,1);FeP2P3S.FeMd(FeP2P3S.FreeFlg,1)];
@@ -438,6 +440,9 @@ quiver3(FreeEdMdX,FreeEdMdY,FreeEdMdZ,FreeEdEV(:,1),FreeEdEV(:,2),FreeEdEV(:,3),
 quiver3(FreeEdMdX,FreeEdMdY,FreeEdMdZ,FreeEdM2EV(:,1),FreeEdM2EV(:,2),FreeEdM2EV(:,3),'b'); hold on
 quiver3(FreeEdMdX,FreeEdMdY,FreeEdMdZ,FaceNormalVector(FreeEdIndx,1),FaceNormalVector(FreeEdIndx,2),FaceNormalVector(FreeEdIndx,3),'g'); hold on
 %%
+
+%% Norm and Shr Tract 
+[ Tnn,Tds,Tss ] = CalculateNormalAndShearTractions3d( FaceNormalVector(1,:),Sxx,Syy,Szz,Sxy,Sxz,Syz );
 
 
 [K1an,K2an,K3an] = NejatiEtAl2015_StrIntInclinedPennyTension(Szz,Beta,Theta,Radius,nu);

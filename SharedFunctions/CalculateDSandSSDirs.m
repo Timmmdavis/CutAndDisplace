@@ -35,10 +35,10 @@ function [ StrikeSlipCosine,DipSlipCosine ] = CalculateDSandSSDirs( FaceNormalVe
 %  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
 if nargin < 2
-%Splitting the face normal vector into its direction cosines. Note these are kept as radians not degrees. 
-CosAx=FaceNormalVector(:,1); 
-CosAy=FaceNormalVector(:,2);
-CosAz=FaceNormalVector(:,3);
+    %Splitting the face normal vector into its direction cosines. Note these are kept as radians not degrees. 
+    CosAx=FaceNormalVector(:,1); 
+    CosAy=FaceNormalVector(:,2);
+    CosAz=FaceNormalVector(:,3);
 end
 
 

@@ -24,7 +24,7 @@ function [ P11,P22,P12 ] = StressTensorTransformation2d(Pxx,Pyy,Pxy,CosAx,CosAy 
 % Arguments: (input)
 % Pxx,Pyy,Pxy       - 2D stress tensors (or strain). (Col vectors or mat)
 %
-% CosAx,CosAy       - Direction cosines of the new coordiantes for each of
+% CosAx,CosAy       - Direction cosines of the new coordinates for each of
 %                     the tensors. (Col vectors or mat)
 %
 % Arguments: (output)

@@ -47,17 +47,17 @@ CSS=zeros(Sz,1);
 
 %If C and Mu are single values we just repeat these here before the loop.
 if isequal(size(C),([1,1]))
-Ones=ones(Sz,1);
-C=C.*Ones;
-Mu=Mu.*Ones;
+    Ones=ones(Sz,1);
+    C=C.*Ones;
+    Mu=Mu.*Ones;
 end
 
 %Looping and calculating for each input value of Tn and Ts etc. 
 for i=1:Sz
     if Tn(i)>=C(i)  %The plane is not in contact.
-    CSS(i)=abs(Ts(i))-C(i);
+        CSS(i)=abs(Ts(i))-C(i);
     else            %Normal equation applies.
-    CSS(i)=abs(Ts(i))+(Mu(i).*Tn(i))-C(i);
+        CSS(i)=abs(Ts(i))+(Mu(i).*Tn(i))-C(i);
     end
 end
 
