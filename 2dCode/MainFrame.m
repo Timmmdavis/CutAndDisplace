@@ -231,7 +231,7 @@ Option='B';
     %centres. 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-%  cc=zeros(MidPoint(:,1),1); 
+%  cc=zeros(size(MidPoint(:,1))); 
 %     
 %  Tn = 0;    Tn=cc+Tn;	    
 %  Ts = 0.5;  Ts=cc+Ts;       

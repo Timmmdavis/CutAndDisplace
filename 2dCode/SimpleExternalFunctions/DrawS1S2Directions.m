@@ -61,8 +61,8 @@ q25 = quiver(X(:),Y(:),-S2dirx(:),-S2diry(:),LineWidth,'.');
 q1.Color = 'red';q15.Color = 'red';q2.Color = 'b';q25.Color = 'b';
 q1.AutoScaleFactor=Scale;q15.AutoScaleFactor=Scale;q2.AutoScaleFactor=Scale;q25.AutoScaleFactor=Scale;
 
-chk=exist('P1','var');
-if chk==1 
+chk=isempty(P1);
+if chk==0
     PlotFracture( P1,P2,'r' )
 end
 

@@ -40,9 +40,14 @@ Sz2= S2;	 %Magnitude of component 2
 
 
 %% DefineDirection
-Dir1=90-DirS1; 	%direction (az) of component 1 (degrees)
+Dir1=DirS1; 	%direction (az) of component 1 (degrees)
+if Dir1<0
+    Dir1=Dir1+360;
+end
 Dir2=90+Dir1; 	%direction (az) of component 2 (degrees)
-
+if Dir2>360
+    Dir2=Dir2-360;
+end
 
 %% Checking Dir 1&2 are 90 degrees apart
 Test=round((asind(abs(sind(Dir1)))+asind(abs(sind(Dir2)))),8)==90; %rounding to 8 digits as precision can be an issue with this test
