@@ -68,7 +68,13 @@ I have attempted to keep copy-write tags on files from other places. If you spot
 [Index ^](#cutanddisplace)
 
 Codes for 2D and 3D are laid out in the same manner. 
-Both are run using and editing 'MainFrame.m' in the respective 2D or 3D directory. The paths are added when this is run. 
+To run:
+* Download the file from GitHub
+* Unzip the folder and move it to the directory you would like to work from
+* If you rename the folder make sure the new name still contains: 'CutAndDisplace'
+* Open MATLAB
+* Run the file inside the folder called ‘AddFilePaths.m’
+* Then run using and editing 'MainFrame.m' in the respective 2D or 3D directory
 
 ## 2. Analytical tests
 
