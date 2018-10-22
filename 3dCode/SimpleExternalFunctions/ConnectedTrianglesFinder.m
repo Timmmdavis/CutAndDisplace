@@ -138,6 +138,9 @@ ConnectionDist2=zeros(length,3);
 ConnectionDist3=zeros(length,3);
 
 for i=1:length
+    if Noconnections(i,2)==0
+        continue
+    end
     ConnectionDist1=MidPoint(SortedTriangles(:,1),:)-MidPoint(SortedTriangles(:,2),:);
     if Noconnections(i,2) == 2
         ConnectionDist2(i,:)=MidPoint(SortedTriangles(i,3),:)-MidPoint(SortedTriangles(i,4),:);

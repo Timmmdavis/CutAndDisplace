@@ -1,11 +1,11 @@
 function Animate3d(Save,fps,Scale,Seperation,AxisOff,AxisLimPad,FaceNormalVector,Dn,Dds,Dss,P1,P2,P3)
-% Animate2d: Drawing an animation of the displacement of elements and
+% Animate3d: Drawing an animation of the displacement of elements and
 %                    exporting as a MP4 (film). %This was used to create
 %                    the animation shown in
 %                    "Path\Images\NashPointArray.gif"
 %               
 % usage #1:
-% Animate2d(Save,fps,Scale,Seperation,AxisOff,AxisLimPad,LineNormalVector,Dn,Ds,Points)
+% Animate3d(Save,fps,Scale,Seperation,AxisOff,AxisLimPad,LineNormalVector,Dn,Ds,Points)
 %
 %
 % Arguments: (input)
@@ -49,7 +49,7 @@ function Animate3d(Save,fps,Scale,Seperation,AxisOff,AxisLimPad,FaceNormalVector
 %
 % Example usage:
 %
-% %Run "MainFrame.m" past "SlipCalculator2d.m" then call the function: 
+% %Run "MainFrame.m" past "SlipCalculator3d.m" then call the function: 
 % Save=1; 
 % fps=15; 
 % Scale=10; 

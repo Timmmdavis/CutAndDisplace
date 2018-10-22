@@ -11,7 +11,7 @@ cross2.m			Paolo de Leva		2009	https://de.mathworks.com/matlabcentral/fileexchan
 colormap_cpt.m		Thijs Damsma		2009	N/A
 CardanRoots.m		Bruno Luong			2010	https://de.mathworks.com/matlabcentral/fileexchange/27680-multiple-eigen-values-for-2x2-and-3x3-matrices
 ParabolaRoots.m		Bruno Luong			2010	See above
-
+Quaternions			Przemyslaw Baranski 2012    https://uk.mathworks.com/matlabcentral/fileexchange/35475-quaternions
 ------------------------------
 Below is a list of files used in the software from other sources that have been modified 
 in some form. 

@@ -116,7 +116,6 @@ end
 Sxx=Tectsx; %Tectonic stress (xx)
 Syy=Tectsy; %Tectonic stress (xx)
 
-
     % Removing any fixed elements
 if any(Fdisp)==1
     [Triangles,FaceNormalVector,MidPoint,P1,P2,P3]...
@@ -196,9 +195,9 @@ xlabel('x'); ylabel('z'); axis('equal'); title('Surface and Obs Points');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%
 
-Sxx=StressTTotal(:,1);
-Szz=StressTTotal(:,3);
-Sxz=StressTTotal(:,5);
+Sxx=StressTChg(:,1);
+Szz=StressTChg(:,3);
+Sxz=StressTChg(:,5);
 
 X=reshape(X,ArrayReshapeSize);
 Z=reshape(Z,ArrayReshapeSize);

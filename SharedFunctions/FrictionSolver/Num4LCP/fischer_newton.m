@@ -76,7 +76,7 @@ if nargin<6
     tol_abs = 10*eps; % Order of 10th of numerical precision seems okay
 end
 if nargin<7
-    solver = 'random';
+    solver = 'random'; %Gets switched to zero lower down...
 end
 if nargin<8
     profile = false;

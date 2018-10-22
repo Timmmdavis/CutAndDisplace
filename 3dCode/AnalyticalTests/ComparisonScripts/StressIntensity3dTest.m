@@ -111,7 +111,8 @@ nu = 0.25;     		%Poisson's ratio, Nu or V. Rubber 0.5, Cork 0, Rock 0.1-0.3;
 Points=[Points(:,1),Points(:,2),Points(:,3),(Points(:,4)-freesurface_height)];
 [MidPoint,FaceNormalVector] = MidPointCreate(Points,Triangles);
 [P1,P2,P3] = CreateP1P2P3( Triangles,Points ); 
-
+TR = triangulation(Triangles,Points(:,2:4)); 
+[P1,P2,P3,Triangles,Points,MidPoint,FaceNormalVector]=CleanEdgeTris(MidPoint,P1,P2,P3,TR,FaceNormalVector);
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -336,7 +337,8 @@ nu = 0.25;     		%Poisson's ratio, Nu or V. Rubber 0.5, Cork 0, Rock 0.1-0.3;
 Points=[Points(:,1),Points(:,2),Points(:,3),(Points(:,4)-freesurface_height)];
 [MidPoint,FaceNormalVector] = MidPointCreate(Points,Triangles);
 [P1,P2,P3] = CreateP1P2P3( Triangles,Points ); 
-
+TR = triangulation(Triangles,Points(:,2:4)); 
+[P1,P2,P3,Triangles,Points,MidPoint,FaceNormalVector]=CleanEdgeTris(MidPoint,P1,P2,P3,TR,FaceNormalVector);
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %STEP 3: Define how you want to calculate slip - Constant, remote (with
@@ -445,7 +447,7 @@ quiver3(FreeEdMdX,FreeEdMdY,FreeEdMdZ,FaceNormalVector(FreeEdIndx,1),FaceNormalV
 [ Tnn,Tds,Tss ] = CalculateNormalAndShearTractions3d( FaceNormalVector(1,:),Sxx,Syy,Szz,Sxy,Sxz,Syz );
 
 
-[K1an,K2an,K3an] = NejatiEtAl2015_StrIntInclinedPennyTension(Szz,Beta,Theta,Radius,nu);
+[K1an,K2an,K3an] = Tada_StrIntInclinedPennyTension(Szz,Beta,Theta,Radius,nu);
 K1an=(K1an);
 K2an=(K2an);
 K3an=(K3an);

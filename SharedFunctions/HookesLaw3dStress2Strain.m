@@ -42,10 +42,7 @@ function [ Exx,Eyy,Ezz,Exy,Exz,Eyz ] = HookesLaw3dStress2Strain( Sxx,Syy,Szz,Sxy
 %  Author: Tim Davis
 %  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
-%Poisson's ratio, Equation 8.28 Pollard
-nu =lambda/(2*(mu+lambda));
-%Young's Modulus, Equation 8.27 Pollard.
-E=(lambda*(1+nu)*(1-2*nu))/nu; 		 
+[~,E,~,nu,~]=ElasticConstantsCheck( lambda,mu );
 
 Exx = 1/E.*(Sxx-(nu.*(Syy+Szz)));
 Eyy = 1/E.*(Syy-(nu.*(Sxx+Szz)));

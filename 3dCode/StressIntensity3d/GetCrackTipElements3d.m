@@ -43,7 +43,7 @@ function [FeP1P2S,FeP1P3S,FeP2P3S]=GetCrackTipElements3d...
 %                       FreeFlg - FreeEdgeFlag (A flag that says if the
 %                                   connection is a free edge).
 %
-%                       FeM2ELe - The length of the Tris Midpoint to the
+%                       FeM2ELe - The length of the Tris 'midpoint' to the
 %                                   free edge. 
 %                       IntAng -  The angle in degrees of the triangles
 %                                   corner facing the free edge.
@@ -66,21 +66,15 @@ function [FeP1P2S,FeP1P3S,FeP2P3S]=GetCrackTipElements3d...
 % FreeEdMdZ=[FeP1P2S.FeMd(FeP1P2S.FreeFlg,3);FeP1P3S.FeMd(FeP1P3S.FreeFlg,3);FeP2P3S.FeMd(FeP2P3S.FreeFlg,3)];
 % FreeEdM3EV=[FeP1P2S.FeM2Ev(FeP1P2S.FreeFlg,:);FeP1P3S.FeM2Ev(FeP1P3S.FreeFlg,:);FeP2P3S.FeM2Ev(FeP2P3S.FreeFlg,:)];
 % quiver3(FreeEdMdX,FreeEdMdY,FreeEdMdZ,FreeEdM3EV(:,1),FreeEdM3EV(:,2),FreeEdM3EV(:,3),'b')
-% 
+% FreeEd=sum([FeP1P2S.FreeFlg,FeP1P3S.FreeFlg,FeP2P3S.FreeFlg],2)>0; %Logical of free edges
+%
+%
 %  Author: Tim Davis
 %  Copyright 2017, Tim Davis, Potsdam University
 
 
 %Get edge triangles
-[TriNo,P1P2FreeFlg,P2P3FreeFlg,P1P3FreeFlg]=EdgeCons(P1,P2,P3);
-
-% %Make flag
-% BoundedEdge=(TriNo>0);
-% %Sum along rows
-% BoundedEdge=sum(BoundedEdge,2);
-% FreeEdge=BoundedEdge<3;
-% hold on;scatter3(MidPoint(:,1),MidPoint(:,2),MidPoint(:,3),15,BoundedEdge,'filled');
-
+[P1P2FreeFlg,P2P3FreeFlg,P1P3FreeFlg]=EdgeCons(P1,P2,P3,MidPoint);
 
 %Do for P1 P2: (Function at base of file)
 [Flg,FeLe,FeMd,FeEv,FeM2Ev,FeM2ELe,IntAng]=GetValues(P1P2FreeFlg,P1,P2,P3,MidPoint,FaceNormalVector);
@@ -122,7 +116,7 @@ function [I,FeLe,FeMd,FeEv,FeM2Ev,FeM2ELe,IntAng]=GetValues(Flg,Pa,Pb,Pc,MidPoin
 
 %Lengths of Free edges
 FeLe=nan(numel(MidPoint)/3,1);
-%Length from MidPoint to edge Midpoint
+%Length from InnerPoint to edge Midpoint
 FeM2ELe=nan(numel(MidPoint)/3,1);
 %MidPoints of Free edges
 FeMd=nan(numel(MidPoint)/3,3);
@@ -141,8 +135,8 @@ FeLe(I)=sqrt(((Pa(I,1)-Pb(I,1)).^2)+((Pa(I,2)-Pb(I,2)).^2)+((Pa(I,3)-Pb(I,3)).^2
 %Midpoint of edge
 FeMd(I,:)=  [((Pa(I,1)+Pb(I,1))/2), ((Pa(I,2)+Pb(I,2))/2), ((Pa(I,3)+Pb(I,3))/2)];
 %Length of mid to edge dist
-%FeM2ELe(I)=sqrt(((FeMd(I,1)-MidPoint(I,1)).^2)+((FeMd(I,2)-MidPoint(I,2)).^2)+((FeMd(I,3)-MidPoint(I,3)).^2));
-FeM2ELe(I)=sqrt(((FeMd(I,1)-Pc(I,1)).^2)+((FeMd(I,2)-Pc(I,2)).^2)+((FeMd(I,3)-Pc(I,3)).^2));
+FeM2ELe(I)=sqrt(((FeMd(I,1)-MidPoint(I,1)).^2)+((FeMd(I,2)-MidPoint(I,2)).^2)+((FeMd(I,3)-MidPoint(I,3)).^2));
+%FePc2ELe(I)=sqrt(((FeMd(I,1)-Pc(I,1)).^2)+((FeMd(I,2)-Pc(I,2)).^2)+((FeMd(I,3)-Pc(I,3)).^2));
 %Vector from midpoint to edge midpoint. 
 FeM2Ev(I,:)=normr([FeMd(I,1)-MidPoint(I,1),FeMd(I,2)-MidPoint(I,2),FeMd(I,3)-MidPoint(I,3)]);
 
@@ -193,17 +187,6 @@ for i=1:numel(Indx)
         FeEv(Indx(i),:)=-FeEv(Indx(i),:);
     end
 end
-
-%% 
-%If triangles are not completly equilateral then the mid2Ed vec calculated
-%above is not perpendilar to the edge (meaning poor calculation of K2).
-%This fixes this for non eq tris.
-
-%First we recompute the mid2edvec length (perp):
-%Angle between vectors: 
-Ang=acos(dot(FeM2Ev(I,:)',FeEv(I,:)'));
-%New length of
-FeM2ELe(I)=sin(Ang).*FeM2ELe(I)';
 
 %Then the direction of this vector: 
 %Vector from midpoint to edge midpoint (cross Pro)

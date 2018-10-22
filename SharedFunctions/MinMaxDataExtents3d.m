@@ -100,13 +100,22 @@ function [maxgriX,mingriX,maxgriY,mingriY,maxgriZ,mingriZ]=ExtentsFun(meanx,mean
 % maxgriZ=meanz+(width/2)+padding;
 % mingriZ=meanz-(width/2)-padding;
 
-%For padding as no of additional cells:
-maxgriX=meanx+(width/2)+(padding*size);
-mingriX=meanx-(width/2)-(padding*size);
-maxgriY=meany+(width/2)+(padding*size);
-mingriY=meany-(width/2)-(padding*size);
-maxgriZ=meanz+(width/2)+(padding*size);
-mingriZ=meanz-(width/2)-(padding*size);
+% %For padding as no of additional cells:
+% maxgriX=meanx+(width/2)+(padding*size);
+% mingriX=meanx-(width/2)-(padding*size);
+% maxgriY=meany+(width/2)+(padding*size);
+% mingriY=meany-(width/2)-(padding*size);
+% maxgriZ=meanz+(width/2)+(padding*size);
+% mingriZ=meanz-(width/2)-(padding*size);
+
+% %For padding defined as a percent of the original box
+size=width*(padding/100);
+maxgriX=meanx+(width/2)+(size);
+mingriX=meanx-(width/2)-(size);
+maxgriY=meany+(width/2)+(size);
+mingriY=meany-(width/2)-(size);
+maxgriZ=meanz+(width/2)+(size);
+mingriZ=meanz-(width/2)-(size);
 
 
 

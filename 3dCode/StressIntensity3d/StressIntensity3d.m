@@ -41,8 +41,8 @@ function [FeP1P2S,FeP1P3S,FeP2P3S] = StressIntensity3d...
 %                                   of the free edge connection).
 %                       FreeFlg - FreeEdgeFlag (A flag that says if the
 %                                   connection is a free edge).
-%                       FreeFlg - FreeEdgeFlag (A flag that says if the
-%                                   connection is a free edge).
+%                       FeM2ELe - The length of the Tris 'midpoint' to the
+%                                   free edge. 
 %                       IntAng -  The angle in degrees of the triangles
 %                                   corner facing the free edge.
 %
@@ -186,7 +186,8 @@ DAlongEd(Vect==1)=-DAlongEd(Vect==1);
 %% Now calculating stress intensities
 
 %Constants:
-h=FeM2ELe(LocFlg)/2; %Currently whole tri length
+h=FeM2ELe(LocFlg); %Currently whole tri length FePc2ELe(LocFlg)/2
+disp('Danger, Changed above for testing')
 
 %Approximate stress intensities. 
 K1(LocFlg)=(mu*sqrt(pi)./(2*sqrt(h).*(1-nu))).*Dn(LocFlg);
@@ -198,28 +199,12 @@ K3(LocFlg)=(mu*sqrt(pi)./(2*sqrt(h).*(1-nu))).*DAlongEd.*(1-nu);
 %Correction factors based on errors in formula above when we reduce 'h'
 %towards zero and compare to results of the analytical solution and the
 %overestimation from the constant movement of elements in 3D. 
-C_K1  =1.4845;
-C_K2K3=1.4245;
+C_K1=1.834;
+C_K2=1.834;
+C_K3=1.834;
 K1=K1./C_K1;
-K2=K2./C_K2K3;
-K3=K3./C_K2K3;
-
-% %Correction factors for non-equilateral triangles:
-x=IntAng(LocFlg)./2; %Internal angle 
-a =       24.45  ;
-b =     -0.2492  ;
-c =       1.137  ;
-d =   -0.006331  ;
-y = (a*exp(b*x) + c*exp(d*x))+0.0458;
-%Constant '0.0458' makes sure equilateral triangles are not corrected but
-%the results are better without this. 
-
-%Correcting the values with equation. 
-K1(LocFlg)=K1(LocFlg).*y;
-K2(LocFlg)=K2(LocFlg).*y;
-K3(LocFlg)=K3(LocFlg).*y;
-
-
+K2=K2./C_K2;
+K3=K3./C_K3;
 
 
 end
