@@ -1,5 +1,10 @@
 # CutAndDisplace
 
+**References to cite**
+
+[2018: Stress concentrations around voids in three dimensions: The roots of failure](https://www.sciencedirect.com/science/article/pii/S0191814117301542)
+
+[2017: Slip on wavy frictional faults: Is the 3rd dimension a sticking point?](https://www.sciencedirect.com/science/article/pii/S0191814118301597)
 
 ## Index
 - [Introduction](#introduction)
@@ -500,7 +505,7 @@ The basic boundary elements are from:
 
     *Crouch, S.L. and Starfield, A.M., 1982. Boundary element methods in solid mechanics: with applications in rock mechanics and geological engineering. Allen & Unwin.*
 
-*   The Finite strain error:
+*   Calculating finite strain (and error):
     Equations are given in: 
 
     *Pollard, D.D. and Fletcher, R.C., 2005. Fundamentals of structural geology. Cambridge University Press.*  
@@ -509,6 +514,15 @@ The basic boundary elements are from:
     and 
     the finite strain calculation of: 
     [*Cardozo, N. and Allmendinger, R.W., 2009. SSPX: A program to compute strain from displacement/velocity data. Computers & Geosciences, 35(6), pp.1343-1357.*](http://www.sciencedirect.com/science/article/pii/S0098300408002410)
+    
+*   Calculating stress intensity factors (2D and 3D):
+    Equations are given in: 
+	
+    2D: 	
+    [*Ritz, E., Pollard, D.D. and Ferris, M., 2015. The influence of fault geometry on small strike-slip fault mechanics. Journal of Structural Geology, 73, pp.49-63.*](https://www.sciencedirect.com/science/article/pii/S0191814115000140)
+    
+    3D: 
+    [*Davis, T., Healy, D. and Rivalta, E., 2018. Slip on wavy frictional faults: Is the 3rd dimension a sticking point?. Journal of Structural Geology.*](https://www.sciencedirect.com/science/article/pii/S0191814118301597)  
 
 ## 7. Acknowledgements
 [Index ^](#cutanddisplace)
