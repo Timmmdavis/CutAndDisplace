@@ -2,9 +2,10 @@
 
 **References to cite**
 
-[2018: Stress concentrations around voids in three dimensions: The roots of failure](https://www.sciencedirect.com/science/article/pii/S0191814117301542)
+[2018: Slip on wavy frictional faults: Is the 3rd dimension a sticking point?](https://www.sciencedirect.com/science/article/pii/S0191814118301597)
 
-[2017: Slip on wavy frictional faults: Is the 3rd dimension a sticking point?](https://www.sciencedirect.com/science/article/pii/S0191814118301597)
+[2017: Stress concentrations around voids in three dimensions: The roots of failure](https://www.sciencedirect.com/science/article/pii/S0191814117301542)
+
 
 ## Index
 - [Introduction](#introduction)
