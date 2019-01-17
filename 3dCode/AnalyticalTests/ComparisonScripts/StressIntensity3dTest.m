@@ -112,7 +112,7 @@ Points=[Points(:,1),Points(:,2),Points(:,3),(Points(:,4)-freesurface_height)];
 [MidPoint,FaceNormalVector] = MidPointCreate(Points,Triangles);
 [P1,P2,P3] = CreateP1P2P3( Triangles,Points ); 
 TR = triangulation(Triangles,Points(:,2:4)); 
-[P1,P2,P3,Triangles,Points,MidPoint,FaceNormalVector]=CleanEdgeTris(MidPoint,P1,P2,P3,TR,FaceNormalVector);
+%[P1,P2,P3,Triangles,Points,MidPoint,FaceNormalVector]=CleanEdgeTris(MidPoint,P1,P2,P3,TR,FaceNormalVector);
 
 %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

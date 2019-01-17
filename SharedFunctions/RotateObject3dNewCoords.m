@@ -18,7 +18,7 @@ function [Xnw,Ynw,Znw] = RotateObject3dNewCoords(Ax1,Ax2,Ax3,X,Y,Z)
 %
 % Ax2           - The new orientation of the y-axis  (direction cosine 1*3)
 %
-% Ax2           - The new orientation of the z-axis  (direction cosine 1*3)
+% Ax3           - The new orientation of the z-axis  (direction cosine 1*3)
 %
 % Arguments: (output)
 % Xnw,Ynw,Znw   - the new X,Y and Z point values. 

@@ -53,11 +53,11 @@ cmap2 = colormap_cpt('Ccool-warm2');
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Single flat user defined fracture
-%x=linspace(-1,1,400);
-x=-1:0.001:1;                        %List of x points
-y=zeros(1,numel(x));
+x=linspace(-1,1,25);
+%x=-1:0.1:1;                        %List of x points
+y=zeros(1,numel(x)); 
 Pointsxy=[x;y]';
-mystruct.line1=(1:(length(Pointsxy(:,1)))-1);
+mystruct.line1=(1:(length(Pointsxy(:,1))));
 Fnms=fieldnames(mystruct);
 nf=numel(Fnms);clear Fnms
 
@@ -187,9 +187,17 @@ N=8;
 DnN = DnP(1:N:end,:);
 xN = xP(1:N:end,:);
 
-%trying interpolation
+%Finding points closest to a 0.1 step. 
 xN = linspace(0,0.9,10);
-DnN = interp1(xe,Dn,xN,'spline');
+Idx=[];
+for i=1:numel(xN)
+    [c index] = min(abs(abs(xe)-(xN(i))));
+    Idx=[Idx,index];
+end
+xN=xe(Idx);
+DnN=Dn(Idx);
+
+%DnN = interp1(xe,Dn,xN,'linear');
 
 lnwidth=2.5;
 figure;
