@@ -406,7 +406,7 @@ SideVec = PB-PA;
 eZ = [0 0 1]';
 beta = acos(-SideVec'*eZ/norm(SideVec));
 
-if abs(beta)<eps || abs(pi-beta)<eps
+if abs(beta)<eps || abs(pi-beta)<eps || abs(cot(beta))>5e5*pi/360
     Stress = zeros(length(X),6);
     Strain = zeros(length(X),6);
 else

@@ -367,7 +367,7 @@ SideVec = PB-PA;
 eZ = [0 0 1]';
 beta = acos(-SideVec'*eZ/norm(SideVec));
 
-if abs(beta)<eps || abs(pi-beta)<eps
+if abs(beta)<eps || abs(pi-beta)<eps || abs(cot(beta))>5e5*pi/360
     ue = zeros(length(X),1);
     un = zeros(length(X),1);
     uv = zeros(length(X),1);
