@@ -36,13 +36,13 @@ cmap2 = colormap_cpt('Ccool-warm2');
     %Option A = Loading XY ascii data or manually creating fractures.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
      
-% % %Single flat user defined fracture
-% x=linspace(-0.5,0.5,15);    
-% y=zeros(1,numel(x)); 
-% Pointsxy=[x;y]';
-% mystruct.line1=(1:(length(Pointsxy(:,1))));
-% Fnms=fieldnames(mystruct);
-% nf=numel(Fnms);clear Fnms
+% %Single flat user defined fracture
+x=linspace(-0.5,0.5,15);    
+y=zeros(1,numel(x)); 
+Pointsxy=[x;y]';
+mystruct.line1=(1:(length(Pointsxy(:,1))));
+Fnms=fieldnames(mystruct);
+nf=numel(Fnms);clear Fnms
 
 
 
@@ -65,10 +65,10 @@ cmap2 = colormap_cpt('Ccool-warm2');
     %Loads Points that represent the file. 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[Pointsxy,mystruct]=m_shaperead('FracturesStoneHaven');
-Fnms=fieldnames(mystruct);
-nf=numel(Fnms);clear Fnms
-Pointsxy=[Pointsxy(:,1),Pointsxy(:,3)]; 
+% [Pointsxy,mystruct]=m_shaperead('FracturesStoneHaven');
+% Fnms=fieldnames(mystruct);
+% nf=numel(Fnms);clear Fnms
+% Pointsxy=[Pointsxy(:,1),Pointsxy(:,3)]; 
 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -280,10 +280,10 @@ PlotOpeningVsShearOnEls( LineNormalVector,Dn,Ds,P1,P2,MidPoint,HalfLength )
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Define the number of cells on the square grid
-cells=16;   
+cells=25;   
 %How many extra cells you want to add away from the faults, 
 %reduce to 0 if having half space issues 
-padding=10;  
+padding=20;  
 % Create a vector that is just all the points in X Y. 
 PointsXY=[[P1(:,1);P2(:,1)],[P1(:,2);P2(:,2)]];
 [maxgriX,mingriX,maxgriY,mingriY,sz]=MinMaxDataExtents2d(PointsXY,cells,padding);
@@ -343,7 +343,7 @@ PointsXY=[[P1(:,1);P2(:,1)],[P1(:,2);P2(:,2)]];
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %Drawing and fixing Obs Point data just created.
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Dist=500;
+Dist=0.05;
 [X,Y]=NanTolDistLine2Pnt( X,Y,P1,P2,LineNormalVector,Dist );
 %Drawing these and the location compared to the Obs Points
 figure;
