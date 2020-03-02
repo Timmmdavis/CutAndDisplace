@@ -2,6 +2,8 @@
 
 **References to cite**
 
+[![DOI](https://zenodo.org/badge/96093712.svg)](https://zenodo.org/badge/latestdoi/96093712)
+
 [2018: Slip on wavy frictional faults: Is the 3rd dimension a sticking point?](https://www.sciencedirect.com/science/article/pii/S0191814118301597)
 
 [2017: Stress concentrations around voids in three dimensions: The roots of failure](https://www.sciencedirect.com/science/article/pii/S0191814117301542)
