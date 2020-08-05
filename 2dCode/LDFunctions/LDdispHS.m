@@ -69,8 +69,6 @@ XB = (x-xe)*cb + (y-ye)*sb;
 YB = -(x-xe)*sb + (y-ye)*cb;
 
 length=size(x);
-lengthrow=length(1,1);
-lengthcol=length(1,2);
 
 % Coordinates of the image dislocation
 XBi = (x-xe)*cb - (y+ye)*sb;		%equation 7.4.6 C&S
@@ -116,7 +114,7 @@ FF3(i1) = atan2(YB(i1),XMa(i1)) - atan2(YB(i1),XPa(i1));
 FF3(i2) = pi.*ones(size(i2));
 FF3(i3) = zeros(size(i3));
 FF3 = -con.*(FF3)';	
-FF3 = reshape(FF3,lengthrow,lengthcol);
+FF3 = reshape(FF3,length);
 
 FF4 = con*(YB./R1S - YB./R2S); 
 FF5 = con*(XMa./R1S - XPa./R2S);
@@ -136,7 +134,7 @@ FF3i(i1i) = atan2(YBi(i1i),XMai(i1i)) - atan2(YBi(i1i),XPai(i1i));
 FF3i(i2i) = pi.*ones(size(i2i));
 FF3i(i3i) = zeros(size(i3i));
 FF3i = -con.*(FF3i)';	
-FF3i = reshape(FF3i,lengthrow,lengthcol);
+FF3i = reshape(FF3i,length);
 
 FF4i = con*(YBi./R1Si - YBi./R2Si); 
 FF5i = con*(XMai./R1Si - XPai./R2Si);

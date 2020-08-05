@@ -163,7 +163,7 @@ strlt = 2.*(zbar.*dlphit./dz+psit);
 %of equations 2, 5, 8, and 9, to obtain stresses.
 
 dift = real (strlt)-tectxx;
-dif = dift+real (strl)+rg.*Y.*(1-2.*nu)./(1-nu);
+dif = dift+real(strl)+rg.*Y.*(1-2.*nu)./(1-nu);
 Sxy = imag(strl)+imag(strlt);
 Sxy = Sxy./2;
 Sxx = (sum-dif)./2;
