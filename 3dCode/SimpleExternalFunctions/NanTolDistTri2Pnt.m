@@ -42,48 +42,49 @@ function [X,Y,Z]=NanTolDistTri2Pnt( X,Y,Z,P1,P2,P3,MidPoint,FaceNormalVector,Dis
 
 for i = 1:numel(P1(:,1))
     
+    %Vector from midpoint to Tris P1
+    Mid2P1=normr([(P1(i,1)-MidPoint(i,1)),...
+                  (P1(i,2)-MidPoint(i,2)),...
+                  (P1(i,3)-MidPoint(i,3))]);
+    %Amount we move P1 out:          
+    NewP1Offset=[Mid2P1(1).*Distance,Mid2P1(2).*Distance,Mid2P1(3).*Distance];
     
-    %Putting triangle flat    
-    V2=[0,0,1 ]; %Pointing up
-    V1=FaceNormalVector(i,:); %Pointing East
-    Xtri=[P1(i,1),P2(i,1),P3(i,1)];
-    Ytri=[P1(i,2),P2(i,2),P3(i,2)];
-    Ztri=[P1(i,3),P2(i,3),P3(i,3)];
-    %Now flatten tri:
-    [Xtri,Ytri,~] = RotateObject3dAllignVectors(V1,V2,Xtri,Ytri,Ztri,MidPoint(i,1),MidPoint(i,2),MidPoint(i,3));
-
-    %Edge 1
-    [X1e1,X2e1,Y1e1,Y2e1]=MoveLine(Xtri(1),Xtri(2),Ytri(1),Ytri(2),Distance);
-    %Edge 2 
-    [X1e2,X2e2,Y1e2,Y2e2]=MoveLine(Xtri(2),Xtri(3),Ytri(2),Ytri(3),Distance);
-    %Edge 3
-    [X1e3,X2e3,Y1e3,Y2e3]=MoveLine(Xtri(3),Xtri(1),Ytri(3),Ytri(1),Distance);
-
-    Xtri=[X1e1,X2e1,X1e2,X2e2,X1e3,X2e3];
-    Ytri=[Y1e1,Y2e1,Y1e2,Y2e2,Y1e3,Y2e3];
-    Ztri=[1,   1,   1,   1,   1,   1];
-
-    %Now rotate back to real coords 
-    V1=[0,0,1]; %Pointing up
-    V2=FaceNormalVector(i,:); %Pointing East
-    %Moving each by distance in relation to tri norm vector
-    [Xup,Yup,Zup] = RotateObject3dAllignVectors(V1,V2,Xtri,Ytri,Ztri*Distance,0,0,0);
-    [Xdwn,Ydwn,Zdwn] = RotateObject3dAllignVectors(V1,V2,Xtri,Ytri,Ztri*-Distance,0,0,0);
-    %Recentre
-     Xup=Xup+MidPoint(i,1);
-     Yup=Yup+MidPoint(i,2);
-     Zup=Zup+MidPoint(i,3);
-     Xdwn=Xdwn+MidPoint(i,1);
-     Ydwn=Ydwn+MidPoint(i,2);
-     Zdwn=Zdwn+MidPoint(i,3);
+    P1(i,:)=P1(i,:)+NewP1Offset;
     
+    %Vector from midpoint to Tris P2
+    Mid2P2=normr([(P2(i,1)-MidPoint(i,1)),...
+                  (P2(i,2)-MidPoint(i,2)),...
+                  (P2(i,3)-MidPoint(i,3))]);
+    %Amount we move P2 out:          
+    NewP2Offset=[Mid2P2(1).*Distance,Mid2P2(2).*Distance,Mid2P2(3).*Distance];
+    
+    P2(i,:)=P2(i,:)+NewP2Offset;    
+    
+    PointsLst=[P1(i,:),P2(i,:),P3(i,:)];
+    Seperation=[FaceNormalVector(i,1).*Distance,FaceNormalVector(i,2).*Distance,FaceNormalVector(i,3).*Distance];
+
+        %Vector from midpoint to Tris P3
+    Mid2P3=normr([(P3(i,1)-MidPoint(i,1)),...
+                  (P3(i,2)-MidPoint(i,2)),...
+                  (P3(i,3)-MidPoint(i,3))]);
+    %Amount we move P3 out:          
+    NewP3Offset=[Mid2P3(1).*Distance,Mid2P3(2).*Distance,Mid2P3(3).*Distance];
+    
+    P3(i,:)=P3(i,:)+NewP3Offset;
+    
+    %Start axis lims
+    %The triangles after being seperated by chonsen amount
+    [PointsNew2P]=DisplaceTris2(PointsLst,Seperation);
+    [PointsNew2N]=DisplaceTris2(PointsLst,-Seperation);
 
     %Create an alpha shape around the points. 
-    shp = alphaShape([Xup;Xdwn],[Yup;Ydwn],[Zup;Zdwn],1E9);
-    %Drawing if wanted: 
-    %figure;
-    %plot(shp);  hold on
-    %scatter3(X(:),Y(:),Z(:),'.k')
+    shp = alphaShape([PointsNew2P(:,1);PointsNew2N(:,1)],...
+        [PointsNew2P(:,2);PointsNew2N(:,2)],...
+        [PointsNew2P(:,3);PointsNew2N(:,3)],1E9);
+     %Drawing if wanted: 
+     %figure;
+     %plot(shp);  hold on
+     %scatter3(X(:),Y(:),Z(:),'.k')
     
     X=X(:);
     Y=Y(:);
@@ -137,31 +138,16 @@ elseif sum(isnan(X(:)))>0
     disp('Function DistTri2Pnt has set some points to NaN')    
 end
 
-function [X1,X2,Y1,Y2]=MoveLine(X1,X2,Y1,Y2,Dist)
-    
-    %Call Func
-    [ ~,~,P1F,P2F,LineNormalVectorF ]...
-    = MidPoint_Orientation( X1,X2,Y1,Y2 );
-    %Get extra X and Y bits:
-    ExX=(LineNormalVectorF(:,1)*Dist);
-    ExY=(LineNormalVectorF(:,2)*Dist);
-
-    %Move Points along normal
-    %X    
-    P1F(:,1)=P1F(:,1)+ExX;
-    P2F(:,1)=P2F(:,1)+ExX;
-    %Y
-    P1F(:,2)=P1F(:,2)+ExY;
-    P2F(:,2)=P2F(:,2)+ExY;
-    
-    %Outputs
-    X1=P1F(:,1);
-    X2=P2F(:,1);
-    Y1=P1F(:,2);
-    Y2=P2F(:,2);     
-
-end
 
 end
 
 
+%Internal func
+function [PointsNewLoc]=DisplaceTris2(Points,Movement)
+    %Takes inputs and moves each triangles points by the amount specified in the 3*3 vector 'Movement'
+    N=3;
+    PointsNewMvX=bsxfun(@plus,Points(:,1:N:end),(Movement(:,1))); 
+    PointsNewMvY=bsxfun(@plus,Points(:,2:N:end),(Movement(:,2))); 
+    PointsNewMvZ=bsxfun(@plus,Points(:,3:N:end),(Movement(:,3))); 
+    PointsNewLoc=[reshape(PointsNewMvX.',1,[])',reshape(PointsNewMvY.',1,[])',reshape(PointsNewMvZ.',1,[])'];
+end
