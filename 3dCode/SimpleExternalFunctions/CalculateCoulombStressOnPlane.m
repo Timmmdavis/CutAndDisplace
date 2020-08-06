@@ -87,7 +87,7 @@ CosAz=FaceNormalVector(:,3);
 
 %TractionStrikeSlip
 [ Tss ] = CalculateTractionInChosenDirection3d( Tx,Ty,Tz,CosAx,CosAy,CosAz,StrikeSlipCosine );
-%TractionStrikeSlip
+%TractionDipSlip
 [ Tds ] = CalculateTractionInChosenDirection3d( Tx,Ty,Tz,CosAx,CosAy,CosAz,DipSlipCosine );
 
 %Cart vector components of the strike slip traction 

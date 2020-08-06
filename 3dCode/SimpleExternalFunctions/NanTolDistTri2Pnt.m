@@ -69,16 +69,35 @@ for i = 1:numel(P1(:,1))
     %Moving each by distance in relation to tri norm vector
     [Xup,Yup,Zup] = RotateObject3dAllignVectors(V1,V2,Xtri,Ytri,Ztri*Distance,0,0,0);
     [Xdwn,Ydwn,Zdwn] = RotateObject3dAllignVectors(V1,V2,Xtri,Ytri,Ztri*-Distance,0,0,0);
-     
+    %Recentre
+     Xup=Xup+MidPoint(i,1);
+     Yup=Yup+MidPoint(i,2);
+     Zup=Zup+MidPoint(i,3);
+     Xdwn=Xdwn+MidPoint(i,1);
+     Ydwn=Ydwn+MidPoint(i,2);
+     Zdwn=Zdwn+MidPoint(i,3);
+    
 
     %Create an alpha shape around the points. 
     shp = alphaShape([Xup;Xdwn],[Yup;Ydwn],[Zup;Zdwn],1E9);
     %Drawing if wanted: 
-    %plot(shp)    
+    %figure;
+    %plot(shp);  hold on
+    %scatter3(X(:),Y(:),Z(:),'.k')
     
-    %Now check if point is within the bound: 
-    in = inShape(shp,Xtri,Ytri,Ztri) ; 
-
+    X=X(:);
+    Y=Y(:);
+    Z=Z(:);
+    in=zeros(numel(X),1);
+    for k=1:numel(X)
+        if isnan(X(k))
+        else
+        %Now check if point is within the bound: 
+        if inShape(shp,X(k),Y(k),Z(k)) 
+            in(k)=1;
+        end
+        end
+    end
     %Now check if point is within radius of 1st corner
     Xr1=X-P1(i,1);
     Yr1=Y-P1(i,2);
@@ -96,9 +115,9 @@ for i = 1:numel(P1(:,1))
     [~,~,r3] = cart2sph(Xr3,Yr3,Zr3);     
 
     %Nan Points inside shp
-    X(in)=nan;
-    Y(in)=nan;
-    Z(in)=nan;
+    X(logical(in))=nan;
+    Y(logical(in))=nan;
+    Z(logical(in))=nan;
     %Nan Points within distance of edge points
     X(r1<Distance)=nan;
     Y(r1<Distance)=nan;
