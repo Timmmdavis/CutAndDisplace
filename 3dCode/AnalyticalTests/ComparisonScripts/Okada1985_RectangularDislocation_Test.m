@@ -259,11 +259,5 @@ if SecondSurface==0
     Resex=exx--uEE(:);
     Resey=exy-(-(uEN(:)+uNE(:))/2);
 
-else
-    
-    Mu=ones(size(Sxx))*0.6; %Coeff Friction
-    Cohesion=zeros(size(Sxx)); %Coeff Friction
-    [CSS] = CalculateCoulombStressOnPlane(MidPointObs,FaceNormalVectorObs,...
-    Sxx,Syy,Szz,Sxy,Sxz,Syz,Mu,Cohesion,PointsObs,TrianglesObs,cmap2 );
-    
+
 end

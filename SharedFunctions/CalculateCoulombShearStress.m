@@ -28,6 +28,7 @@ function [ CSS ] = CalculateCoulombShearStress( Tn,Ts,Mu,C )
 % C                 - The cohesive strength on the plane (in some texts
 %                    called "sliding friction").
 %
+%
 % Arguments: (output)
 % CSS              - The value of Coulomb stress change. 
 %
@@ -39,8 +40,6 @@ function [ CSS ] = CalculateCoulombShearStress( Tn,Ts,Mu,C )
 %  Author: Tim Davis
 %  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
 
-%We want shear traction as positive.
-Ts=abs(Ts);
 %Getting some sizes for the loop and initiating arrays to fill.
 Sz=numel(Tn);
 CSS=zeros(Sz,1);
@@ -55,9 +54,9 @@ end
 %Looping and calculating for each input value of Tn and Ts etc. 
 for i=1:Sz
     if Tn(i)>=C(i)  %The plane is not in contact.
-        CSS(i)=abs(Ts(i))-C(i);
+        CSS(i)=Ts(i)-C(i);
     else            %Normal equation applies.
-        CSS(i)=abs(Ts(i))+(Mu(i).*Tn(i))-C(i);
+        CSS(i)=Ts(i)+(Mu(i).*Tn(i))-C(i);
     end
 end
 

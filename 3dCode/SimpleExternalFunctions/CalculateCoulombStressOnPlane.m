@@ -1,4 +1,4 @@
-function [ CSS,TsMaxShr,TsMaxShrDir ] = CalculateCoulombStressOnPlane(MidPoint,FaceNormalVector,Sxx,Syy,Szz,Sxy,Sxz,Syz,Mu,Cohesion,Points,Triangles,cmap )
+function [ CSS ] = CalculateCoulombStressOnPlane(FaceNormalVector,Sxx,Syy,Szz,Sxy,Sxz,Syz,Mu,Cohesion,Rake )
 % CalculateCoulombStressOnPlane: Calculates the Coulomb stress change on an
 %                   imported triangulated surface using the stress tensors
 %                   at its midpoints. Calculates the shear traction
@@ -10,9 +10,6 @@ function [ CSS,TsMaxShr,TsMaxShrDir ] = CalculateCoulombStressOnPlane(MidPoint,F
 %( MidPointObs,FaceNormalVector,Sxx,Syy,Szz,Sxy,Sxz,Syz,Mu,Cohesion,Points,Triangles,cmap )
 %
 % Arguments: (input)
-%   MidPoint       - A 3*n vector that is the XYZ locations of the
-%                   midpoints of the imported fault surface that you find
-%                   the Coulomb stress change on.
 %
 % FaceNormalVector - The normal vector of the triangles of the surface.
 %
@@ -26,50 +23,70 @@ function [ CSS,TsMaxShr,TsMaxShrDir ] = CalculateCoulombStressOnPlane(MidPoint,F
 % Cohesion          - The Cohesive strength of the surface (or sliding
 %                    friction).
 %
-% Points            - Columns 2 3 and 4 are the XYZ locations of one the
-%                    corner points of a triangle. Column 1 is the index. 
-%
-% Triangles         -  Triangles is a list where each row contains 3 index
-%                     locations in "Points" which contains the XYZ location
-%                     of each corner of the triangle.
-%
-% cmap              -  A colourmap that MATLAB can use. See func
-%                   "colormap_cpt.m" to produce one. 
+% Rake              - Defined as clockwise away from the pure thrust direction
+%                     facing down the normal onto the fault. Supplied in
+%                     degrees.
 %
 % Arguments: (output)
 %       CSS        - The Coulomb stress change at each point
 %
-%  TsMaxShr        - The magnitude of the maxiumum shear stress at each
-%                   point. 
+% Example usage A) on a mesh:
 %
-%  TsMaxShrDir     - Direction cosines of the maximum shear direction
-%                   (CosAx,CosAy,CosAz)
-%
-% Example usage:
-%
+% Rake=0; %Thrust
 % [x,y] = meshgrid(-2:.2:2);                                
 % z = x .* exp(-x.^2 - y.^2);
 % Triangles = delaunay(x(:),y(:));
 % Points=[[1:numel(x)]',x(:),y(:),z(:)];
-% [MidPoint,FaceNormalVector] = MidPointCreate(Points,Triangles);
-% Sxx=ones(size(FaceNormalVector(:,1)));
+% [MidPoint,FaceNormalVector] = MidPointCreate(Points,Triangles,0);
+% Sxx=zeros(size(FaceNormalVector(:,1)));
 % Syy=zeros(size(FaceNormalVector(:,1)));
-% Szz=Syy;
-% Sxy=Syy;
+% Szz=ones(size(FaceNormalVector(:,1)));
+% Sxy=Sxx;
+% Sxz=Sxx;
+% Syz=Sxx;
+% Mu=0.6; 
+% Cohesion=0.2;
+% [ CSS ] = CalculateCoulombStressOnPlane...
+% (FaceNormalVector,Sxx,Syy,Szz,Sxy,Sxz,Syz,Mu,Cohesion,Rake);
+% hold on
+% trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),CSS,'LineStyle','none'); WhiteFigure;
+% DivergingCentre( CSS ); axis('equal'); colormap('cool');
+% hold off
+%
+% Example usage B) on a series of points with imaginary planes:
+%
+% %Creating grid with user defined sampling
+% X = linspace(-10,15,25); 
+% Y = linspace(-10,15,25); 
+% [X,Y] = meshgrid(X,Y); 
+% [dimx,dimy] = size(X);  
+% %Planes at each point
+% SurfaceDip=89;
+% SurfaceAzimuth=0;
+% Rake=270; %Thrust
+% %Normal vector facing upwards (flat plane)
+% FaceNormalVectorObs=[0, 0, 1];
+% %First we rotate around dip
+% [FaceNormalVectorObs]=RotateCosine3d(FaceNormalVectorObs,deg2rad(-SurfaceDip),'x');
+% %now around azimuth
+% [FaceNormalVectorObs]=RotateCosine3d(FaceNormalVectorObs,deg2rad(SurfaceAzimuth),'z');
+% %Repeat for every point (could have different if needed) 
+% FaceNormalVectorObs=repmat(FaceNormalVectorObs,numel(X),1);
+% Sxx=zeros(size(FaceNormalVectorObs(:,1)));
+% Syy=zeros(size(FaceNormalVectorObs(:,1)));
+% Szz=zeros(size(FaceNormalVectorObs(:,1)));
+% Sxy=ones(size(FaceNormalVectorObs(:,1)));
 % Sxz=Syy;
 % Syz=Syy;
 % Mu=0.6; 
 % Cohesion=0.2;
-% [ CSS,TsMaxShr,TsMaxShrDir ] = CalculateCoulombStressOnPlane...
-% (MidPoint,FaceNormalVector,Sxx,Syy,Szz,Sxy,Sxz,Syz,Mu,Cohesion,Points,Triangles,[]);
+% [ CSS ] = CalculateCoulombStressOnPlane...
+% (FaceNormalVectorObs,Sxx,Syy,Szz,Sxy,Sxz,Syz,Mu,Cohesion,Rake);
+% DrawContourFPlots2d( X,Y,[],reshape(CSS,size(X)) );
+%   
 %
 %  Author: Tim Davis
 %  Copyright 2017, Tim Davis, Potsdam University\The University of Aberdeen
-
-%Grabbing the midpoints of the surface
-X=MidPoint(:,1);
-Y=MidPoint(:,2);
-Z=MidPoint(:,3);
 
 %Explict direction cosines
 CosAx=FaceNormalVector(:,1);
@@ -90,41 +107,7 @@ CosAz=FaceNormalVector(:,3);
 %TractionDipSlip
 [ Tds ] = CalculateTractionInChosenDirection3d( Tx,Ty,Tz,CosAx,CosAy,CosAz,DipSlipCosine );
 
-%Cart vector components of the strike slip traction 
-TssCart=bsxfun(@times,StrikeSlipCosine,Tss);
-%Cart vector components of the dip slip traction 
-TdsCart=bsxfun(@times,DipSlipCosine,Tds);
-
-%3D vector addition of these Cart components (normalised as we want the
-%vector). This is the max shear vector direction.
-TsMaxShrDir=normr(TssCart+TdsCart);
-
-%Total traction vector on the plane
-T=sqrt((Tx.^2)+(Ty.^2)+(Tz.^2)); 
-
-%Max Shear stress %Pollard and Fletcher Book Eq 6.53 
-TsMaxShr=sqrt((abs(T).^2)-(abs(Tn).^2));
+Ts=Tds*cos(deg2rad(Rake))+Tss*sin(deg2rad(Rake));
 
 %Function to calculate CSC
-[ CSS ] = CalculateCoulombShearStress( Tn,TsMaxShr,Mu,Cohesion );
-
-%Drawing total traction and normal stress
-figure;quiver3(X,Y,Z,Tx(:,1),Ty(:,1),Tz(:,1))
-xlabel('x'); ylabel('y'); axis('equal'); title('Total Traction Vector');
-hold on
-trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),Tn); WhiteFigure;
-if isempty(cmap); colormap('default'); else; colormap(cmap); end %draw with the imported value
-DivergingCentre( Tn )
-hold off
-
-%Drawing shear traction and CSS 
-figure;quiver3(X,Y,Z,TsMaxShrDir(:,1),TsMaxShrDir(:,2),TsMaxShrDir(:,3))
-xlabel('x'); ylabel('y'); axis('equal'); title('Shear Traction Vector and CSS');
-hold on
-trisurf(Triangles,Points(:,2),Points(:,3),Points(:,4),CSS); WhiteFigure;
-if isempty(cmap); colormap('default'); else; colormap(cmap); end %draw with the imported value
-DivergingCentre( CSS )
-hold off
-
-end
-
+[ CSS ] = CalculateCoulombShearStress( Tn,Ts,Mu,Cohesion );

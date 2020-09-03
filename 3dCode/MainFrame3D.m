@@ -446,7 +446,7 @@ if Uniform==0
 if SecondSurface==1
     Mu=ones(size(Sxx))*0.6; %Coeff Friction
     Cohesion=zeros(size(Sxx)); %Coeff Friction
-    [CSS] = CalculateCoulombStressOnPlane(MidPointObs,FaceNormalVectorObs,...
+    [CSS] = CalculateMaximumCoulombStress(MidPointObs,FaceNormalVectorObs,...
         Sxx,Syy,Szz,Sxy,Sxz,Syz,Mu,Cohesion,PointsObs,TrianglesObs,cmap2 );
 end
 
