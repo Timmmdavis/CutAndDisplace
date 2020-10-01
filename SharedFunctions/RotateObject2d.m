@@ -1,6 +1,6 @@
 function [Xrot,Yrot] = RotateObject2d(X,Y,Theta)
 % RotateObject2d: Rotates the passed in XY points around the origin by
-%               angle theta (radians). Works on matricies or vectors
+%               angle theta (radians) anticlockwise. Works on matricies or vectors
 %               
 % usage #1:
 % [Xrot,Yrot] = RotateObject2d(X,Y,Theta)
