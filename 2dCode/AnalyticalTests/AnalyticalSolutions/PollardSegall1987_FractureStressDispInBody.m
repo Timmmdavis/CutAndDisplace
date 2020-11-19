@@ -128,23 +128,20 @@ SxxChange_sxy= Pxy.*(2.*r.*R1.*sin(theta-THETA)-a^2.*r.*R3.*sin(theta).*cos(3*TH
 Sxx= SxxChange_syy + SxxChange_sxy; %Can add remote here if want to find total stress, see eq
 
 
-if Syz>0 %Doing if user has chosen to run with out of plane stress
+if Pyz>0 %Doing if user has chosen to run with out of plane stress
     % Calculate the stresses from eq 8.44 onwards from Pollard and Segall 1984
     % Note this contains no elastic constants related to rigidity. The
     % resultant stress related to a fracture and is only dependant on input stress magntitude
     % on the fracture surface (this stress must already alude to the strength of the elastic solid) 
-    SyzChange_syz= Syz.*(r.*R1.*cos(theta-THETA)-1);                                        %8.44d
+    SyzChange_syz= Pyz.*(r.*R1.*cos(theta-THETA)-1);                                        %8.44d
     Syz= SyzChange_syz;   %Can add remote here if want to find total stress, see eq
 
 
-end
-
-if Syz>0 %Doing if user has chosen to run with out of plane stress
     % Calculate the stresses from eq 8.44 onwards from Pollard and Segall 1984
     % Note this contains no elastic constants related to rigidity. The
     % resultant stress related to a fracture and is only dependant on input stress magntitude
     % on the fracture surface (this stress must already alude to the strength of the elastic solid) 
-    SxzChange_syz= Syz.*(r.*R1.*sin(theta-THETA));                                        %8.44d
+    SxzChange_syz= Pyz.*(r.*R1.*sin(theta-THETA));                                        %8.44d
     Sxz= SxzChange_syz;   %Can add remote here if want to find total stress, see eq
 
 end
