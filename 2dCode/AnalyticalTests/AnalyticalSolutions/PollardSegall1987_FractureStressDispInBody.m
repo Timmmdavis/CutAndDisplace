@@ -139,12 +139,12 @@ if Syz>0 %Doing if user has chosen to run with out of plane stress
 
 end
 
-if Sxz>0 %Doing if user has chosen to run with out of plane stress
+if Syz>0 %Doing if user has chosen to run with out of plane stress
     % Calculate the stresses from eq 8.44 onwards from Pollard and Segall 1984
     % Note this contains no elastic constants related to rigidity. The
     % resultant stress related to a fracture and is only dependant on input stress magntitude
     % on the fracture surface (this stress must already alude to the strength of the elastic solid) 
-    SxzChange_sxz= Sxz.*(r.*R1.*sin(theta-THETA)-1);                                        %8.44d
+    SxzChange_sxz= Syz.*(r.*R1.*sin(theta-THETA));                                        %8.44d
     SxzChange= SxzChange_sxz;   %Can add remote here if want to find total stress, see eq
     SxzChange=reshape(SxzChange,num,num);
 
