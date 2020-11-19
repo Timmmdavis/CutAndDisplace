@@ -70,8 +70,8 @@ a = 1;
 %Defining stress. Extension positive "Engineering convention"
 Pyy=Pyy;
 Pxy=Pxy;
-Syz=0; %Out of Plane stresses all done at the bottom of code
-Sxz=0; %Out of Plane stresses all done at the bottom of code
+Pyz=0; %Out of Plane stresses all done at the bottom of code
+
 
 % Now calculating the locations and angles of each point relative to the
 % two ends (positive and negative) and the centre of the fracture. 
