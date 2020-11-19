@@ -134,8 +134,8 @@ if Syz>0 %Doing if user has chosen to run with out of plane stress
     % resultant stress related to a fracture and is only dependant on input stress magntitude
     % on the fracture surface (this stress must already alude to the strength of the elastic solid) 
     SyzChange_syz= Syz.*(r.*R1.*cos(theta-THETA)-1);                                        %8.44d
-    SyzChange= SyzChange_syz;   %Can add remote here if want to find total stress, see eq
-    SyzChange=reshape(SyzChange,num,num);
+    Syz= SyzChange_syz;   %Can add remote here if want to find total stress, see eq
+
 
 end
 
@@ -144,8 +144,7 @@ if Syz>0 %Doing if user has chosen to run with out of plane stress
     % Note this contains no elastic constants related to rigidity. The
     % resultant stress related to a fracture and is only dependant on input stress magntitude
     % on the fracture surface (this stress must already alude to the strength of the elastic solid) 
-    SxzChange_sxz= Syz.*(r.*R1.*sin(theta-THETA));                                        %8.44d
-    SxzChange= SxzChange_sxz;   %Can add remote here if want to find total stress, see eq
-    SxzChange=reshape(SxzChange,num,num);
+    SxzChange_syz= Syz.*(r.*R1.*sin(theta-THETA));                                        %8.44d
+    Sxz= SxzChange_syz;   %Can add remote here if want to find total stress, see eq
 
 end
