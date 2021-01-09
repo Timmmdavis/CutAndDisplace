@@ -145,3 +145,33 @@ if Pyz>0 %Doing if user has chosen to run with out of plane stress
     Sxz= SxzChange_syz;   %Can add remote here if want to find total stress, see eq
 
 end
+
+%% Example of how to derive symbolically in MATLAB. See Westergaard 1939
+%Or Tada handbook introduction 
+% clear 
+% close all
+% %Evaluate symbolically
+% syms x y a sig
+% z = x + 1i*y;
+% %Stress function for crack in remote stress: 
+% %For reasoning see Westergaard 1939
+% Z=sig/sqrt(1-(a^2/z^2));
+% Zbar=int(Z);
+% Zbarbar=int(Zbar);
+% Zprime=diff(Z);
+% %Actual params
+% sig=1;
+% a=1;
+% x=1.0000000000001; y=0;
+% z=x + 1i*y;
+% %Show how to evalulate:
+% ZbarVal=double(subs(Zbar)); %Reval
+% ZprimtVal=double(subs(Zprime)); %Reval
+% Sxx=real(Z)-y*imag(Zprime);
+% SxxVal=double(subs(Sxx))-sig; %Remove remote stress (in str func)
+% Syy=real(Z)+y*imag(Zprime);
+% SyyVal=double(subs(Syy))-sig; %Remove remote stress (in str func)
+% Sxy=-y*real(Zprime);
+% SxyVal=double(subs(Sxy)); 
+% %Compare
+% [Sxx,Syy,Sxy,~,~]=PollardSegall1987_FractureStressDispInBody(NaN,NaN,sig,NaN,x,y);
