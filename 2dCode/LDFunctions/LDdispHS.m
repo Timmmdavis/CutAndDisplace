@@ -1,5 +1,5 @@
 function [Disp] = LDdispHS(x,y,xe,ye,a,Beta,Ds,Dn,nu)
-% LDdispHS: LineDisplacementInducedDisplacementHalfSpace Computes the 
+% LDdispHS: LineDislocationInducedDisplacementHalfSpace Computes the 
 %               influence (displacement) of a single planar line crack
 %               shearing and/or opening on the surronding points. Half
 %               space at 0.

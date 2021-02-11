@@ -1,5 +1,5 @@
 function [Stress] = LDstressHS(x,y,xe,ye,a,Beta,Ds,Dn,nu,E)
-% LDstressHS: LineDisplacementInducedStressHalfSpace Computes the influence 
+% LDstressHS: LineDislocationInducedStressHalfSpace Computes the influence 
 %               (stress) of a single planar line crack shearing and/or
 %               opening on the surronding points. (half space).
 %
