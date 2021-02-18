@@ -79,15 +79,20 @@ delta=Beta+pi/2;
 
 [~,~,~,~,c1,c2,d2]=SET_EPAR(mu1,mu2,nu1,nu2);
 
+Ih1=zeros(4);  
+Ih2=zeros(4);  
+dI=zeros(4);  
+dIfill=zeros(4);  
+
 x=x(:);
 y=y(:);
 Sxxfill=zeros(size(x));
 Syyfill=zeros(size(x));
 Sxyfill=zeros(size(x));
 for i=1:length(x)      
-    Sxx = sxxUt(xe,ye,delta,a,x(i),y(i),mu1,mu2,nu1,nu2,c1,c2,d2)*Dn + sxxUb(xe,ye,delta,a,x(i),y(i),mu1,mu2,nu1,nu2,c1,c2,d2)*Ds;
-    Syy = szzUt(xe,ye,delta,a,x(i),y(i),mu1,mu2,nu1,nu2,c1,c2,d2)*Dn + szzUb(xe,ye,delta,a,x(i),y(i),mu1,mu2,nu1,nu2,c1,c2,d2)*Ds;
-    Sxy = sxzUt(xe,ye,delta,a,x(i),y(i),mu1,mu2,nu1,nu2,c1,c2,d2)*Dn + sxzUb(xe,ye,delta,a,x(i),y(i),mu1,mu2,nu1,nu2,c1,c2,d2)*Ds;
+    Sxx = sxxUt(xe,ye,delta,a,x(i),y(i),mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*Dn + sxxUb(xe,ye,delta,a,x(i),y(i),mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*Ds;
+    Syy = szzUt(xe,ye,delta,a,x(i),y(i),mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*Dn + szzUb(xe,ye,delta,a,x(i),y(i),mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*Ds;
+    Sxy = sxzUt(xe,ye,delta,a,x(i),y(i),mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*Dn + sxzUb(xe,ye,delta,a,x(i),y(i),mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*Ds;
     Sxxfill(i)=Sxx;
     Syyfill(i)=Syy;
     Sxyfill(i)=Sxy;
@@ -283,79 +288,80 @@ function [Up,Us,Tp,Ts,c1,c2,d2]=SET_EPAR(mu1,mu2,nu1,nu2)
 end %Subroutine SET_EPAR
 
 %     xx comp of the stress field due to the tensile component of the burger vector
-function [output]=sxxUt(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
+function [output]=sxxUt(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)
       %IMPLICIT NONE
 
       %REAL(8) :: sxxUt
       %REAL(8) :: x0,z0,delta,Hd,x,z
 
-      output = sxxUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)*cos(delta) -...
-             sxxUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)*sin(delta);
+      output = sxxUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*cos(delta) -...
+             sxxUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*sin(delta);
 
 end %Function sxxUt
 
 %     xz comp of the stress field due to the tensile component of the burger vector
-function [output]=sxzUt(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
+function [output]=sxzUt(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)
       %IMPLICIT NONE
 
       %REAL(8) :: sxzUt
       %REAL(8) :: x0,z0,delta,Hd,x,z
 
-      output = sxzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)*cos(delta) -...
-             sxzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)*sin(delta);
+      output = sxzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*cos(delta) -...
+             sxzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*sin(delta);
 
 end %Function sxzUt
 
 %     zz comp of the stress field due to the tensile component of the burger vector
-function [output]=szzUt(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
+function [output]=szzUt(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)
       %IMPLICIT NONE
 
       %REAL(8) :: szzUt
       %REAL(8) :: x0,z0,delta,Hd,x,z
 
-      output = szzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)*cos(delta) -...
-             szzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)*sin(delta);
+      output = szzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*cos(delta) -...
+             szzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*sin(delta);
 
 end %Function szzUt
 
 %     xx comp of the stress field due to the shear component of the burger vector
-function [output]=sxxUb(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
+function [output]=sxxUb(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)
       %IMPLICIT NONE
 
       %REAL(8) :: sxxUb
       %REAL(8) :: x0,z0,delta,Hd,x,z
 
-      output = sxxUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)*sin(delta) +...
-             sxxUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)*cos(delta);
+      output = sxxUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*sin(delta) +...
+             sxxUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*cos(delta);
 
 end% Function sxxUb
 
 %     xz comp of the stress field due to the shear component of the burger vector
-function [output]=sxzUb(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
+function [output]=sxzUb(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)
       %IMPLICIT NONE
 
       %REAL(8) :: sxzUb
       %REAL(8) :: x0,z0,delta,Hd,x,z
 
-      output = sxzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)*sin(delta) +...
-             sxzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)*cos(delta);
+      output = sxzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*sin(delta) +...
+             sxzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*cos(delta);
 
 end %Function sxzUb
 
 %     zz comp of the stress field due to the shear component of the burger vector
-function [output]=szzUb(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
+function [output]=szzUb(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)
       %IMPLICIT NONE
 
       %REAL(8) :: szzUb
       %REAL(8) :: x0,z0,delta,Hd,x,z
 
-      output = szzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)*sin(delta) +...
-             szzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)*cos(delta);
+      output = szzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*sin(delta) +...
+             szzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,Ih1,Ih2,dI,dIfill)*cos(delta);
 
 end% Function szzUb
 
 %     xx component of the stress field due to x component of the burger vector
-function [output]=sxxUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
+function [output]=sxxUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,...
+    Ih1,Ih2,dI,dIfill)
       %IMPLICIT NONE
 
       %REAL(8) :: sxxUX
@@ -380,7 +386,7 @@ function [output]=sxxUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
       if (z1>=0.D0) %Then
 
-         [dI]=fill_dI (x0,z0,delta,Hd,x,z);
+         [dI]=fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z);
 
          if (z<0.D0) %Then    % formula for CASE1 within half-space 2
             output =...
@@ -407,7 +413,7 @@ function [output]=sxxUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
          if (z2<=0.D0) %Then
 
-            [dI]=fill_dI (x0,z0,delta,Hd,x,z);
+            [dI]=fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z);
 
             if (z>0.D0) %Then    % formula for CASE2 within half-space 1
                 output =...
@@ -431,8 +437,8 @@ function [output]=sxxUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
             end
          else                      % formulas for mixed CASE (2-1)
 
-         [Ih1]=fill_I(x1,z1,x,z);
-         [Ih2]=fill_I(x2,z2,x,z);
+         [Ih1]=fill_I(Ih1,x1,z1,x,z);
+         [Ih2]=fill_I(Ih2,x2,z2,x,z);
 
               if (z<0.D0) %Then  % formula for mixed CASE within half-space 2
                 output =...
@@ -465,7 +471,8 @@ function [output]=sxxUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 end %Function sxxUX
 
 %     xz component of the stress field due to x component of the burger vector
-function [output]=sxzUX (x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
+function [output]=sxzUX (x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,...
+    Ih1,Ih2,dI,dIfill)
       %IMPLICIT NONE
 
       %REAL(8) :: sxzUX
@@ -489,7 +496,7 @@ function [output]=sxzUX (x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
       if (z1>=0.D0) %Then
 
-           [dI]=fill_dI (x0,z0,delta,Hd,x,z);
+           [dI]=fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z);
 
            if (z<0.D0) %Then        % formula for CASE1 within half-space 2
                 output =-3.D0/(4.D0*(1.D0-nu2)) *...                               
@@ -514,7 +521,7 @@ function [output]=sxzUX (x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
            if (z2<=0.D0) %Then
 
-              [dI]=fill_dI (x0,z0,delta,Hd,x,z);
+              [dI]=fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z);
 
               if (z>0.D0) %Then     % formula for CASE2 within half-space 1
                 output =-3.D0/(4.D0*(1.D0-nu1)) *...                               
@@ -537,8 +544,8 @@ function [output]=sxzUX (x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
            else                       % formulas for mixed CASE
 
-              [Ih1]= fill_I (x1,z1,x,z);
-              [Ih2]= fill_I (x2,z2,x,z);
+              [Ih1]= fill_I (Ih1,x1,z1,x,z);
+              [Ih2]= fill_I (Ih2,x2,z2,x,z);
 
               if (z<0.D0) %Then     % formula for mixed CASE within half-space 2
                 output =-3.D0/(4.D0*(1.D0-nu2)) *  ...                             
@@ -569,7 +576,8 @@ function [output]=sxzUX (x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 end %Function sxzUX
 
 %     zz component of the stress field due to x component of the burger vector
-function [output]=szzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
+function [output]=szzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,...
+    Ih1,Ih2,dI,dIfill)
       %IMPLICIT NONE
 
       %REAL(8) :: szzUX
@@ -593,7 +601,7 @@ function [output]=szzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
       if (z1>=0.D0) %Then
 
-           dI= fill_dI (x0,z0,delta,Hd,x,z);
+           dI= fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z);
 
            if (z<0.D0) %Then        % formula for CASE1 within half-space 2
             output =-3.D0/(4.D0*(1.D0-nu2)) * ...                          
@@ -617,7 +625,7 @@ function [output]=szzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
       else
            if (z2<=0.D0) %Then
 
-              [dI]= fill_dI (x0,z0,delta,Hd,x,z);
+              [dI]= fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z);
 
               if (z>0.D0) %Then     % formula for CASE2 within half-space 1
                 output =-3.D0/(4.D0*(1.D0-nu1)) * ...                          
@@ -640,8 +648,8 @@ function [output]=szzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
            else                       % formulas for mixed CASE
 
-              Ih1= fill_I (x1,z1,x,z);
-              Ih2= fill_I (x2,z2,x,z);
+              Ih1= fill_I (Ih1,x1,z1,x,z);
+              Ih2= fill_I (Ih2,x2,z2,x,z);
 
               if (z<0.D0) %Then     % formula for mixed CASE within half-space 2
                 output =-3.D0/(4.D0*(1.D0-nu2)) *...                           
@@ -672,7 +680,8 @@ function [output]=szzUX(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 end% Function szzUX
 
 %     xx component of the stress field due to z component of the burger vector
-function [output]=sxxUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
+function [output]=sxxUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,...
+    Ih1,Ih2,dI,dIfill)
       %IMPLICIT NONE
 
       %REAL(8) :: sxxUZ
@@ -696,7 +705,7 @@ function [output]=sxxUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
       if (z1>=0.D0) %Then
 
-           [dI]= fill_dI (x0,z0,delta,Hd,x,z);
+           [dI]= fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z);
 
            if (z<0.D0) %Then        % formula for CASE1 within half-space 2
             output =-3.D0/(4.D0*(1.D0-nu2)) * ...                              
@@ -721,7 +730,7 @@ function [output]=sxxUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
            if (z2<=0.D0) %Then
 
-              [dI]= fill_dI (x0,z0,delta,Hd,x,z);
+              [dI]= fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z);
 
               if (z>0.D0) %Then     % formula for CASE2 within half-space 1
                 output =-3.D0/(4.D0*(1.D0-nu1)) *...                               
@@ -744,8 +753,8 @@ function [output]=sxxUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
            else                       % formulas for mixed CASE
 
-              [Ih1]= fill_I (x1,z1,x,z);
-              [Ih2]= fill_I (x2,z2,x,z);
+              Ih1= fill_I (Ih1,x1,z1,x,z);
+              Ih2= fill_I (Ih2,x2,z2,x,z);
 
               if (z<0.D0) %Then     % formula for mixed CASE within half-space 2
                 output =-3.D0/(4.D0*(1.D0-nu2)) * ...                              
@@ -776,7 +785,8 @@ function [output]=sxxUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 end% Function sxxUZ
 
 %     xz component of the stress field due to z component of the burger vector
-function [output]=sxzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
+function [output]=sxzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,...
+    Ih1,Ih2,dI,dIfill)
       %IMPLICIT NONE
 
       %REAL(8) :: sxzUZ
@@ -800,7 +810,7 @@ function [output]=sxzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
       if (z1>=0.D0) %Then
 
-           [dI]= fill_dI (x0,z0,delta,Hd,x,z);
+           [dI]= fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z);
 
            if (z<0.D0) %Then        % formula for CASE1 within half-space 2
             output =-3.D0/(4.D0*(1.D0-nu2)) * ...                             
@@ -824,7 +834,7 @@ function [output]=sxzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
       else
            if (z2<=0.D0) %Then
 
-              [dI]= fill_dI (x0,z0,delta,Hd,x,z);
+              [dI]= fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z);
 
               if (z>0.D0) %Then     % formula for CASE2 within half-space 1
                 output =-3.D0/(4.D0*(1.D0-nu1)) * ...                             
@@ -847,8 +857,8 @@ function [output]=sxzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
            else                       % formulas for mixed CASE
 
-              [Ih1]=fill_I (x1,z1,x,z);
-              [Ih2]=fill_I (x2,z2,x,z);
+              Ih1= fill_I (Ih1,x1,z1,x,z);
+              Ih2= fill_I (Ih2,x2,z2,x,z);
 
               if (z<0.D0) %Then     % formula for mixed CASE within half-space 2
                 output =-3.D0/(4.D0*(1.D0-nu2)) *...                              
@@ -879,7 +889,8 @@ function [output]=sxzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 end %Function sxzUZ
 
 %     zz component of the stress field due to z component of the burger vector
-function [output]=szzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
+function [output]=szzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2,...
+    Ih1,Ih2,dI,dIfill)
       %IMPLICIT NONE
 
       %REAL(8) :: szzUZ
@@ -903,7 +914,7 @@ function [output]=szzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
       if (z1>=0.D0) %Then
 
-         [dI]= fill_dI (x0,z0,delta,Hd,x,z);
+         [dI]= fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z);
 
          if (z<0.D0) %Then        % formula for CASE1 within half-space 2
             output = 3.D0/(4.D0*(1.D0-nu2)) *...                                 
@@ -927,7 +938,7 @@ function [output]=szzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 
          if (z2<=0.D0) %Then
 
-            [dI]= fill_dI (x0,z0,delta,Hd,x,z);
+            [dI]= fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z);
 
             if (z>0.D0) %Then     % formula for CASE2 within half-space 1
                 output = 3.D0/(4.D0*(1.D0-nu1)) * ...                                
@@ -949,8 +960,8 @@ function [output]=szzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
             end
          else                       % formulas for mixed CASE
 
-         [Ih1]= fill_I (x1,z1,x,z);
-         [Ih2]= fill_I (x2,z2,x,z);
+            Ih1= fill_I (Ih1,x1,z1,x,z);
+            Ih2= fill_I (Ih2,x2,z2,x,z);
 
             if (z<0.D0) %Then     % formula for mixed CASE within half-space 2
                 output = 3.D0/(4.D0*(1.D0-nu2)) * ...                                
@@ -981,7 +992,7 @@ function [output]=szzUZ(x0,z0,delta,Hd,x,z,mu1,mu2,nu1,nu2,c1,c2,d2)
 end %Function szzUZ
 
 
-function [dI]=fill_dI(x0,z0,delta,Hd,x,z)
+function [dI]=fill_dI(dI,dIfill,x0,z0,delta,Hd,x,z)
       %IMPLICIT NONE
       
       %REAL(8) :: x0,z0,delta,Hd,x,z
@@ -989,7 +1000,7 @@ function [dI]=fill_dI(x0,z0,delta,Hd,x,z)
       %REAL(8) :: dI(4,4),I1(4,4),I2(4,4)
       %REAL(8) :: x1,z1,x2,z2
       %INTEGER :: n,m
-      dI=zeros(4);    
+      %dI=zeros(4);    
 
     z1 = z0 - (Hd*0.5D0)*cos(delta);
     z2 = z0 + (Hd*0.5D0)*cos(delta);
@@ -1004,73 +1015,89 @@ function [dI]=fill_dI(x0,z0,delta,Hd,x,z)
         z2 = 0.D0;
     end
 
-    I1=fill_I (x1,z1,x,z);
-    I2=fill_I(x2,z2,x,z);
+    dI=fill_I(dI,x1,z1,x,z);
+    dIfill=fill_I(dIfill,x2,z2,x,z);
 
     for n=1:4
        for m=1:4
-          dI(n,m) = 0.D0;
-          dI(n,m) = I1(n,m) - I2(n,m);
+          %dI(n,m) = 0.D0;
+          dI(n,m) = dI(n,m) - dIfill(n,m);
        end
     end
 
 end %Subroutine fill_dI
 
 
-function [I]=fill_I(xd,zd,x,z)
-      %IMPLICIT NONE
+function [I]=fill_I(I,xd,zd,x,z)
+     %IMPLICIT NONE
 
       %REAL(8) :: I(4,4)
       %REAL(8) :: xd,zd,x,z
-      I=zeros(4);   
+      %I=zeros(4);   
+
+      %Introducing some constants
+      zdpz=zd+z;
+      zdpz2=zdpz^2;
+      xmxd=x-xd;
+      xmxd2=xmxd^2;
+      xmxd2pzdpz22=(xmxd2 + zdpz2)^2;
+      zmzd=z-zd;
+      zmzd2=zmzd^2;
+      zdmz=zd-z;
+      xmxd2pzmzd22=(xmxd2+zmzd2)^2;
+      xmxd2pzmzd23=(xmxd2 + zmzd2)^3;
+      xmxd2pzdpz23=(xmxd2 + zdpz2)^3;
+      zdpz2mxmxd2=zdpz2-xmxd2;
+
       
-     I(1,1)=(zd+z)/((x-xd)^2 + (z+zd)^2);
+     I(1,1)=(zdpz)/(xmxd2 + zdpz2);
 
-     I(1,2)=z*((z+zd)^2 - (x-xd)^2)/...         
-             ((x-xd)^2 + (z+zd)^2)^2;
+     I(1,2)=z*(zdpz2mxmxd2)/...         
+             xmxd2pzdpz22;
 
-     I(1,3)=zd*((z+zd)^2 - (x-xd)^2)/...      
-              ((x-xd)^2 + (z+zd)^2)^2;
+     I(1,3)=zd*(zdpz2mxmxd2)/...      
+              xmxd2pzdpz22;
 
-     I(1,4)=2.D0*z*zd*(zd+z)*...                  
-           ((z+zd)^2 - 3.D0*(x-xd)^2)/...      
-           ((x-xd)^2 + (z+zd)^2)^3;
+     I(1,4)=2.D0*z*zd*(zdpz)*...                  
+           (zdpz2 - 3.D0*xmxd2)/...      
+           xmxd2pzdpz23;
 
-     I(2,1)=(zd-z)/((x-xd)^2 + (z-zd)^2);
+     I(2,1)=(zdmz)/(xmxd2 + zmzd2);
 
-     I(2,2)=z*((z-zd)^2 - (x-xd)^2)/...         
-             ((x-xd)^2 + (z-zd)^2)^2;
+     I(2,2)=z*(zmzd2 - xmxd2)/...         
+             xmxd2pzmzd22;
 
-     I(2,3)=zd*((z-zd)^2 - (x-xd)^2)/...        
-              ((x-xd)^2 + (z-zd)^2)^2;
+     I(2,3)=zd*(zmzd2 - xmxd2)/...        
+              xmxd2pzmzd22;
 
-     I(2,4)=2.D0*z*zd*(zd-z)*...                  
-           ((z-zd)^2 - 3.D0*(x-xd)^2)/...      
-           ((x-xd)^2 + (z-zd)^2)^3;
+     I(2,4)=2.D0*z*zd*(zdmz)*...                  
+           (zmzd2 - 3.D0*xmxd2)/...      
+           xmxd2pzmzd23;
 
-     I(3,1)=(x-xd)/((x-xd)^2 + (z+zd)^2);
+     I(3,1)=(xmxd)/(xmxd2 + zdpz2);
 
-     I(3,2)=2.D0*z*(x-xd)*(zd+z)/...              
-              ((x-xd)^2 + (z+zd)^2)^2;
+     I(3,2)=2.D0*z*(xmxd)*(zdpz)/...              
+              xmxd2pzdpz22;
 
-     I(3,3)=2.D0*zd*(x-xd)*(zd+z)/...             
-                ((x-xd)^2 + (z+zd)^2)^2;
+     I(3,3)=2.D0*zd*(xmxd)*(zdpz)/...             
+                xmxd2pzdpz22;
 
-     I(3,4)=2.D0*z*zd*(x-xd)*...                  
-           (3.D0*(zd+z)^2 - (x-xd)^2)/...      
-           ((x-xd)^2 + (z+zd)^2)^3;
+     I(3,4)=2.D0*z*zd*(xmxd)*...                  
+           (3.D0*zdpz2mxmxd2)/...      
+           xmxd2pzdpz23;
 
-     I(4,1)=(x-xd)/((x-xd)^2 + (z-zd)^2);
+     I(4,1)=(xmxd)/(xmxd2 + zmzd2);
 
-     I(4,2)=2.D0*z*(x-xd)*(zd-z)/...              
-               ((x-xd)^2 + (z-zd)^2)^2;
+     I(4,2)=2.D0*z*(xmxd)*(zdmz)/...              
+               xmxd2pzmzd22;
 
-     I(4,3)=2.D0*zd*(x-xd)*(zd-z)/...             
-                ((x-xd)^2 + (z-zd)^2)^2;
+     I(4,3)=2.D0*zd*(xmxd)*(zdmz)/...             
+                xmxd2pzmzd22;
 
-     I(4,4)=2.D0*z*zd*(x-xd)*...                  
-           (3.D0*(zd-z)^2 - (x-xd)^2)/...      
-           ((x-xd)^2 + (z-zd)^2)^3;
+     I(4,4)=2.D0*z*zd*(xmxd)*...                  
+           (3.D0*(zdmz)^2 - xmxd2)/...      
+           xmxd2pzmzd23;
+
 
 end %Subroutine fill_I
 
