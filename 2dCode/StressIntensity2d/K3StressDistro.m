@@ -44,8 +44,8 @@ Sxz=Cons1.*(-sin(theta/2));
 Syz=Cons1.*(cos(theta/2));
 
 %Convert back to global coords - No need!
-%CosAx=cos(TipDip);
-%CosAy=sin(TipDip);
+% CosAx=cos(deg2rad(TipDip));
+% CosAy=sin(deg2rad(TipDip));
 %[ Sxz,Syz ] = StressTensorTransformation2d(Sxz,Syz,zeros(size,CosAx,CosAy );
 
 %Back to input grid size
