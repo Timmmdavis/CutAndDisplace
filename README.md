@@ -37,7 +37,8 @@
 Gif of a fault array shearing due to a remote stress. Computed using the 3D code
 ## Citation
 
-Davis, T., 2017. A new open source boundary element code and its application to geological deformation: Exploring stress concentrations around voids and the effects of 3D frictional distributions on fault surfaces (M.Sc thesis. Aberdeen University)
+[Davis, T., 2017. A new open source boundary element code and its application to geological deformation: Exploring stress concentrations around voids and the effects of 3D frictional distributions on fault surfaces (M.Sc thesis. Aberdeen University)](https://abdn.primo.exlibrisgroup.com/view/delivery/44ABE_INST/12153058290005941)
+
 
 ## Introduction
 
