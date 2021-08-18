@@ -31,11 +31,20 @@ function [Ux,Uy] = K1DispDistro(K1, X,Y, TipDip,mu,nu)
 [Xrot,Yrot] = RotateObject2d(X(:),Y(:),deg2rad(-TipDip));
 [theta,r]=cart2pol(Xrot,Yrot);
 
-%Page 3 Tada Stress analysis of cracks handbook
+% %Page 3 Tada Stress analysis of cracks handbook
+% Cons1=K1./mu;
+% Cons2=sqrt(r./(2*pi));
+% Ux=Cons1.*Cons2.*cos(theta./2).*(1-(2*nu)+sin(theta./2).^2);
+% Uy=Cons1.*Cons2.*sin(theta./2).*(2-(2*nu)-cos(theta./2).^2);
+
+%Page 6 Tada Stress analysis of cracks handbook
 Cons1=K1./mu;
 Cons2=sqrt(r./(2*pi));
-Ux=Cons1.*Cons2.*(cos(theta./2).*(1-(2*nu)+sin(theta./2).^2));
-Uy=Cons1.*Cons2.*(sin(theta./2).*(2-(2*nu)-cos(theta./2).^2));
+Beta=2*(1-nu);
+Cons3=Beta-cos(theta./2).^2;
+Ux=Cons1.*Cons2.*cos(theta./2).*Cons3;
+Uy=Cons1.*Cons2.*sin(theta./2).*Cons3;
+
 
 %Convert back to global coords
 [Ux,Uy] = RotateObject2d(Ux(:),Uy(:),deg2rad(TipDip));
