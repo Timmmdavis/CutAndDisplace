@@ -62,29 +62,34 @@ K2(EndElsFlg)=Ds(EndElsFlg).*Eq;
 % This means these match the drawings in Fig 9.30 of Pollard and Fletcher
 % assuming our end element normal corresponds to the y-axis in this figure.
 
-%Get the index of the end elements
-[Indx]=find(EndElsLoc~=0);
-for i =1:numel(Indx)
-    I=Indx(i); %Get current index
-    if EndElsLoc(Indx(i))==1
-        %Vector from midpoint to edge
-        FeM2Ev=normr([(P1(I,1)-MidPoint(I,1)),(P1(I,2))-MidPoint(I,2)]);        
-    else %must be 2
-        FeM2Ev=normr([P2(I,1)-(MidPoint(I,1)),P2(I,2)-(MidPoint(I,2))]);        
-    end
+% %Get the index of the end elements
+% [Indx]=find(EndElsLoc~=0);
+% for i =1:numel(Indx)
+%     I=Indx(i); %Get current index
+%     if EndElsLoc(Indx(i))==1
+%         %Vector from midpoint to edge
+%         FeM2Ev=normr([(P1(I,1)-MidPoint(I,1)),(P1(I,2))-MidPoint(I,2)]);        
+%     else %must be 2
+%         FeM2Ev=normr([P2(I,1)-(MidPoint(I,1)),P2(I,2)-(MidPoint(I,2))]);        
+%     end
+% 
+%     %Rotate line normal counter clockwise 90 degrees
+%     %Clockwise [x,y]=[-y,x]
+%     ClockwisePerp(:,1)=-LineNormalVector(I,2);
+%     ClockwisePerp(:,2)=LineNormalVector(I,1);
+% 
+%     %Check the two vectors allign
+%     Vect=(dot(FeM2Ev',ClockwisePerp'))<=0;
+%     %If they do then change sign of calculated K2 value. 
+%     if Vect==1
+%         K2(I,:)=-K2(I,:);
+%     end
+% end
 
-    %Rotate line normal counter clockwise 90 degrees
-    %Clockwise [x,y]=[-y,x]
-    ClockwisePerp(:,1)=-LineNormalVector(I,2);
-    ClockwisePerp(:,2)=LineNormalVector(I,1);
-
-    %Check the two vectors allign
-    Vect=(dot(FeM2Ev',ClockwisePerp'))<=0;
-    %If they do then change sign of calculated K2 value. 
-    if Vect==1
-        K2(I,:)=-K2(I,:);
-    end
-end
+%A positive shearing line dislocation in this code results in left lateral
+%shear. This is the opposite of stress intensity tip displacement
+%conventions
+K2=-K2; 
 
 
 
