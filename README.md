@@ -541,4 +541,4 @@ Thanks to:
 And others who have replied to emails regarding code, solutions etc.  
 
 Questions? 
-Contact "davis[at]gfz-potsdam.com"
+Contact "timothy.davis[at]earth.ox.ac.uk" 
