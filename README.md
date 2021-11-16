@@ -532,7 +532,11 @@ The basic boundary elements are from:
 [Index ^](#cutanddisplace)
 
 Thanks to:  
+[Prof Eleonora Rivalta](https://www.unibo.it/sitoweb/eleonora.rivalta/cv-en), University of Bologna/GFZ (PhD supervisor).
+
 [Dr David Healy](https://www.abdn.ac.uk/staffnet/profiles/d.healy), University of Aberdeen (MSc supervisor).
+
+[Dr Mehdi Nikkhoo](https://volcanodeformation.com/about), GFZ.
 
 [Dr Juliet Crider](http://www.ess.washington.edu/people/profile.php?pid=crider--juliet), University of Washington.
 
