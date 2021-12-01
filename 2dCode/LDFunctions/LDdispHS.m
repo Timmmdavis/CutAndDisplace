@@ -110,6 +110,7 @@ i3 = find( YB==0 & abs(XB) > a );
 % Steve Martels Solution to elements lying on same plane
 % FB3 = 0 for pts colinear with element, CON*pi for pts. on element 
 % FB3 = difference of arc tangents for all other pts.
+FF3=zeros(size(x));
 FF3(i1) = atan2(YB(i1),XMa(i1)) - atan2(YB(i1),XPa(i1)); 
 FF3(i2) = pi.*ones(size(i2));
 FF3(i3) = zeros(size(i3));
@@ -130,6 +131,7 @@ i3i = find( YBi==0 & abs(XBi) > a );
 % Steve Martels Solution to elements lying on same plane
 % FB3 = 0 for pts colinear with element, CON*pi for pts. on element 
 % FB3 = difference of arc tangents for all other pts.
+FF3i=zeros(size(x));
 FF3i(i1i) = atan2(YBi(i1i),XMai(i1i)) - atan2(YBi(i1i),XPai(i1i)); 
 FF3i(i2i) = pi.*ones(size(i2i));
 FF3i(i3i) = zeros(size(i3i));
