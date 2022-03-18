@@ -426,9 +426,10 @@ Syy,Szz,Sxy,Sxz,Syz,P1,P2,P3,halfspace,nu);
 
 [S1,S2,S3,S1dir,S2dir,S3dir] = EigCalc3d(Sxx(:),Syy(:),Szz(:),Sxy(:),Sxz(:),Syz(:));
 
-%If the stresses don't draw well use this function
-%FilterValue=2.5;
-%[S1,S2,Sxx,Syy,Sxy] = NanOrRemoveBadPoints( FilterValue,0,S1,S2,Sxx,Syy,Sxy );
+% %If the stresses don't draw well use this function
+% FilterValue=2.5;
+% Bad=abs(Sxx)>FilterValue;
+% [S1,S2,S3,Sxx,Syy,Szz,Sxy,Sxz,Syz] = NanOrRemovePoints( Bad,S1,S2,S3,Sxx,Syy,Szz,Sxy,Sxz,Syz );
 
 %Function that draws stress ellipsoids
 DrawStressEllipsoidsPrincipal(StressTTotal,StrainTTotal,X,Y,Z,'Triangles',Triangles,'Points',Points);
