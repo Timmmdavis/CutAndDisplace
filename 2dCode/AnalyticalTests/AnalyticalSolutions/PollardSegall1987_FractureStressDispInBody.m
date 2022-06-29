@@ -108,8 +108,8 @@ usyy=Pyy.*((1-(2*nu))*(R.*cos(THETA)-r.*cos(theta))-r.*sin(theta).*(r.*R1.*sin(t
 usxy=Pxy.*(2*(1-nu)*(R.*sin(THETA)-r.*sin(theta))+r.*sin(theta).*(r.*R1.*cos(theta-THETA)-1));
 vsxy=(Pxy.*((1-(2*nu))*(R.*cos(THETA)-r.*cos(theta))+r.*sin(theta).*(r.*R1.*sin(theta-THETA)))).*-1; %Why do I need to do this?
 
-Uy=(vsyy+vsxy)/2*mu;%The 2/G corresponds to the left hand side of the eq 8.33 that i have pushed over
-Ux=(usyy+usxy)/2*mu;
+Uy=(vsyy+vsxy)/(2*mu);%The 2/G corresponds to the left hand side of the eq 8.33 that i have pushed over
+Ux=(usyy+usxy)/(2*mu);
 
 % Calculate the stresses from eq 8.44 onwards from Pollard and Segall 1984
 % Note this contains no elastic constants related to rigidity. The
