@@ -96,7 +96,7 @@ end
 if any(nuExist)
     nu=varargin{find(nuExist)};
     nuinp=nu; %Assigning to check it doesnt change
-    if nu<-1 || nu>=0.5
+    if nu<-1 || nu>0.5
         error('Poisson s ratio  out of limits')
     end
 end
