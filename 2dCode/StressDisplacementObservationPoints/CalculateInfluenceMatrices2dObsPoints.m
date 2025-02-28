@@ -59,13 +59,13 @@ Dn = 0;
 %Simple if/else statement to create half space or non half space
 %coefficients
 [DsInfMatrix,DsDisplacementXY]=CreateCoeffsLoop2d(InfMatrix,Dispinfmatrix,...
-    NUM,x,y,MidPoint,HalfLength,LineNormalVector,Ds,Dn,nu,E,halfspace,0);
+    NUM,x,y,MidPoint,HalfLength,LineNormalVector,Ds,Dn,nu,E,halfspace,1);
 
 %Setting up normal disp coeff matrix
 Ds = 0;
 Dn = 1;
 [DnInfMatrix,DnDisplacementXY]=CreateCoeffsLoop2d(InfMatrix,Dispinfmatrix,...
-    NUM,x,y,MidPoint,HalfLength,LineNormalVector,Ds,Dn,nu,E,halfspace,0);
+    NUM,x,y,MidPoint,HalfLength,LineNormalVector,Ds,Dn,nu,E,halfspace,1);
 
 
 %  Each influence array is now a huge 5*n column vectors with
