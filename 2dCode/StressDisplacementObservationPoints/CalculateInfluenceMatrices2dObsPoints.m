@@ -58,13 +58,13 @@ Dn = 0;
 %Running loop and filling matrices with coefficients
 %Simple if/else statement to create half space or non half space
 %coefficients
-[DsInfMatrix,~]=CreateCoeffsLoop2d(InfMatrix,Dispinfmatrix,...
+[DsInfMatrix,DsDisplacementXY]=CreateCoeffsLoop2d(InfMatrix,Dispinfmatrix,...
     NUM,x,y,MidPoint,HalfLength,LineNormalVector,Ds,Dn,nu,E,halfspace,0);
 
 %Setting up normal disp coeff matrix
 Ds = 0;
 Dn = 1;
-[DnInfMatrix,~]=CreateCoeffsLoop2d(InfMatrix,Dispinfmatrix,...
+[DnInfMatrix,DnDisplacementXY]=CreateCoeffsLoop2d(InfMatrix,Dispinfmatrix,...
     NUM,x,y,MidPoint,HalfLength,LineNormalVector,Ds,Dn,nu,E,halfspace,0);
 
 
@@ -77,11 +77,11 @@ dimy = NUM2;
 
 %External functions, extracting cols and reshaping
 [ DsSxx,DsSyy,DsSxy ] = ExtractCols( DsInfMatrix );   
-%[ DsUx,DsUy ] = ExtractCols( DsDisplacementXY ); 
+[ DsUx,DsUy ] = ExtractCols( DsDisplacementXY ); 
 [ DsSxx,DsSyy,DsSxy]=ReshapeData2d(dimx,dimy,DsSxx,DsSyy,DsSxy); 
 
 [ DnSxx,DnSyy,DnSxy ] = ExtractCols( DnInfMatrix );   
-%[ DnUx,DnUy ] = ExtractCols( DnDisplacementXY );    
+[ DnUx,DnUy ] = ExtractCols( DnDisplacementXY );    
 [ DnSxx,DnSyy,DnSxy ]=ReshapeData2d(dimx,dimy,DnSxx,DnSyy,DnSxy); 
 
 InfMats.DnSxx=DnSxx;
@@ -90,13 +90,13 @@ InfMats.DnSxx=DnSxx;
 InfMats.DnSxx= DnSxx; clear DnSxx
 InfMats.DnSyy= DnSyy; clear DnSyy
 InfMats.DnSxy= DnSxy; clear DnSxy
-% InfMats.DnUx = DnUx;  clear DnUx
-% InfMats.DnUy = DnUy;  clear DnUy
+InfMats.DnUx = DnUx;  clear DnUx
+InfMats.DnUy = DnUy;  clear DnUy
 InfMats.DsSxx= DsSxx; clear DsSxx
 InfMats.DsSyy= DsSyy; clear DsSyy
 InfMats.DsSxy= DsSxy; clear DsSxy
-% InfMats.DsUx = DsUx;  clear DsUx
-% InfMats.DsUy = DsUy;  clear DsUy
+InfMats.DsUx = DsUx;  clear DsUx
+InfMats.DsUy = DsUy;  clear DsUy
 
 end
 
