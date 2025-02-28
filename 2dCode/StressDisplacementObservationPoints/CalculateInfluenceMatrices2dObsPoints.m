@@ -79,10 +79,12 @@ dimy = NUM2;
 [ DsSxx,DsSyy,DsSxy ] = ExtractCols( DsInfMatrix );   
 [ DsUx,DsUy ] = ExtractCols( DsDisplacementXY ); 
 [ DsSxx,DsSyy,DsSxy]=ReshapeData2d(dimx,dimy,DsSxx,DsSyy,DsSxy); 
+[ DsUx,DsUy ]=ReshapeData2d(dimx,dimy,DsUx,DsUy); 
 
 [ DnSxx,DnSyy,DnSxy ] = ExtractCols( DnInfMatrix );   
 [ DnUx,DnUy ] = ExtractCols( DnDisplacementXY );    
 [ DnSxx,DnSyy,DnSxy ]=ReshapeData2d(dimx,dimy,DnSxx,DnSyy,DnSxy); 
+[ DnUx,DnUy ]=ReshapeData2d(dimx,dimy,DnUx,DnUy); 
 
 
 %Now for struct of the influence matricies 
