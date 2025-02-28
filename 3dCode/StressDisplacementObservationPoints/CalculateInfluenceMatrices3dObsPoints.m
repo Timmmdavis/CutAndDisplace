@@ -128,7 +128,7 @@ StrainInf.DnExz= DnExz; clear DnExz
 StrainInf.DnEyz= DnEyz; clear DnEyz
 StrainInf.DnUx = DnUx;  clear DnUx
 StrainInf.DnUy = DnUy;  clear DnUy
-StrainInf.DnUy = DnUz;  clear DnUz
+StrainInf.DnUz = DnUz;  clear DnUz
 
 StrainInf.DssExx= DssExx; clear DssExx
 StrainInf.DssEyy= DssEyy; clear DssEyy
@@ -138,7 +138,7 @@ StrainInf.DssExz= DssExz; clear DssExz
 StrainInf.DssEyz= DssEyz; clear DssEyz
 StrainInf.DssUx = DssUx;  clear DssUx
 StrainInf.DssUy = DssUy;  clear DssUy
-StrainInf.DssUy = DssUz;  clear DssUz
+StrainInf.DssUz = DssUz;  clear DssUz
 
 StrainInf.DdsExx= DdsExx; clear DdsExx
 StrainInf.DdsEyy= DdsEyy; clear DdsEyy
@@ -148,7 +148,7 @@ StrainInf.DdsExz= DdsExz; clear DdsExz
 StrainInf.DdsEyz= DdsEyz; clear DdsEyz
 StrainInf.DdsUx = DdsUx;  clear DdsUx
 StrainInf.DdsUy = DdsUy;  clear DdsUy
-StrainInf.DdsUy = DdsUz;  clear DdsUz
+StrainInf.DdsUz = DdsUz;  clear DdsUz
 
 end
 
