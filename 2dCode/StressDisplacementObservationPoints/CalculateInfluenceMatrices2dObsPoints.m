@@ -50,7 +50,7 @@ NUM2 = numel(MidPoint(:,1));
 
 %Creating empty array to be filled with influence coefficients 
 InfMatrix = zeros(NUM*NUM2,3); 
-Dispinfmatrix=[];%zeros(NUM*NUM2,2);
+Dispinfmatrix=zeros(NUM*NUM2,2);
 
 %Setting up shear disp coeff matrix
 Ds = 1;
@@ -84,9 +84,8 @@ dimy = NUM2;
 [ DnUx,DnUy ] = ExtractCols( DnDisplacementXY );    
 [ DnSxx,DnSyy,DnSxy ]=ReshapeData2d(dimx,dimy,DnSxx,DnSyy,DnSxy); 
 
-InfMats.DnSxx=DnSxx;
 
-%Now for the disp influence matricies 
+%Now for struct of the influence matricies 
 InfMats.DnSxx= DnSxx; clear DnSxx
 InfMats.DnSyy= DnSyy; clear DnSyy
 InfMats.DnSxy= DnSxy; clear DnSxy
