@@ -544,5 +544,14 @@ Thanks to:
 
 And others who have replied to emails regarding code, solutions etc.  
 
+This code was originally written during a Masters. 
+Grants that have allowed me maintain and update this code:
+
+*   Deutsche Forschungsgemeinschaft/International Continental Scientific Drilling Program grant agreement N. RI 2782/3-1.
+
+*   RIFT-O-MAT: European Research Council grant agreement No. 772255.
+
+*   MAST: European Research Council grant agreement No. 101003173.
+
 Questions? 
 Contact "timothy.davis[at]bristol.ac.uk" 
