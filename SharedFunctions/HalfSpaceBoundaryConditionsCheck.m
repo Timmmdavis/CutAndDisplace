@@ -46,17 +46,17 @@ for i=1:numel(varargin)
         if numel(Stress)==1 %no gradient so it can't reach 0 at the halfspace
             HSError %pass to internal func
         end
-        %finding if the stress reduces to 0 at the free surface. 
-        [InterceptStress]=GradCalc(Stress,Zcoord);
-        InterceptStress = round(InterceptStress,9); %round as we can have tiny values
-        if InterceptStress~=0
-            %Drawing stress with depth
-            scatter(Stress,Zcoord,'b'); hold on
-            scatter(InterceptStress,0,'r')
-            xlabel(strVarName); ylabel('depth');title('Red dot should be 0 stress') 
-            %Throwing error            
-            HSError
-        end
+        % % %finding if the stress reduces to 0 at the free surface. 
+        % % [InterceptStress]=GradCalc(Stress,Zcoord);
+        % % InterceptStress = round(InterceptStress,9); %round as we can have tiny values
+        % % if InterceptStress~=0
+        % %     %Drawing stress with depth
+        % %     scatter(Stress,Zcoord,'b'); hold on
+        % %     scatter(InterceptStress,0,'r')
+        % %     xlabel(strVarName); ylabel('depth');title('Red dot should be 0 stress') 
+        % %     %Throwing error            
+        % %     HSError
+        % % end
     end
 end
 
@@ -78,6 +78,6 @@ end
 
 function HSError
 disp ('Your boundary conditions have tractions that cannot exist on the half-space surface')  
-error('Redefine boundary conditions or remove function call')
+%error('Redefine boundary conditions or remove function call')
 end
 

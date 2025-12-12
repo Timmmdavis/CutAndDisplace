@@ -134,7 +134,8 @@ if Option=='C'
     end
     FricRes=Tn.*Mu; %Negative is compression
     if all(-abs(Tss)>FricRes) && all(-abs(Tds)>FricRes)
-        PlotSlipDistribution3d(Triangles,Points,cmap,FricRes,Tss,Tds)
+        cmap2 = colormap_cpt('Ccool-warm2');
+        PlotSlipDistribution3d(Triangles,Points,cmap2,FricRes,Tss,Tds)
         disp('Your frictional fault will not slip, quit (ctrl+c)')
         pause        
     end

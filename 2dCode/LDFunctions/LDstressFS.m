@@ -71,22 +71,37 @@ XMH = XB-H; XPH = XB+H;
 XMH2 = XMH.^2; XPH2 = XPH.^2; 
 R1S = XMH2 + Y2; R1S2 = R1S.^2; 
 R2S = XPH2 + Y2; R2S2 = R2S.^2;
+% % The following derivatives are eqs. 4.5.5a thru d of C&S, p. 58.
+% FF4 = con*(YB./R1S - YB./R2S); 
+% FF5 = con*(XMH./R1S - XPH./R2S);
+% 
+% % The following derivatives are eqs. 5.5.3a and b of C&S, p. 91.
+% FF6 = con*((XMH2 - Y2)./R1S2 - (XPH2 - Y2)./R2S2);
+% FF7 = 2*con*YB.*(XMH./R1S2 - XPH./R2S2);
+% 
+% % Calculate the stress components using eqs. 5.5.5 of C&S, p. 92.
+% Sxx =  cons*Dxb*(2*(cb*cb)*FF4 + s2b*FF5 + YB.*(c2b*FF6-s2b*FF7))...
+%      +cons*Dyb*(-FF5 + YB.*(s2b*FF6 + c2b*FF7));
+% Syy =  cons*Dxb*(2*(sb*sb)*FF4 - s2b*FF5 - YB.*(c2b*FF6-s2b*FF7))...
+%      +cons*Dyb*(-FF5 - YB.*(s2b*FF6 + c2b*FF7));
+% Sxy =  cons*Dxb*(s2b*FF4 - c2b*FF5 + YB.*(s2b*FF6+c2b*FF7))...
+%      +cons*Dyb*(-YB.*(c2b*FF6 - s2b*FF7)); 
+
 % The following derivatives are eqs. 4.5.5a thru d of C&S, p. 58.
-FF4 = con*(YB./R1S - YB./R2S); 
-FF5 = con*(XMH./R1S - XPH./R2S);
+FF4 = (YB./R1S - YB./R2S); 
+FF5 = (XMH./R1S - XPH./R2S);
 
 % The following derivatives are eqs. 5.5.3a and b of C&S, p. 91.
-FF6 = con*((XMH2 - Y2)./R1S2 - (XPH2 - Y2)./R2S2);
-FF7 = 2*con*YB.*(XMH./R1S2 - XPH./R2S2);
+FF6 = ((XMH2 - Y2)./R1S2 - (XPH2 - Y2)./R2S2);
+FF7 = 2*YB.*(XMH./R1S2 - XPH./R2S2);
 
 % Calculate the stress components using eqs. 5.5.5 of C&S, p. 92.
-Sxx =  cons*Dxb*(2*(cb*cb)*FF4 + s2b*FF5 + YB.*(c2b*FF6-s2b*FF7))...
-     +cons*Dyb*(-FF5 + YB.*(s2b*FF6 + c2b*FF7));
-Syy =  cons*Dxb*(2*(sb*sb)*FF4 - s2b*FF5 - YB.*(c2b*FF6-s2b*FF7))...
-     +cons*Dyb*(-FF5 - YB.*(s2b*FF6 + c2b*FF7));
-Sxy =  cons*Dxb*(s2b*FF4 - c2b*FF5 + YB.*(s2b*FF6+c2b*FF7))...
-     +cons*Dyb*(-YB.*(c2b*FF6 - s2b*FF7)); 
+Sxx =  Dxb*(2*(cb*cb)*FF4 + s2b*FF5 + YB.*(c2b*FF6-s2b*FF7))...
+     +Dyb*(-FF5 + YB.*(s2b*FF6 + c2b*FF7));
+Syy =  Dxb*(2*(sb*sb)*FF4 - s2b*FF5 - YB.*(c2b*FF6-s2b*FF7))...
+     +Dyb*(-FF5 - YB.*(s2b*FF6 + c2b*FF7));
+Sxy =  Dxb*(s2b*FF4 - c2b*FF5 + YB.*(s2b*FF6+c2b*FF7))...
+     +Dyb*(-YB.*(c2b*FF6 - s2b*FF7)); 
 
-
-Stress=[Sxx(:),Syy(:),Sxy(:)];
+Stress=[Sxx(:),Syy(:),Sxy(:)]*cons*con;
 

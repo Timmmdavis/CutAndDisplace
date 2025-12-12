@@ -44,8 +44,12 @@ function DivergingCentre( Var )
 colorbar;
 %Get the limits of the data, find the maximum.
 c = max(abs([min(Var(:)),max(Var(:))]));
+
+if c==0 || isnan(c)
+    return
+end
 %Set the caxis limits to the maximum
-caxis([-c c]);
+clim([-c c]);
 
 end
 

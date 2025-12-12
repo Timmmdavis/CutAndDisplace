@@ -69,6 +69,38 @@ i1 = find(YB);
 i2 = find(YB == 0 & abs(XB) < H);
 i3 = find(YB == 0 & abs(XB) > H ); 
 
+% %Calculate derivatives of the function f(x,y), eq. 5.2.5 of C&S, p. 81. 
+% %which are used to calculate the displacement and stress components. 
+% %It is understood that X and Y refer to XB and YB.
+% %First abbreviate repeated terms in the derivatives of f(x,y):
+% Y2 = YB.^2;
+% XMH = XB-H; XPH = XB+H; 
+% XMH2 = XMH.^2; XPH2 = XPH.^2; 
+% R1S = XMH2 + Y2; 
+% R2S = XPH2 + Y2; 
+% %The following derivatives are eqs. 4.5.5a thru d of C&S, p. 58.
+% FF2 = con*(log(sqrt(R1S)) - log(sqrt(R2S)));
+% 
+% %Steve Martels Solution to elements lying on same plane
+% %FB3 = 0 for pts colinear with element, CON*pi for pts. on element 
+% %FB3 = difference of arc tangents for all other pts.
+% FF3(i1) = atan2(YB(i1),XMH(i1)) - atan2(YB(i1),XPH(i1)); 
+% FF3(i2) = pi.*ones(size(i2));
+% FF3(i3) = zeros(size(i3));
+% FF3 = -con.*(FF3)';	
+% FF3 = reshape(FF3,lengthrow,lengthcol);
+% FF4 = con*(YB./R1S - YB./R2S); 
+% FF5 = con*(XMH./R1S - XPH./R2S);
+% 
+% 
+% %Define material constants used in calculating displacements.
+% pr1 = 1-2*nu; pr2 = 2-2*nu;
+% %Calculate the displacement components using eqs. 5.5.4 of C&S, p. 91.
+% Ux = Dxb*(-pr1*sb*FF2 + pr2*cb*FF3 + YB.*(sb*FF4 - cb*FF5))...
+%     +Dyb*(-pr1*cb*FF2 - pr2*sb*FF3 - YB.*(cb*FF4 + sb*FF5));
+% Uy = Dxb*(+pr1*cb*FF2 + pr2*sb*FF3 - YB.*(cb*FF4 + sb*FF5))...
+%     +Dyb*(-pr1*sb*FF2 + pr2*cb*FF3 - YB.*(sb*FF4 - cb*FF5));
+
 %Calculate derivatives of the function f(x,y), eq. 5.2.5 of C&S, p. 81. 
 %which are used to calculate the displacement and stress components. 
 %It is understood that X and Y refer to XB and YB.
@@ -79,7 +111,7 @@ XMH2 = XMH.^2; XPH2 = XPH.^2;
 R1S = XMH2 + Y2; 
 R2S = XPH2 + Y2; 
 %The following derivatives are eqs. 4.5.5a thru d of C&S, p. 58.
-FF2 = con*(log(sqrt(R1S)) - log(sqrt(R2S)));
+FF2 = (log(sqrt(R1S)) - log(sqrt(R2S)));
 
 %Steve Martels Solution to elements lying on same plane
 %FB3 = 0 for pts colinear with element, CON*pi for pts. on element 
@@ -87,19 +119,21 @@ FF2 = con*(log(sqrt(R1S)) - log(sqrt(R2S)));
 FF3(i1) = atan2(YB(i1),XMH(i1)) - atan2(YB(i1),XPH(i1)); 
 FF3(i2) = pi.*ones(size(i2));
 FF3(i3) = zeros(size(i3));
-FF3 = -con.*(FF3)';	
+FF3 = -(FF3)';	
 FF3 = reshape(FF3,lengthrow,lengthcol);
-FF4 = con*(YB./R1S - YB./R2S); 
-FF5 = con*(XMH./R1S - XPH./R2S);
+FF4 = (YB./R1S - YB./R2S); 
+FF5 = (XMH./R1S - XPH./R2S);
 
 
 %Define material constants used in calculating displacements.
-pr1 = 1-2*nu; pr2 = 2-2*nu;
+pr1 = 1-2*nu; pr2 = 2*(1-nu);
 %Calculate the displacement components using eqs. 5.5.4 of C&S, p. 91.
 Ux = Dxb*(-pr1*sb*FF2 + pr2*cb*FF3 + YB.*(sb*FF4 - cb*FF5))...
     +Dyb*(-pr1*cb*FF2 - pr2*sb*FF3 - YB.*(cb*FF4 + sb*FF5));
 Uy = Dxb*(+pr1*cb*FF2 + pr2*sb*FF3 - YB.*(cb*FF4 + sb*FF5))...
     +Dyb*(-pr1*sb*FF2 + pr2*cb*FF3 - YB.*(sb*FF4 - cb*FF5));
 
-Disp=[Ux(:),Uy(:)];
+
+
+Disp=[Ux(:),Uy(:)]*con;
 
