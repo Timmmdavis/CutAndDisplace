@@ -63,7 +63,8 @@ D(NanFlag)=nan;
 V(NanFlag)=nan;
 
 %Now getting a col vec of S3 S2 S1 which is for each point
-J=(1:2:size(D(:,1)));
+%J=(1:2:size(D(:,1)));
+J = 1:2:length(D(:,1));
 for i = 1:n 
     [B(J(:,i):J(:,i)+1,:),I(J(:,i):J(:,i)+1,:)]=sort(diag(D(J(:,i):J(:,i)+1,:)));
 end  
