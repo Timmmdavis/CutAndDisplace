@@ -10,11 +10,11 @@ function [Stress]=LDstressLayeredElastic(Dn,Ds,xe,ye,Beta,a,x,y,mu1,mu2,nu1,nu2)
 %                 The tensile dislocation problem in a layered elastic
 %                 medium. Maurizio Bonafede, Eleonora Rivalta. Geophysical
 %                 Journal International, Volume 136, Issue 2, February 1999,
-%                 Pages 341–356. 
+%                 Pages 341356. 
 %                 The edge dislocation problem in a layered elastic medium.
 %                 Rivalta Eleonora, Mangiavillano Walter, Bonafede
 %                 Maurizio. Geophysical Journal International, Volume 149, 
-%                 Issue 2, May 2002, Pages 508–523
+%                 Issue 2, May 2002, Pages 508523
 %
 % Arguments: (input)
 %      x & y  - The observation points locations in real Cartesian coords. 
@@ -1082,8 +1082,10 @@ function [I]=fill_I(I,xd,zd,x,z)
      I(3,3)=2.D0*zd*(xmxd)*(zdpz)/...             
                 xmxd2pzdpz22;
 
-     I(3,4)=2.D0*z*zd*(xmxd)*...                  
-           (3.D0*zdpz2mxmxd2)/...      
+     % FIXED (Oct 2026): was (3*zdpz2mxmxd2) = 3*((zd+z)^2-(x-xd)^2).
+     % Correct term (as in the displacement file) is 3*(zd+z)^2-(x-xd)^2.
+     I(3,4)=2.D0*z*zd*(xmxd)*...
+           (3.D0*zdpz2-xmxd2)/...
            xmxd2pzdpz23;
 
      I(4,1)=(xmxd)/(xmxd2 + zmzd2);
@@ -1100,6 +1102,3 @@ function [I]=fill_I(I,xd,zd,x,z)
 
 
 end %Subroutine fill_I
-
-
-
