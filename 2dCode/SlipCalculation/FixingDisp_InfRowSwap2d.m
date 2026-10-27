@@ -1,5 +1,5 @@
 function [StressInf,Tn,Ts,NUM]...
-    = FixingDisp_InfRowSwap2d(StressInf,DispInf,NUM,Tn,Ts,Fdisp)
+    = FixingDisp_InfRowSwap2d(StressInf,DispInf,NUM,Tn,Ts,Fdisp,ColFdisp)
 % FixingDisp_InfRowSwap2d: This swaps rows of the Coefficient matrices for
 %               stress to that of disp. This is be used to fix displacement
 %               of chosen midpoints that have been flagged with 'Fdisp'.
@@ -63,21 +63,30 @@ function [StressInf,Tn,Ts,NUM]...
 
 %Replacing fixed disp rows with disp inf matrices
 FD=logical(Fdisp);
+%Optional: when the rows of StressInf are only a subset of the elements
+%(e.g. the free boundary rows of one body in an inhomogeneous calc) the row
+%flag (Fdisp, one per row) and the column flag (ColFdisp, one per element)
+%differ. If not supplied both are Fdisp, as before.
+if nargin<7 || isempty(ColFdisp)
+    ColFD=FD;
+else
+    ColFD=logical(ColFdisp);
+end
 StressInf.DsTn(FD,:)=DispInf.DsUx(FD,:);
 StressInf.DsTs(FD,:)=DispInf.DsUy(FD,:);
 StressInf.DnTn(FD,:)=DispInf.DnUx(FD,:);
 StressInf.DnTs(FD,:)=DispInf.DnUy(FD,:);
 %Now removing any fixed disp element cols
-StressInf.DsTn=StressInf.DsTn(:,~FD);
-StressInf.DsTs=StressInf.DsTs(:,~FD);
-StressInf.DnTn=StressInf.DnTn(:,~FD);
-StressInf.DnTs=StressInf.DnTs(:,~FD);
+StressInf.DsTn=StressInf.DsTn(:,~ColFD);
+StressInf.DsTs=StressInf.DsTs(:,~ColFD);
+StressInf.DnTn=StressInf.DnTn(:,~ColFD);
+StressInf.DnTs=StressInf.DnTs(:,~ColFD);
 %Now fixing the elements to 0 disp, you could put any disp here you
 %want if you wanted a displacement boundary condition
 Tn(FD)=0;
 Ts(FD)=0;
 %Removing any of the fixed elements from the size value
-Sm = sum(Fdisp);
+Sm = sum(ColFD);
 NUM=NUM-(Sm);
 
 

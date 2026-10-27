@@ -223,7 +223,11 @@ if Option~='F'
 else %We need to do this for both elastics  
     
     if any(FdispE1)==1    
-        [ StressInfE1FB,NUME1,~,~,~]= FixingDisp_InfRowSwap3d( StressInfE1FB,DispInfE1FB,NUME1,[],[],[],FdispE1);       
+        %Rows of the FB matrices are only the free boundary elements of
+        %E1, columns are all E1 elements, so pass both flags.
+        FlgE1=Fdisp(Fdisp<=2);
+        RowFdispE1=FdispE1(FlgE1==0 | FlgE1==1);
+        [ StressInfE1FB,NUME1,~,~,~]= FixingDisp_InfRowSwap3d( StressInfE1FB,DispInfE1FB,NUME1,[],[],[],RowFdispE1,FdispE1);
         %Now removing any fixed disp element cols from the interface elements  
         [StressInfE1IF] = ExtractData(FdispE1,2,StressInfE1IF,'Columns',1 );
         [DispInfE1IF]  = ExtractData(FdispE1,2,DispInfE1IF,'Columns',1 );
@@ -231,13 +235,16 @@ else %We need to do this for both elastics
     
     %E2    
     if any(FdispE2)==1
-        %Need to Flip So the fixed disps are the top part    
-        [StressInfE2FB,DispInfE2FB,FdispE2]=FlipColVecs(StressInfE2FB,DispInfE2FB,FdispE2);
-        
-        [ StressInfE2FB,NUME1,~,~,~ ]= FixingDisp_InfRowSwap3d( StressInfE2FB,DispInfE2FB,NUME2,[],[],[],FdispE2);  
-        
-        %Flipping back right way up
-        [StressInfE2FB,DispInfE2FB,FdispE2]=FlipColVecs(StressInfE2FB,DispInfE2FB,FdispE2);
+        %Rows of the FB matrices are only the free boundary elements of
+        %E2, columns are all E2 elements, so pass both flags. (Previously
+        %the rows were flipped so FdispE2 lined up with them, but the same
+        %flipped flag then removed the wrong columns: those of the first
+        %interface elements rather than the fixed elements. The count was
+        %also returned into NUME1, which is used below to split D between
+        %the two bodies.)
+        FlgE2=Fdisp(Fdisp>=3);
+        RowFdispE2=FdispE2(FlgE2==4 | FlgE2==5);
+        [ StressInfE2FB,NUME2,~,~,~ ]= FixingDisp_InfRowSwap3d( StressInfE2FB,DispInfE2FB,NUME2,[],[],[],RowFdispE2,FdispE2);
         %Now removing any fixed disp element cols from the interface elements  
         [StressInfE2IF] = ExtractData(FdispE2,2,StressInfE2IF,'Columns',1 );
         [DispInfE2IF]  = ExtractData(FdispE2,2,DispInfE2IF,'Columns',1 );      

@@ -1,5 +1,5 @@
 function [ StressInf,NUM,Tn,Tss,Tds ]...
-    = FixingDisp_InfRowSwap3d( StressInf,DispInf,NUM,Tn,Tss,Tds,Fdisp)
+    = FixingDisp_InfRowSwap3d( StressInf,DispInf,NUM,Tn,Tss,Tds,Fdisp,ColFdisp)
 % FixingDisp_InfRowSwap3d: This swaps rows of the Coefficient matrices for
 %                       stress to that of disp. This is be used to fix displacement
 %                       of chosen midpoints that have been flagged with 'Fdisp'.
@@ -65,6 +65,15 @@ function [ StressInf,NUM,Tn,Tss,Tds ]...
 
 %Replacing fixed disp rows with disp inf matrices
 FD=logical(Fdisp);
+%Optional: when the rows of StressInf are only a subset of the elements
+%(e.g. the free boundary rows of one body in an inhomogeneous calc) the row
+%flag (Fdisp, one per row) and the column flag (ColFdisp, one per element)
+%differ. If not supplied both are Fdisp, as before.
+if nargin<8 || isempty(ColFdisp)
+    ColFD=FD;
+else
+    ColFD=logical(ColFdisp);
+end
 StressInf.DnTn(FD,:)  =DispInf.DnUx(FD,:);
 StressInf.DnTss(FD,:) =DispInf.DnUy(FD,:);
 StressInf.DnTds(FD,:) =DispInf.DnUz(FD,:);
@@ -75,22 +84,22 @@ StressInf.DdsTn(FD,:) =DispInf.DdsUx(FD,:);
 StressInf.DdsTss(FD,:)=DispInf.DdsUy(FD,:);
 StressInf.DdsTds(FD,:)=DispInf.DdsUz(FD,:);
 %Now removing any fixed disp element cols
-StressInf.DnTn  =StressInf.DnTn(:,~FD);
-StressInf.DnTss =StressInf.DnTss(:,~FD);
-StressInf.DnTds =StressInf.DnTds(:,~FD);
-StressInf.DssTn =StressInf.DssTn(:,~FD);
-StressInf.DssTss=StressInf.DssTss(:,~FD);
-StressInf.DssTds=StressInf.DssTds(:,~FD);
-StressInf.DdsTn =StressInf.DdsTn(:,~FD);
-StressInf.DdsTss=StressInf.DdsTss(:,~FD);
-StressInf.DdsTds=StressInf.DdsTds(:,~FD);
+StressInf.DnTn  =StressInf.DnTn(:,~ColFD);
+StressInf.DnTss =StressInf.DnTss(:,~ColFD);
+StressInf.DnTds =StressInf.DnTds(:,~ColFD);
+StressInf.DssTn =StressInf.DssTn(:,~ColFD);
+StressInf.DssTss=StressInf.DssTss(:,~ColFD);
+StressInf.DssTds=StressInf.DssTds(:,~ColFD);
+StressInf.DdsTn =StressInf.DdsTn(:,~ColFD);
+StressInf.DdsTss=StressInf.DdsTss(:,~ColFD);
+StressInf.DdsTds=StressInf.DdsTds(:,~ColFD);
 %Now fixing the triangles to 0 disp, Replacing tractions with the disp
 %boundary condition you could put any disp here you want
 Tn(FD)=0;
 Tss(FD)=0;
 Tds(FD)=0;
 %Removing any of the fixed triangles from the size
-Sm = sum(Fdisp);
+Sm = sum(ColFD);
 NUM=NUM-Sm;
 
 

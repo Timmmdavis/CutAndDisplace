@@ -90,6 +90,11 @@ cmap2 = colormap_cpt('Ccool-warm2');
 
 %Adding interface E2E1, Points towards E1
 [Points,Triangles,BoundaryFlag] = DataAppender3d( Points,PointsIFE2E1,Triangles,TrianglesIFE2E1,BoundaryFlag,3 );
+%also fix body 2 (flag 5), as the 2D annulus test does
+PointsF2=PointsFBE1F; PointsF2(:,2)=PointsF2(:,2)+0.01;
+[Points,Triangles,BoundaryFlag] = DataAppender3d( Points,PointsF2,Triangles,TrianglesFBE1F,BoundaryFlag,5 );
+fprintf('flag counts 0..5: %s\n',mat2str(arrayfun(@(k) sum(BoundaryFlag==k),0:5)));
+
 
 % %How to add Fixed parts of E2 to data
 %[Points,Triangles,BoundaryFlag] = DataAppender3d( Points,PointsFBE1F,Triangles,TrianglesFBE1F,BoundaryFlag,5 );
